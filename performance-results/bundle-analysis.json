@@ -1,0 +1,34 @@
+{
+  "timestamp": "2025-07-29T23:07:41.043Z",
+  "totalSize": "312.47",
+  "files": {
+    "js": [
+      {
+        "name": "icons-B4UEHjxZ.js",
+        "size": "2.12"
+      },
+      {
+        "name": "index-Ds_fbPyI.js",
+        "size": "229.58"
+      },
+      {
+        "name": "router-Z_pdE2-p.js",
+        "size": "30.94"
+      },
+      {
+        "name": "utils-BJeS7sC5.js",
+        "size": "24.29"
+      },
+      {
+        "name": "vendor-gH-7aFTg.js",
+        "size": "11.59"
+      }
+    ],
+    "css": [
+      {
+        "name": "index-DR1VKaZJ.css",
+        "size": "13.96"
+      }
+    ]
+  }
+}
