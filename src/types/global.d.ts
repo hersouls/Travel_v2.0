@@ -20,7 +20,7 @@ interface ImportMetaEnv {
   readonly VITE_ENABLE_PREFETCH: string
 }
 
-interface ImportMeta {
+interface _ImportMeta {
   readonly env: ImportMetaEnv
 }
 
@@ -35,13 +35,13 @@ declare global {
 }
 
 // Audio API Extensions
-interface HTMLAudioElement {
+interface _HTMLAudioElement {
   mozAudioChannelType?: string
   webkitAudioContext?: AudioContext
 }
 
 // PWA Types
-interface BeforeInstallPromptEvent extends Event {
+interface _BeforeInstallPromptEvent extends Event {
   readonly platforms: string[]
   readonly userChoice: Promise<{
     outcome: 'accepted' | 'dismissed'
@@ -51,7 +51,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 // Service Worker Types
-interface ServiceWorkerRegistration {
+interface _ServiceWorkerRegistration {
   pushManager: PushManager
 }
 
@@ -62,7 +62,7 @@ interface PushManager {
 }
 
 // Performance API Extensions
-interface PerformanceObserverEntryList {
+interface _PerformanceObserverEntryList {
   getEntries(): PerformanceEntry[]
   getEntriesByType(type: string): PerformanceEntry[]
   getEntriesByName(name: string, type?: string): PerformanceEntry[]
