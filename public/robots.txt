@@ -1,4 +1,17 @@
 User-agent: *
 Allow: /
 
+# Disallow admin or private areas
+Disallow: /admin/
+Disallow: /private/
+
+# Allow important resources
+Allow: /music/
+Allow: /covers/
+Allow: /manifest.json
+
+# Sitemap
 Sitemap: https://oh.moonwave.kr/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1

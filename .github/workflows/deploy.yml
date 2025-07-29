@@ -39,3 +39,13 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./dist
         cname: oh.moonwave.kr
+        force_orphan: true
+        user_name: 'github-actions[bot]'
+        user_email: 'github-actions[bot]@users.noreply.github.com'
+        
+    - name: Deploy Status
+      if: github.ref == 'refs/heads/main'
+      run: |
+        echo "🚀 Deployment completed successfully!"
+        echo "🌐 Site URL: https://oh.moonwave.kr"
+        echo "📅 Deployed at: $(date)"
