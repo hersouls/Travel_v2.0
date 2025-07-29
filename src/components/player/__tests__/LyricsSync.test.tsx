@@ -66,7 +66,7 @@ describe('LyricsSync', () => {
   });
 
   it('shows message when lyrics is null', () => {
-    render(<LyricsSync lyrics={null as any} currentTime={0} />);
+    render(<LyricsSync lyrics={null as unknown} currentTime={0} />);
     expect(screen.getByText('가사가 없습니다.')).toBeInTheDocument();
   });
 
@@ -135,7 +135,7 @@ describe('LyricsSync', () => {
   it('handles lyrics with missing time property', () => {
     const lyricsWithMissingTime = [
       { time: 0, text: '첫 번째 가사' },
-      { text: '시간 없는 가사' } as any,
+      { text: '시간 없는 가사' } as unknown,
       { time: 20, text: '세 번째 가사' },
     ];
     

@@ -5,9 +5,9 @@ import { LyricsSync } from '@/components/player/LyricsSync';
 import { Modal } from '@/components/ui/Modal';
 import { Track } from '@/types';
 
-interface TrackDetailPageProps {}
+// TrackDetailPage doesn't need props
 
-export const TrackDetailPage: React.FC<TrackDetailPageProps> = () => {
+export const TrackDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [track, setTrack] = useState<Track | null>(null);

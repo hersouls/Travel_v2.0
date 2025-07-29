@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { formatTime } from '@/utils/audio';
 
 interface ProgressBarProps {
@@ -22,14 +22,14 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   const displayTime = isDragging ? dragTime : currentTime;
   const displayProgress = duration > 0 ? (displayTime / duration) * 100 : 0;
 
-  const getTimeFromEvent = (clientX: number) => {
+  const getTimeFromEvent = useCallback((clientX: number) => {
     if (!progressRef.current) return 0;
     
     const rect = progressRef.current.getBoundingClientRect();
     const clickX = clientX - rect.left;
     const percentage = Math.max(0, Math.min(1, clickX / rect.width));
     return percentage * duration;
-  };
+  }, [duration]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!progressRef.current) return;
@@ -50,14 +50,14 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
     }
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isDragging || !progressRef.current) return;
     
     const newTime = getTimeFromEvent(e.clientX);
     setDragTime(newTime);
-  };
+  }, [isDragging, getTimeFromEvent]);
 
-  const handleTouchMove = (e: TouchEvent) => {
+  const handleTouchMove = useCallback((e: TouchEvent) => {
     if (!isDragging || !progressRef.current) return;
     
     e.preventDefault(); // 스크롤 방지
@@ -66,21 +66,21 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
       const newTime = getTimeFromEvent(touch.clientX);
       setDragTime(newTime);
     }
-  };
+  }, [isDragging, getTimeFromEvent]);
 
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     if (isDragging) {
       onSeek(dragTime);
       setIsDragging(false);
     }
-  };
+  }, [isDragging, dragTime, onSeek]);
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = useCallback(() => {
     if (isDragging) {
       onSeek(dragTime);
       setIsDragging(false);
     }
-  };
+  }, [isDragging, dragTime, onSeek]);
 
   useEffect(() => {
     if (isDragging) {
@@ -97,7 +97,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
       };
     }
     return undefined;
-  }, [isDragging, dragTime, duration, onSeek]);
+  }, [isDragging, handleMouseMove, handleMouseUp, handleTouchMove, handleTouchEnd]);
 
   const handleClick = (e: React.MouseEvent) => {
     if (!progressRef.current) return;

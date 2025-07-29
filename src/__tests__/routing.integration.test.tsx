@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
+import '@testing-library/jest-dom';
 
 import App from '../App';
 
@@ -106,7 +107,7 @@ describe('Routing Integration Tests', () => {
   });
 
   test('브라우저 뒤로가기 버튼이 올바르게 작동한다', async () => {
-    const { container } = render(
+    render(
       <BrowserRouter>
         <App />
       </BrowserRouter>
