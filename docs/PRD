@@ -1,0 +1,222 @@
+🎧 Moonwave 오안나 음악 플레이어 MVP - PRD 문서
+
+
+---
+
+📌 1. 개요
+
+항목	내용
+
+프로젝트명	Moonwave 오안나 음악 플레이어 MVP
+목적	13곡으로 구성된 정적 웹 기반 음악 플레이어 서비스 제공
+도메인	https://oh.moonwave.kr
+저장소	https://github.com/hersouls/Oh_v1.0
+배포 방식	GitHub Actions + GitHub Pages
+로그인	❌ 필요 없음
+DB 사용	❌ 없음 (Supabase, Firebase 연동 없음)
+외부 API	❌ 없음 (모든 데이터는 JSON/정적파일로 관리)
+서비스 타입	정적 SPA + PWA (모바일 최적화 및 설치형 앱 포함)
+디자인 가이드	Moonwave 브랜드 디자인 가이드 기반 적용
+
+
+
+---
+
+🧱 2. 기술 스택
+
+영역	기술
+
+프론트엔드	React + Vite
+UI 스타일링	Tailwind CSS
+오디오 재생	HTML5 <audio> 태그 + useRef 제어
+상태관리	useState, useRef
+배포	GitHub Pages (Actions 자동 배포 스크립트 포함)
+데이터 구조	/public/sample-tracks.json, /music, /covers
+앱 아이콘	/public/moonwave_log.png (PWA 앱 실행 아이콘)
+
+
+
+---
+
+🎵 3. 음원 구성 및 저장 방식
+
+총 13곡
+
+모든 음원은 /public/music/ 경로에 .mp3 파일로 저장
+
+음원 커버 이미지는 /public/covers/에 저장
+
+트랙 메타정보 및 곡 설명은 /public/sample-tracks.json에 다음 구조로 저장:
+
+
+{
+  "id": 1,
+  "title": "Shine Bright",
+  "artist": "오안나",
+  "audioUrl": "/music/shine-bright.mp3",
+  "coverUrl": "/covers/shine-bright.jpg",
+  "description": "오안나가 자신의 리듬, 궤적, 침묵, 파동 위에 스스로 빛이 되어 무대를 밝혀낸 마지막 선언곡",
+  "lyrics": "숨죽인 무대 위...",
+  "interpretation": "이 곡은 외부 조명 없이도 자신의 내면에서 발산되는 빛을 상징합니다...",
+  "sync": [
+    { "time": 0, "line": "숨죽인 무대 위" },
+    { "time": 5, "line": "조명 없는 나의 길" }
+  ]
+}
+
+
+---
+
+🎨 4. UI/UX 요구사항
+
+요소	요구사항
+
+메인 화면	커버 이미지 중심 카드형 UI, 하단에 플레이어 영역 고정
+트랙 리스트	가로 슬라이드 방식 or 수직 목록형 선택 가능
+플레이어 영역	재생/정지, 볼륨, 진행바, 다음/이전곡, 반복 버튼 포함
+상세 뷰	곡 제목 + 설명 + 가사 + 해석 + 싱크 가사 출력 (스크롤형)
+가사 싱크	실시간 하이라이팅, 오디오 currentTime과 sync[] 연동
+인트로 페이지	서비스 소개 + 오안나 세계관 요약 + 음악 목록 진입 버튼
+다운로드 기능	각 곡마다 .mp3 개별 다운로드 버튼 추가
+반응형	모바일 우선 디자인, 최소 375px 대응
+테마	Moonwave 색상 기준 (연보라/검정/흰톤 조합)
+
+
+
+---
+
+🔐 5. 인증 및 데이터 관리
+
+로그인/회원가입 없음
+
+모든 데이터는 정적 JSON 또는 정적 파일 기반
+
+보안 이슈 없음 (오픈된 공개 자료 기반)
+
+
+
+---
+
+🚀 6. 배포 구성
+
+Github Actions 설정
+
+브랜치: main
+
+저장소: hersouls/Oh_v1.0
+
+빌드 명령: vite build
+
+아티팩트 경로: /dist
+
+배포 대상: GitHub Pages (gh-pages 브랜치 자동 생성)
+
+사용 액션: peaceiris/actions-gh-pages@v3
+
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+
+DNS 설정
+
+oh.moonwave.kr → hersouls/Oh_v1.0 GitHub Pages 연결
+
+DNS A 레코드 or CNAME 파일 /public/CNAME 생성 필요:
+
+
+oh.moonwave.kr
+
+
+---
+
+📖 7. 콘텐츠 예시 - 'Shine Bright'
+
+> "오안나가 자신의 리듬, 궤적, 침묵, 파동 위에 스스로 빛이 되어 무대를 밝혀낸 마지막 선언곡"
+
+
+
+✨ 핵심 철학
+
+조용한 반복, 실패의 흔적, 정의되지 않은 궤적들 속에서 끝내 자기 존재의 빛을 만든 사람의 이야기
+
+“I'm not lit, I ignite” → 외부 조명 아닌 내면의 점화
+
+
+🎧 사운드 구조
+
+정적 → 확장 → 폭발 → 공명 구조의 서사
+
+밀도와 질감 중심의 빛의 음향화 구현
+
+
+📝 가사 (요약)
+
+숨죽인 무대 위, 조명 없는 나의 길
+반복된 silence, 깨진 trace — 그게 나의 base
+...
+I shine bright, not by chance
+내 리듬은 우연이 아냐, it's a dance
+
+🌟 해석 요약
+
+빛은 단순히 ‘밝음’이 아니라 존재의 본질이 드러나는 자기발광
+
+무대는 주어진 것이 아니라 만들어낸 공간
+
+완성이자 새로운 시작으로 작용
+
+
+
+---
+
+🧭 8. 이후 확장 고려사항
+
+항목	내용
+
+가사 싱크 기능	✅ 포함됨 (sync[] 기반 실시간 표시)
+앨범 단위 grouping	시리즈별/테마별 구분 UI 적용
+인트로 페이지	✅ 포함됨 (첫 진입 시 안내형 커버 + 진입 버튼)
+다운로드 기능	✅ 각 곡 mp3 다운로드 버튼 포함
+PWA 앱화	✅ 적용 (manifest + /public/moonwave_log.png 앱 아이콘)
+
+
+
+---
+
+✅ 문서 버전
+
+버전: PRD v1.2
+
+작성일: 2025-07-29
+
+담당: 문유오빠 (Moonwave HQ)
+
+
