@@ -1,0 +1,510 @@
+# 🎧 문유 음악 플레이어 화면정의서 v2.0
+
+## 1. 화면 구조도
+
+```
+┌─────────────────────────────────────────┐
+│           인트로 페이지                  │
+│     (평범함에서 특별함으로)             │
+└────────────────┬────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────┐
+│           메인 페이지                    │
+│      (트랙 리스트 + 플레이어)           │
+├─────────────────┴────────────────────────┤
+│                                          │
+│  ┌──────────┐  ┌──────────┐            │
+│  │트랙 카드1│  │트랙 카드2│  ...       │
+│  └──────────┘  └──────────┘            │
+│                                          │
+├──────────────────────────────────────────┤
+│         하단 플레이어 (고정)             │
+└──────────────────────────────────────────┘
+                 │
+                 ▼ (곡 선택시)
+┌─────────────────────────────────────────┐
+│           상세 뷰 페이지                 │
+│    (가사/해석/싱크 가사 표시)           │
+└─────────────────────────────────────────┘
+```
+
+---
+
+### 2.4 오안나 소개 페이지 (About)
+
+#### 화면 ID: ABOUT-001
+#### 화면명: 오안나의 여정
+#### URL: `/about`
+
+#### 레이아웃
+```
+┌─────────────────────────────────────────┐
+│  [🏠 로고]          오안나의 여정       │ Header
+├─────────────────────────────────────────┤
+│                                         │
+│         [오안나 이미지/일러스트]        │
+│                                         │
+│            오안나 (OH Anna)             │
+│              2007.04.28                 │
+│                                         │
+│  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  │
+│                                         │
+│  "재능보다 노력으로, 평범함에서         │
+│   특별함을 만들어낸 리듬체조 선수"      │
+│                                         │
+│  [타임라인]                             │
+│  2014 • 초등학교 1학년, 리듬체조 시작  │
+│  2022 • 15세, 주니어 국가대표 선발     │
+│  2024 • 시니어 국가대표팀 활동         │
+│                                         │
+│  [스토리 섹션]                          │
+│  📍 시작: 평범한 재능의 소녀           │
+│  처음엔 두각을 나타내지 못했지만...     │
+│                                         │
+│  💫 성장: 비범한 열정과 노력           │
+│  매일 새벽 홀로 연습하며...            │
+│                                         │
+│  🏆 현재: 대한민국 국가대표            │
+│  손연재의 뒤를 잇는 차세대 주자...      │
+│                                         │
+│  [곡 해석]                              │
+│  이 13곡은 오안나의 여정을 음악으로     │
+│  재해석한 작품입니다. 각 트랙은...      │
+│                                         │
+│  [음악 듣기 버튼]                       │
+│                                         │
+├─────────────────────────────────────────┤
+│         (플레이어 영역 고정)             │
+└─────────────────────────────────────────┘
+```
+
+#### 구성 요소 (Catalyst UI)
+
+##### 헤더 영역
+| 요소 | Catalyst 컴포넌트 | 설명 | 스타일 |
+|------|-------------------|------|--------|
+| 홈 버튼 | `<Button>` | 메인으로 이동 | `glass-button` 스타일 |
+| 페이지 타이틀 | `<Heading>` | "오안나의 여정" | `level={1}` |
+
+##### 프로필 영역
+| 요소 | Catalyst 컴포넌트 | 설명 | 스타일 |
+|------|-------------------|------|--------|
+| 이미지 | `<img>` | 오안나 일러스트 | `w-48 h-48 rounded-full mx-auto` |
+| 이름 | `<Heading>` | "오안나 (OH Anna)" | `level={2} align="center"` |
+| 생년월일 | `<Text>` | "2007.04.28" | `color="gray" align="center"` |
+| 소개문 | `<Text>` | 핵심 메시지 | `size="lg" weight="medium"` |
+
+##### 타임라인 영역
+| 요소 | Catalyst 컴포넌트 | 설명 | 스타일 |
+|------|-------------------|------|--------|
+| 타임라인 | `<div>` | 세로 타임라인 | `border-l-2 border-purple-300` |
+| 연도 | `<Badge>` | 연도 표시 | `color="purple"` |
+| 이벤트 | `<Text>` | 주요 사건 | `pl-4 relative` |
+
+##### 스토리 섹션
+| 요소 | Catalyst 컴포넌트 | 설명 | 스타일 |
+|------|-------------------|------|--------|
+| 섹션 카드 | `<Card>` | 각 스토리 단계 | `hover:shadow-lg transition` |
+| 아이콘 | `<div>` | 이모지/아이콘 | `text-2xl mb-2` |
+| 제목 | `<Heading>` | 섹션 제목 | `level={3}` |
+| 내용 | `<Text>` | 스토리 내용 | `color="secondary"` |
+
+##### CTA 영역
+| 요소 | Catalyst 컴포넌트 | 설명 | 스타일 |
+|------|-------------------|------|--------|
+| 음악 듣기 | `<Button>` | 메인으로 이동 | `size="lg" color="purple"` |
+
+#### 인터랙션
+- 스크롤시 타임라인 애니메이션
+- 카드 호버 효과
+- 음악 듣기 → 메인 페이지 이동
+
+#### 반응형 디자인
+- 모바일: 단일 컬럼, 축소된 타임라인
+- 태블릿+: 2컬럼 그리드 레이아웃
+
+---
+
+## 2. 화면별 상세 정의
+
+### 2.1 인트로 페이지 (Intro)
+
+#### 화면 ID: INTRO-001
+#### 화면명: 여정의 시작
+#### URL: `/` (첫 방문시)
+
+#### 레이아웃
+```
+┌─────────────────────────────────────────┐
+│                                         │
+│         [Moonwave 로고]                 │
+│                                         │
+│       "평범함에서 특별함으로"           │
+│                                         │
+│    재능보다 노력으로, 한계를 넘어       │
+│    자신만의 빛을 찾아가는 여정.         │
+│    13개의 트랙에 담긴 성장의 순간들.    │
+│                                         │
+│      [음악으로 만나기]                  │
+│                                         │
+│    "타고난 것보다 만들어가는 것"        │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+#### 구성 요소 (Catalyst UI 활용)
+| 요소 | Catalyst 컴포넌트 | 설명 | 스타일 |
+|------|-------------------|------|--------|
+| 배경 | - | 그라디언트 배경 | `bg-gradient-to-br from-purple-500 to-pink-600` |
+| 로고 | `<img>` | Moonwave 로고만 | `w-20 h-20 mx-auto mb-8 opacity-90` |
+| 메인 문구 | `<Heading>` | "평범함에서 특별함으로" | `text-3xl sm:text-5xl font-bold text-white` |
+| 설명 텍스트 | `<Text>` | 여정 설명 | `text-lg text-white/90 max-w-xl leading-relaxed` |
+| 시작 버튼 | `<Button>` | 메인 진입 | `variant="solid" color="white"` |
+| 인용구 | `<Text>` | 핵심 메시지 | `text-sm text-white/70 italic` |
+
+#### 인터랙션
+- 페이드인 애니메이션 (하단에서 위로)
+- 로고 subtle pulse 애니메이션
+- 버튼 클릭 → 페이드 아웃 후 메인 이동
+
+---
+
+### 2.2 메인 페이지 (Main)
+
+#### 화면 ID: MAIN-001  
+#### 화면명: 13개의 순간들
+#### URL: `/tracks`
+
+#### 레이아웃
+```
+┌─────────────────────────────────────────┐
+│  [🏠 로고]              [오안나 이야기] │ Header (고정)
+├─────────────────────────────────────────┤
+│                                         │
+│  13개의 트랙, 13개의 성장               │
+│                                         │
+│  ┌──────────┐  ┌──────────┐           │
+│  │  [커버]  │  │  [커버]  │           │
+│  │ ▶ 재생  │  │ ▶ 재생  │           │ Track Grid
+│  │ 트랙명  │  │ 트랙명  │           │
+│  │  문유   │  │  문유   │           │
+│  └──────────┘  └──────────┘           │
+│                                         │
+│  (... 13곡 그리드 반복 ...)            │
+│                                         │
+├─────────────────────────────────────────┤
+│ [◀] [▶/❚❚] [▶] === [♪] [↓]           │ Player (고정)
+│ 현재 트랙 - 문유    0:00 / 3:45        │
+└─────────────────────────────────────────┘
+```
+
+#### 구성 요소 (Catalyst UI)
+
+##### 헤더 영역
+| 요소 | Catalyst 컴포넌트 | 설명 | 스타일 |
+|------|-------------------|------|--------|
+| 헤더 | `<div>` | 상단 고정 헤더 | `fixed top-0 z-50 w-full p-4 flex justify-between` |
+| 홈 버튼 | `<Button>` | 글래스카드 홈버튼 | `bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20` |
+| 로고 | `<img>` | Moonwave 로고 | `w-8 h-8` |
+| About 링크 | `<Button>` | 오안나 소개 페이지 | `variant="ghost" text-sm`|
+
+##### 트랙 그리드
+| 요소 | Catalyst 컴포넌트 | 설명 | 스타일 |
+|------|-------------------|------|--------|
+| 그리드 | `<div>` + Grid | 반응형 그리드 | `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6` |
+| 트랙 카드 | `<Card>` | 개별 곡 카드 | Catalyst Card 스타일 |
+| 커버 이미지 | `<img>` | 앨범 커버 | `aspect-square object-cover` |
+| 재생 버튼 | `<Button>` | 재생/정지 | `shape="circle" variant="ghost"` |
+| 트랙명 | `<Heading>` | 곡 제목 | `level={3}` |
+| 아티스트 | `<Text>` | "문유" | `color="gray"` |
+
+##### 플레이어 영역 (Catalyst UI)
+| 요소 | Catalyst 컴포넌트 | 설명 | 스타일 |
+|------|-------------------|------|--------|
+| 플레이어 | `<div>` + Border | 하단 고정 | `fixed bottom-0 bg-white border-t` |
+| 컨트롤 그룹 | `<ButtonGroup>` | 재생 컨트롤 | Catalyst ButtonGroup |
+| 재생 버튼 | `<Button>` | 메인 재생 | `color="purple" variant="solid"` |
+| 진행바 | `<Slider>` | 재생 위치 | Catalyst Slider |
+| 볼륨 | `<Slider>` | 볼륨 조절 | `size="sm"` |
+| 다운로드 | `<Button>` | MP3 다운로드 | `variant="ghost"` |
+
+---
+
+### 2.3 상세 뷰 페이지 (Detail)
+
+#### 화면 ID: DETAIL-001
+#### 화면명: 트랙 상세
+#### URL: `/track/:id`
+
+#### 레이아웃
+```
+┌─────────────────────────────────────────┐
+│  [← 뒤로]          트랙명               │ Header
+├─────────────────────────────────────────┤
+│                                         │
+│         [대형 커버 이미지]              │
+│                                         │
+│           "Shine Bright"                │
+│              문유                       │
+│                                         │
+├─────────────────────────────────────────┤
+│  [가사] [해석] [싱크]  (탭 메뉴)        │
+├─────────────────────────────────────────┤
+│                                         │
+│  (선택된 탭 콘텐츠 표시)                │
+│                                         │
+│  싱크 모드:                             │
+│  ♪ 현재 재생중인 가사 라인             │
+│    (실시간 하이라이트)                  │
+│                                         │
+├─────────────────────────────────────────┤
+│         (플레이어 영역 고정)             │
+└─────────────────────────────────────────┘
+```
+
+#### 구성 요소 (Catalyst UI)
+
+##### 헤더 영역
+| 요소 | Catalyst 컴포넌트 | 설명 | 스타일 |
+|------|-------------------|------|--------|
+| 뒤로가기 | `<Button>` | 메인 복귀 | `variant="ghost" prefix={<ChevronLeftIcon />}` |
+| 페이지 타이틀 | `<Heading>` | 현재 곡 | `level={2}` |
+
+##### 곡 정보 영역
+| 요소 | Catalyst 컴포넌트 | 설명 | 스타일 |
+|------|-------------------|------|--------|
+| 커버 | `<img>` | 대형 커버 | `rounded-xl shadow-xl` |
+| 트랙명 | `<Heading>` | 곡 제목 | `level={1} align="center"` |
+| 아티스트 | `<Text>` | "문유" | `color="gray" align="center"` |
+| 설명 | `<Text>` | 곡 설명 | `color="secondary"` |
+
+##### 탭 콘텐츠 영역
+| 요소 | Catalyst 컴포넌트 | 설명 | 스타일 |
+|------|-------------------|------|--------|
+| 탭 | `<TabGroup>` | 콘텐츠 전환 | Catalyst TabGroup |
+| 탭 리스트 | `<TabList>` | 탭 메뉴 | Default styling |
+| 탭 패널 | `<TabPanel>` | 콘텐츠 영역 | `overflow-y-auto max-h-96` |
+| 가사 라인 | `<Text>` | 개별 가사 | `leading-relaxed` |
+| 싱크 가사 | `<Text>` | 현재 가사 | `color="purple" weight="semibold"` |
+
+---
+
+## 3. 공통 컴포넌트 (Catalyst 기반)
+
+### 3.1 글래스카드 버튼 (GlassButton)
+```tsx
+// 글래스모피즘 버튼 스타일
+<Button className={cn(
+  "bg-white/10 backdrop-blur-md",
+  "border border-white/20",
+  "hover:bg-white/20",
+  "transition-all duration-200",
+  "shadow-lg"
+)}>
+  <img src="/moonwave_log.png" className="w-8 h-8" />
+</Button>
+```
+
+### 3.2 플레이어 컨트롤 (PlayerControls)
+```tsx
+// Catalyst UI 컴포넌트 활용
+<div className="border-t bg-white/95 backdrop-blur">
+  <ButtonGroup>
+    <Button variant="ghost"><SkipBackIcon /></Button>
+    <Button color="purple"><PlayIcon /></Button>
+    <Button variant="ghost"><SkipForwardIcon /></Button>
+  </ButtonGroup>
+  <Slider value={currentTime} max={duration} />
+</div>
+```
+
+### 3.4 트랙 카드 (TrackCard)
+```tsx
+// Catalyst Card 컴포넌트 활용
+<Card>
+  <div className="relative">
+    <img src={coverUrl} className="aspect-square" />
+    <Button shape="circle" className="absolute inset-center">
+      <PlayIcon />
+    </Button>
+  </div>
+  <CardContent>
+    <Heading level={3}>{title}</Heading>
+    <Text color="gray">문유</Text>
+  </CardContent>
+</Card>
+```
+
+### 3.5 로딩 상태 (LoadingState)
+```tsx
+// Catalyst Spinner 활용
+<div className="flex items-center justify-center">
+  <Spinner color="purple" />
+  <Text>음원을 불러오는 중...</Text>
+</div>
+```
+
+---
+
+## 4. 상태 관리
+
+### 4.1 전역 상태
+```typescript
+interface AppState {
+  currentTrack: Track | null;
+  isPlaying: boolean;
+  currentTime: number;
+  duration: number;
+  volume: number;
+  tracks: Track[];
+  isLoading: boolean;
+  hasVisitedIntro: boolean;
+}
+```
+
+### 4.2 Track 인터페이스
+```typescript
+interface Track {
+  id: number;
+  title: string;
+  artist: string; // "문유"로 고정
+  audioUrl: string;
+  coverUrl: string;
+  description: string;
+  lyrics: string;
+  interpretation: string;
+  sync: Array<{ time: number; line: string }>;
+}
+```
+
+---
+
+## 5. 반응형 브레이크포인트
+
+| 디바이스 | 너비 | 그리드 열 | Catalyst 대응 |
+|----------|------|-----------|---------------|
+| 모바일 | 375px~ | 1열 | Default |
+| 태블릿 | 640px~ | 2열 | `sm:` prefix |
+| 데스크톱 | 1024px~ | 3열 | `lg:` prefix |
+| 와이드 | 1280px~ | 4열 | `xl:` prefix |
+
+---
+
+## 6. 테마 커스터마이징
+
+### 6.1 컬러 팔레트
+```javascript
+// tailwind.config.js 확장
+{
+  purple: {
+    50: '#faf5ff',
+    500: '#a855f7',  // 메인 컬러
+    600: '#9333ea',
+  },
+  pink: {
+    500: '#ec4899',  // 보조 컬러
+    600: '#db2777',
+  }
+}
+```
+
+### 6.2 타이포그래피
+- Catalyst 기본 폰트 시스템 활용
+- 한글 최적화: Pretendard 추가 적용
+
+---
+
+## 7. 접근성 (Catalyst 기본 지원)
+
+### 7.1 내장 접근성 기능
+- 모든 Catalyst 컴포넌트는 ARIA 속성 기본 포함
+- 키보드 네비게이션 자동 지원
+- 포커스 관리 내장
+
+### 7.2 추가 고려사항
+- 가사 싱크시 `aria-live="polite"` 적용
+- 음악 재생 상태 스크린리더 알림
+
+---
+
+## 8. 성능 최적화
+
+### 8.1 Catalyst 최적화
+- Tree-shaking으로 사용하지 않는 컴포넌트 제거
+- CSS 번들 최소화
+
+### 8.2 오디오 최적화
+- 프리로드: metadata only
+- 버퍼링 상태 표시 (Catalyst Spinner)
+
+---
+
+## 9. PWA 설정
+
+### 9.1 manifest.json
+```json
+{
+  "name": "문유 - 13개의 순간",
+  "short_name": "문유",
+  "description": "평범함에서 특별함으로, 13곡의 여정",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#a855f7",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/moonwave_log.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
+```
+
+---
+
+## 10. 스토리텔링 요소
+
+### 10.1 트랙별 테마 매핑
+- **Track 1-3**: "평범한 시작" (Beginning)
+- **Track 4-7**: "노력과 성장" (Growth)  
+- **Track 8-10**: "도전과 극복" (Challenge)
+- **Track 11-13**: "자신만의 빛" (Shine)
+
+### 10.2 시각적 내러티브
+- 커버 이미지: 추상적 → 구체적 변화
+- 색상 톤: 차가운 색 → 따뜻한 색 진행
+- 가사 밀도: 간결함 → 풍부함 확장
+
+## 11. 네비게이션 플로우
+
+### 11.1 페이지 이동 경로
+```
+인트로 페이지
+    ↓ (음악으로 만나기)
+메인 페이지 ←→ 오안나 소개 페이지
+    ↓ (트랙 선택)
+상세 뷰 페이지
+```
+
+### 11.2 글로벌 네비게이션
+- **로고 홈버튼**: 모든 페이지에서 메인으로 이동
+- **About 링크**: 메인 페이지 우측 상단
+- **뒤로가기**: 상세 페이지에서 메인으로
+
+### 11.3 URL 구조
+- `/` : 인트로 (첫 방문) / 메인 (재방문)
+- `/tracks` : 메인 페이지
+- `/track/:id` : 트랙 상세
+- `/about` : 오안나 소개
+
+---
+
+## 📌 버전 정보
+- 문서 버전: v2.1
+- 작성일: 2025-01-30  
+- 주요 변경: 
+  - 메인 헤더 미니멀화 (아티스트명 제거)
+  - 로고 글래스카드 홈버튼 적용
+  - 오안나 소개 페이지 추가
