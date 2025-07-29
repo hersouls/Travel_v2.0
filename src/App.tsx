@@ -4,6 +4,7 @@ import { Layout } from '@/components/layout/Layout';
 import { IntroPage } from '@/components/intro/IntroPage';
 import { AboutPage } from '@/components/intro/AboutPage';
 import { TracksPage } from '@/pages/TracksPage';
+import { LyricsTestPage } from '@/pages/LyricsTestPage';
 import './App.css';
 
 function App() {
@@ -45,6 +46,12 @@ function App() {
                   <TracksPage />
                 </Layout>
               } 
+            />
+            
+            {/* 가사 싱크 테스트 페이지 */}
+            <Route 
+              path="/lyrics-test" 
+              element={<LyricsTestPage />} 
             />
             
             {/* 404 페이지 */}
