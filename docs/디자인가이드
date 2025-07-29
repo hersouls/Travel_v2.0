@@ -1,0 +1,1323 @@
+# 🎨 Moonwave 디자인 가이드 v2.0
+
+## ⚠️ CRITICAL WARNINGS - READ FIRST
+
+**⚠️ IMPORTANT: Always cd SMS_V.2.0 before running any commands**
+**⚠️ DO NOT create src folder manually - Vite already created it**
+**⚠️ GitHub Actions workflows must be in root .github folder**
+**⚠️ All development work must happen inside SMS_V.2.0 directory**
+
+---
+
+## 1. 디자인 시스템 개요
+
+Moonwave v2.0은 **Utility-First CSS**와 **Container Queries**를 기반으로 한 현대적인 디자인 시스템을 제공합니다. 한글 타이포그래피 최적화와 접근성을 우선시하며, 확장 가능한 컴포넌트 아키텍처를 지향합니다.
+
+### 1.1 핵심 원칙
+
+- **Utility-First**: Tailwind CSS 기반의 유틸리티 클래스 우선
+- **Container Queries**: 요소 기반 반응형 디자인
+- **Korean Typography**: Pretendard 폰트와 한글 최적화
+- **Accessibility First**: WCAG 2.1 AA 준수
+- **Design Tokens**: 일관된 디자인 토큰 시스템
+
+### 1.2 디자인 철학
+
+```
+Moonwave = Utility-First CSS + Container Queries + Korean Typography + Accessibility
+```
+
+---
+
+## 2. 기술 스택
+
+### 2.1 핵심 기술
+
+- **CSS Framework**: Tailwind CSS 3.3+
+- **Container Queries**: @tailwindcss/container-queries
+- **Typography**: Pretendard Variable Font
+- **Icons**: @radix-ui/react-icons, lucide-react, @heroicons/react
+- **Build Tool**: Vite (Phase 1) → Next.js (Phase 2)
+- **Type Safety**: TypeScript 5.0+
+
+### 2.2 설치 및 설정
+
+```bash
+# ⚠️ IMPORTANT: Make sure you're in SMS_V.2.0 directory
+cd SMS_V.2.0
+
+# 필수 패키지 설치 (--legacy-peer-deps for Vite 7 compatibility)
+npm install --legacy-peer-deps -D tailwindcss @tailwindcss/container-queries
+npm install --legacy-peer-deps clsx tailwind-merge
+
+# 아이콘 라이브러리 설치
+npm install --legacy-peer-deps @radix-ui/react-icons lucide-react @heroicons/react
+
+# Tailwind UI 추가 의존성
+npm install --legacy-peer-deps @headlessui/react @tailwindcss/forms @tailwindcss/typography @tailwindcss/aspect-ratio
+```
+
+```javascript
+// SMS_V.2.0/tailwind.config.js
+module.exports = {
+  content: ['./src/**/*.{js,jsx,ts,tsx}'],
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['Pretendard Variable', 'Pretendard', ...defaultTheme.fontFamily.sans],
+      },
+    },
+  },
+  plugins: [
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
+    require('@tailwindcss/aspect-ratio'),
+    require('@tailwindcss/container-queries'),
+  ],
+}
+```
+
+---
+
+## 3. 디자인 토큰
+
+### 3.1 Spacing Scale
+```javascript
+// Moonwave 표준 간격 시스템
+const spacing = {
+  0: '0px',
+  1: '0.25rem',   // 4px
+  2: '0.5rem',    // 8px
+  3: '0.75rem',   // 12px
+  4: '1rem',      // 16px
+  6: '1.5rem',    // 24px
+  8: '2rem',      // 32px
+  12: '3rem',     // 48px
+  16: '4rem',     // 64px
+  20: '5rem',     // 80px
+  24: '6rem',     // 96px
+}
+```
+
+### 3.2 Border Radius
+```javascript
+const borderRadius = {
+  'none': '0',
+  'sm': '0.125rem',     // 2px
+  'DEFAULT': '0.25rem', // 4px
+  'md': '0.375rem',     // 6px
+  'lg': '0.5rem',       // 8px
+  'xl': '0.75rem',      // 12px
+  '2xl': '1rem',        // 16px
+  '3xl': '1.5rem',      // 24px
+  'full': '9999px',
+}
+```
+
+### 3.3 Shadow System
+```javascript
+const boxShadow = {
+  'sm': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+  'DEFAULT': '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+  'md': '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+  'lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+  'xl': '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+  '2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+  'soft': '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+  'glow': '0 0 20px rgba(59, 130, 246, 0.3)',
+  'premium': '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+}
+```
+
+### 3.4 아이콘 크기 표준
+
+```javascript
+const iconSizes = {
+  'xs': 'w-3 h-3',    // 12px
+  'sm': 'w-4 h-4',    // 16px
+  'md': 'w-5 h-5',    // 20px (기본)
+  'lg': 'w-6 h-6',    // 24px
+  'xl': 'w-8 h-8',    // 32px
+}
+```
+
+---
+
+## 4. 타이포그래피
+
+### 4.1 Pretendard 폰트 설정
+
+#### CDN 방식
+```html
+<link 
+  rel="stylesheet" 
+  as="style" 
+  crossorigin 
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+/>
+```
+
+#### 로컬 폰트 (Next.js)
+```typescript
+import localFont from 'next/font/local';
+
+const pretendard = localFont({
+  src: './fonts/PretendardVariable.woff2',
+  weight: '45 920',
+  variable: '--font-pretendard',
+  display: 'swap',
+});
+```
+
+### 4.2 타이포그래피 스케일
+
+```typescript
+// 타입 스케일 (rem 단위)
+const fontSize = {
+  'xs': ['0.75rem', { lineHeight: '1rem' }],      // 12px
+  'sm': ['0.875rem', { lineHeight: '1.25rem' }],  // 14px
+  'base': ['1rem', { lineHeight: '1.5rem' }],     // 16px
+  'lg': ['1.125rem', { lineHeight: '1.75rem' }],  // 18px
+  'xl': ['1.25rem', { lineHeight: '1.75rem' }],   // 20px
+  '2xl': ['1.5rem', { lineHeight: '2rem' }],      // 24px
+  '3xl': ['1.875rem', { lineHeight: '2.25rem' }], // 30px
+  '4xl': ['2.25rem', { lineHeight: '2.5rem' }],   // 36px
+  '5xl': ['3rem', { lineHeight: '1' }],           // 48px
+  '6xl': ['3.75rem', { lineHeight: '1' }],        // 60px
+  '7xl': ['4.5rem', { lineHeight: '1' }],         // 72px
+}
+```
+
+### 4.3 한글 최적화 유틸리티
+
+```css
+@layer utilities {
+  /* 한글 줄바꿈 최적화 */
+  .break-keep-ko {
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+  
+  /* 한글 자간 최적화 */
+  .tracking-ko-tight { letter-spacing: -0.02em; }
+  .tracking-ko-normal { letter-spacing: -0.01em; }
+  .tracking-ko-wide { letter-spacing: 0; }
+  
+  /* 숫자 최적화 */
+  .text-numeric {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
+  }
+}
+```
+
+### 4.4 타이포그래피 컴포넌트
+
+```tsx
+const Typography = {
+  H1: ({ children, className }) => (
+    <h1 className={cn(
+      'text-4xl sm:text-5xl lg:text-6xl',
+      'font-bold tracking-ko-tight',
+      'text-gray-900 break-keep-ko',
+      className
+    )}>
+      {children}
+    </h1>
+  ),
+  
+  Body: ({ children, className }) => (
+    <p className={cn(
+      'text-base lg:text-lg',
+      'font-normal tracking-ko-normal',
+      'text-gray-700 leading-relaxed break-keep-ko',
+      className
+    )}>
+      {children}
+    </p>
+  ),
+}
+```
+
+---
+
+## 5. 컬러 시스템
+
+### 5.1 브랜드 컬러
+
+```javascript
+const colors = {
+  moonwave: {
+    primary: {
+      50: '#eff6ff',
+      100: '#dbeafe',
+      200: '#bfdbfe',
+      300: '#93c5fd',
+      400: '#60a5fa',
+      500: '#3b82f6', // 주요 색상
+      600: '#2563eb',
+      700: '#1d4ed8',
+      800: '#1e40af',
+      900: '#1e3a8a',
+    },
+    secondary: {
+      50: '#faf5ff',
+      100: '#f3e8ff',
+      200: '#e9d5ff',
+      300: '#d8b4fe',
+      400: '#c084fc',
+      500: '#a855f7', // 보조 색상
+      600: '#9333ea',
+      700: '#7e22ce',
+      800: '#6b21a8',
+      900: '#581c87',
+    },
+  },
+}
+```
+
+### 5.2 시맨틱 컬러
+
+```javascript
+const semanticColors = {
+  success: {
+    light: '#d1fae5',
+    DEFAULT: '#10b981',
+    dark: '#065f46',
+  },
+  warning: {
+    light: '#fed7aa',
+    DEFAULT: '#f59e0b',
+    dark: '#92400e',
+  },
+  error: {
+    light: '#fee2e2',
+    DEFAULT: '#ef4444',
+    dark: '#991b1b',
+  },
+  info: {
+    light: '#dbeafe',
+    DEFAULT: '#3b82f6',
+    dark: '#1e40af',
+  },
+}
+```
+
+### 5.3 그라디언트 시스템
+
+```css
+/* 표준 그라디언트 */
+.gradient-moonwave {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.gradient-sunset {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.gradient-ocean {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+```
+
+---
+
+## 6. 레이아웃 시스템
+
+### 6.1 Container Queries
+
+#### 설정
+```javascript
+// tailwind.config.js
+module.exports = {
+  theme: {
+    extend: {
+      containers: {
+        '2xs': '16rem',
+        'xs': '20rem',
+        'sm': '24rem',
+        'md': '28rem',
+        'lg': '32rem',
+        'xl': '36rem',
+        '2xl': '42rem',
+      },
+    },
+  },
+  plugins: [require('@tailwindcss/container-queries')],
+}
+```
+
+#### 사용법
+```tsx
+// 기본 컨테이너 쿼리
+<div className="@container">
+  <div className="@lg:flex @lg:gap-6 space-y-4 @lg:space-y-0">
+    <div className="@lg:w-1/3">사이드바</div>
+    <div className="@lg:w-2/3">메인 콘텐츠</div>
+  </div>
+</div>
+
+// 명명된 컨테이너
+<div className="@container/card">
+  <h3 className="@sm/card:text-lg text-base">제목</h3>
+</div>
+```
+
+### 6.2 그리드 시스템
+
+```tsx
+// 반응형 그리드
+<div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+  {items.map(item => (
+    <Card key={item.id}>{item.content}</Card>
+  ))}
+</div>
+
+// 컨테이너 기반 그리드
+<div className="@container grid gap-4 @md:grid-cols-2 @xl:grid-cols-3">
+  {/* 아이템들 */}
+</div>
+```
+
+---
+
+## 7. 컴포넌트 라이브러리
+
+### 7.1 버튼 컴포넌트
+
+```tsx
+interface ButtonProps {
+  variant?: 'primary' | 'secondary' | 'destructive' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+}
+
+const Button: React.FC<ButtonProps> = ({ 
+  variant = 'primary', 
+  size = 'md', 
+  children,
+  className,
+  ...props 
+}) => {
+  const baseClasses = cn(
+    'font-pretendard font-semibold rounded-lg transition-colors duration-200',
+    'focus:outline-none focus:ring-2 focus:ring-offset-2',
+    'tracking-ko-normal break-keep-ko antialiased'
+  );
+  
+  const variants = {
+    primary: 'bg-blue-500 hover:bg-blue-600 text-white focus:ring-blue-500',
+    secondary: 'bg-gray-200 hover:bg-gray-300 text-gray-900 focus:ring-gray-500',
+    destructive: 'bg-red-500 hover:bg-red-600 text-white focus:ring-red-500',
+    ghost: 'bg-transparent hover:bg-gray-100 text-gray-700'
+  };
+  
+  const sizes = {
+    sm: 'py-1.5 px-3 text-sm',
+    md: 'py-2 px-4 text-base',
+    lg: 'py-3 px-6 text-lg'
+  };
+  
+  return (
+    <button 
+      className={cn(baseClasses, variants[variant], sizes[size], className)}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+};
+```
+
+### 7.2 카드 컴포넌트
+
+```tsx
+const Card: React.FC<CardProps> = ({ children, className, hover = true }) => {
+  return (
+    <div className={cn(
+      'bg-white rounded-xl border border-gray-200 shadow-sm',
+      hover && 'hover:shadow-lg transition-shadow duration-200',
+      '@container',
+      className
+    )}>
+      {children}
+    </div>
+  );
+};
+```
+
+### 7.3 입력 필드
+
+```tsx
+const Input: React.FC<InputProps> = ({ label, error, className, ...props }) => {
+  return (
+    <div className="space-y-1">
+      {label && (
+        <label className="font-pretendard text-sm font-medium text-gray-700">
+          {label}
+        </label>
+      )}
+      <input
+        className={cn(
+          'w-full px-3 py-2 border rounded-md',
+          'font-pretendard tracking-ko-normal',
+          'focus:outline-none focus:ring-2 focus:ring-blue-500',
+          error ? 'border-red-300' : 'border-gray-300',
+          className
+        )}
+        {...props}
+      />
+      {error && (
+        <p className="text-sm text-red-600">{error}</p>
+      )}
+    </div>
+  );
+};
+```
+
+### 7.4 헤더 컴포넌트
+
+```tsx
+interface HeaderProps {
+  serviceButtons?: Array<{
+    icon: React.ReactNode;
+    onClick: () => void;
+    ariaLabel: string;
+  }>;
+}
+
+const Header: React.FC<HeaderProps> = ({ serviceButtons = [] }) => {
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50">
+      {/* Wave Effect Background */}
+      <div className="absolute inset-0 h-20 overflow-hidden">
+        <svg 
+          className="absolute bottom-0 w-full wave-single"
+          style={{ height: '80px', opacity: 0.3 }}
+          viewBox="0 0 1440 320"
+          preserveAspectRatio="none"
+        >
+          <path 
+            fill="#3b82f6" 
+            d="M0,192L48,181.3C96,171,192,149,288,154.7C384,160,480,192,576,213.3C672,235,768,245,864,218.7C960,192,1056,128,1152,106.7C1248,85,1344,107,1392,117.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+          />
+        </svg>
+      </div>
+      
+      {/* Glass Card Navigation */}
+      <nav className="relative">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between">
+            {/* Home Button */}
+            <button
+              className="glass-button p-3 rounded-lg bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 transition-all duration-200"
+              aria-label="홈으로 가기"
+            >
+              <HomeIcon className="w-5 h-5 text-white" />
+            </button>
+            
+            {/* Right Side Buttons */}
+            <div className="flex items-center gap-3">
+              {/* Service Buttons */}
+              {serviceButtons.map((button, index) => (
+                <button
+                  key={index}
+                  onClick={button.onClick}
+                  className="glass-button p-3 rounded-lg bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 transition-all duration-200"
+                  aria-label={button.ariaLabel}
+                >
+                  {button.icon}
+                </button>
+              ))}
+              
+              {/* Profile Button */}
+              <button
+                className="glass-button p-3 rounded-lg bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 transition-all duration-200"
+                aria-label="프로필"
+              >
+                <UserIcon className="w-5 h-5 text-white" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+  );
+};
+```
+
+### 7.5 푸터 컴포넌트
+
+```tsx
+const Footer: React.FC = () => {
+  return (
+    <footer className="bg-gray-900 text-white">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        {/* Footer 내용은 별도 가이드 참조 */}
+        <div className="text-center text-sm text-gray-400">
+          © 2025 Moonwave. All rights reserved.
+        </div>
+      </div>
+    </footer>
+  );
+};
+```
+
+---
+
+## 8. Tailwind UI 프리미엄 컴포넌트
+
+### 8.1 Application UI Kit 활용
+
+#### 프리미엄 Stats 카드
+```tsx
+// Tailwind UI Stats Pattern
+const StatsSection = () => {
+  const stats = [
+    { name: '총 구독', stat: '12', change: '+2', changeType: 'increase' },
+    { name: '월간 비용', stat: '₩127,500', change: '-₩5,000', changeType: 'decrease' },
+    { name: '평균 구독료', stat: '₩10,625', change: '+₩1,200', changeType: 'increase' },
+    { name: '활성 구독', stat: '10', change: '0', changeType: 'neutral' },
+  ];
+
+  return (
+    <div>
+      <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {stats.map((item) => (
+          <div key={item.name} className="relative overflow-hidden rounded-lg bg-white px-4 pb-12 pt-5 shadow sm:px-6 sm:pt-6">
+            <dt>
+              <div className="absolute rounded-md bg-blue-500 p-3">
+                <ChartBarIcon className="h-6 w-6 text-white" aria-hidden="true" />
+              </div>
+              <p className="ml-16 truncate text-sm font-medium text-gray-500">{item.name}</p>
+            </dt>
+            <dd className="ml-16 flex items-baseline pb-6 sm:pb-7">
+              <p className="text-2xl font-semibold text-gray-900">{item.stat}</p>
+              <p
+                className={cn(
+                  item.changeType === 'increase' ? 'text-green-600' : item.changeType === 'decrease' ? 'text-red-600' : 'text-gray-500',
+                  'ml-2 flex items-baseline text-sm font-semibold'
+                )}
+              >
+                {item.changeType === 'increase' ? (
+                  <ArrowUpIcon className="h-5 w-5 flex-shrink-0 self-center text-green-500" aria-hidden="true" />
+                ) : item.changeType === 'decrease' ? (
+                  <ArrowDownIcon className="h-5 w-5 flex-shrink-0 self-center text-red-500" aria-hidden="true" />
+                ) : null}
+                <span className="sr-only"> {item.changeType === 'increase' ? 'Increased' : item.changeType === 'decrease' ? 'Decreased' : 'No change'} by </span>
+                {item.change}
+              </p>
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  );
+};
+```
+
+#### 프리미엄 테이블 컴포넌트
+```tsx
+// Tailwind UI Table Pattern
+const SubscriptionTable = ({ subscriptions }) => {
+  return (
+    <div className="px-4 sm:px-6 lg:px-8">
+      <div className="sm:flex sm:items-center">
+        <div className="sm:flex-auto">
+          <h1 className="text-base font-semibold leading-6 text-gray-900">구독 목록</h1>
+          <p className="mt-2 text-sm text-gray-700">모든 활성 구독 서비스 목록입니다.</p>
+        </div>
+        <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+          <button
+            type="button"
+            className="block rounded-md bg-blue-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+          >
+            구독 추가
+          </button>
+        </div>
+      </div>
+      <div className="mt-8 flow-root">
+        <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+          <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+            <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+              <table className="min-w-full divide-y divide-gray-300">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+                      서비스명
+                    </th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                      가격
+                    </th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                      다음 결제일
+                    </th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                      상태
+                    </th>
+                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                      <span className="sr-only">Edit</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {subscriptions.map((subscription) => (
+                    <tr key={subscription.id}>
+                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                        {subscription.name}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">₩{subscription.price.toLocaleString()}</td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{subscription.nextBilling}</td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                          활성
+                        </span>
+                      </td>
+                      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                        <a href="#" className="text-blue-600 hover:text-blue-900">
+                          수정
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+
+#### 프리미엄 모달 컴포넌트
+```tsx
+// Tailwind UI Modal Pattern with Headless UI
+import { Fragment } from 'react';
+import { Dialog, Transition } from '@headlessui/react';
+import { XMarkIcon } from '@heroicons/react/24/outline';
+
+const PremiumModal = ({ open, setOpen, children }) => {
+  return (
+    <Transition.Root show={open} as={Fragment}>
+      <Dialog as="div" className="relative z-10" onClose={setOpen}>
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+        </Transition.Child>
+
+        <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              enterTo="opacity-100 translate-y-0 sm:scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+              leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            >
+              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                <div className="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
+                  <button
+                    type="button"
+                    className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    onClick={() => setOpen(false)}
+                  >
+                    <span className="sr-only">Close</span>
+                    <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                  </button>
+                </div>
+                {children}
+              </Dialog.Panel>
+            </Transition.Child>
+          </div>
+        </div>
+      </Dialog>
+    </Transition.Root>
+  );
+};
+```
+
+### 8.2 Marketing UI Blocks
+
+#### 프리미엄 Hero 섹션
+```tsx
+// Tailwind UI Hero Pattern
+const HeroSection = () => {
+  return (
+    <div className="relative isolate overflow-hidden bg-white">
+      <svg
+        className="absolute inset-0 -z-10 h-full w-full stroke-gray-200 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]"
+        aria-hidden="true"
+      >
+        <defs>
+          <pattern
+            id="0787a7c5-978c-4f66-83c7-11c213f99cb7"
+            width={200}
+            height={200}
+            x="50%"
+            y={-1}
+            patternUnits="userSpaceOnUse"
+          >
+            <path d="M.5 200V.5H200" fill="none" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" strokeWidth={0} fill="url(#0787a7c5-978c-4f66-83c7-11c213f99cb7)" />
+      </svg>
+      <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pb-32 lg:flex lg:px-8 lg:py-40">
+        <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl lg:flex-shrink-0 lg:pt-8">
+          <h1 className="mt-10 text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+            구독 관리의 새로운 기준
+          </h1>
+          <p className="mt-6 text-lg leading-8 text-gray-600">
+            Moonwave로 모든 구독 서비스를 한 곳에서 관리하세요. 
+            불필요한 지출을 줄이고 정말 필요한 서비스에만 집중할 수 있습니다.
+          </p>
+          <div className="mt-10 flex items-center gap-x-6">
+            
+              href="#"
+              className="rounded-md bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            >
+              무료로 시작하기
+            </a>
+            <a href="#" className="text-sm font-semibold leading-6 text-gray-900">
+              더 알아보기 <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+
+#### 프리미엄 Feature 섹션
+```tsx
+// Tailwind UI Feature Pattern
+const FeatureSection = () => {
+  const features = [
+    {
+      name: '실시간 동기화',
+      description: '모든 기기에서 구독 정보가 실시간으로 동기화됩니다.',
+      icon: CloudArrowUpIcon,
+    },
+    {
+      name: '스마트 알림',
+      description: '결제일 전 알림으로 예상치 못한 지출을 방지합니다.',
+      icon: BellIcon,
+    },
+    {
+      name: '지출 분석',
+      description: '카테고리별 지출 분석으로 구독료를 최적화합니다.',
+      icon: ChartBarIcon,
+    },
+    {
+      name: '보안 우선',
+      description: '모든 데이터는 암호화되어 안전하게 보호됩니다.',
+      icon: LockClosedIcon,
+    },
+  ];
+
+  return (
+    <div className="bg-white py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl lg:text-center">
+          <h2 className="text-base font-semibold leading-7 text-blue-600">더 나은 구독 관리</h2>
+          <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+            필요한 모든 기능을 제공합니다
+          </p>
+          <p className="mt-6 text-lg leading-8 text-gray-600">
+            복잡한 구독 관리를 단순하고 효율적으로 만드는 핵심 기능들을 만나보세요.
+          </p>
+        </div>
+        <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
+          <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
+            {features.map((feature) => (
+              <div key={feature.name} className="relative pl-16">
+                <dt className="text-base font-semibold leading-7 text-gray-900">
+                  <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600">
+                    <feature.icon className="h-6 w-6 text-white" aria-hidden="true" />
+                  </div>
+                  {feature.name}
+                </dt>
+                <dd className="mt-2 text-base leading-7 text-gray-600">{feature.description}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+
+### 8.3 E-commerce 컴포넌트
+
+#### 프리미엄 Pricing 카드
+```tsx
+// Tailwind UI Pricing Pattern
+const PricingSection = () => {
+  const tiers = [
+    {
+      name: 'Free',
+      id: 'tier-free',
+      href: '#',
+      priceMonthly: '₩0',
+      description: '개인 사용자를 위한 기본 기능',
+      features: ['구독 10개까지 관리', '기본 알림', '월간 리포트', '웹 액세스'],
+      featured: false,
+    },
+    {
+      name: 'Pro',
+      id: 'tier-pro',
+      href: '#',
+      priceMonthly: '₩9,900',
+      description: '더 많은 구독을 관리하는 파워 유저를 위한 플랜',
+      features: ['무제한 구독 관리', '고급 알림 설정', '상세 분석 리포트', '모바일 앱 지원', 'API 액세스'],
+      featured: true,
+    },
+  ];
+
+  return (
+    <div className="bg-white py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto max-w-4xl text-center">
+          <h2 className="text-base font-semibold leading-7 text-blue-600">요금제</h2>
+          <p className="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+            필요에 맞는 플랜을 선택하세요
+          </p>
+        </div>
+        <div className="isolate mx-auto mt-16 grid max-w-md grid-cols-1 gap-y-8 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
+          {tiers.map((tier, tierIdx) => (
+            <div
+              key={tier.id}
+              className={cn(
+                tier.featured ? 'lg:z-10 lg:rounded-b-none' : 'lg:mt-8',
+                tierIdx === 0 ? 'lg:rounded-r-none' : '',
+                tierIdx === tiers.length - 1 ? 'lg:rounded-l-none' : '',
+                'flex flex-col justify-between rounded-3xl bg-white p-8 ring-1 ring-gray-200 xl:p-10'
+              )}
+            >
+              <div>
+                <div className="flex items-center justify-between gap-x-4">
+                  <h3
+                    id={tier.id}
+                    className={cn(
+                      tier.featured ? 'text-blue-600' : 'text-gray-900',
+                      'text-lg font-semibold leading-8'
+                    )}
+                  >
+                    {tier.name}
+                  </h3>
+                  {tier.featured ? (
+                    <p className="rounded-full bg-blue-600/10 px-2.5 py-1 text-xs font-semibold leading-5 text-blue-600">
+                      가장 인기
+                    </p>
+                  ) : null}
+                </div>
+                <p className="mt-4 text-sm leading-6 text-gray-600">{tier.description}</p>
+                <p className="mt-6 flex items-baseline gap-x-1">
+                  <span className="text-4xl font-bold tracking-tight text-gray-900">{tier.priceMonthly}</span>
+                  <span className="text-sm font-semibold leading-6 text-gray-600">/월</span>
+                </p>
+                <ul role="list" className="mt-8 space-y-3 text-sm leading-6 text-gray-600">
+                  {tier.features.map((feature) => (
+                    <li key={feature} className="flex gap-x-3">
+                      <CheckIcon className="h-6 w-5 flex-none text-blue-600" aria-hidden="true" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              
+                href={tier.href}
+                aria-describedby={tier.id}
+                className={cn(
+                  tier.featured
+                    ? 'bg-blue-600 text-white shadow-sm hover:bg-blue-500'
+                    : 'text-blue-600 ring-1 ring-inset ring-blue-200 hover:ring-blue-300',
+                  'mt-8 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600'
+                )}
+              >
+                시작하기
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+
+### 8.4 프리미엄 컴포넌트 커스터마이징 가이드
+
+#### Tailwind UI 컴포넌트 수정 원칙
+1. **브랜드 컬러 적용**: Tailwind UI의 기본 색상을 Moonwave 브랜드 컬러로 변경
+2. **폰트 시스템 통합**: 모든 텍스트에 Pretendard 폰트 클래스 추가
+3. **Container Queries 추가**: 반응형 개선을 위한 Container Queries 적용
+4. **아이콘 대체**: Heroicons를 Radix/Lucide 아이콘으로 필요시 교체
+5. **한글 최적화**: 한글 텍스트에 tracking-ko-normal, break-keep-ko 추가
+
+#### 커스터마이징 예시
+```tsx
+// Tailwind UI 원본
+<h2 className="text-3xl font-bold tracking-tight text-gray-900">
+  Dashboard
+</h2>
+
+// Moonwave 커스터마이징
+<h2 className="text-3xl font-bold font-pretendard tracking-ko-tight text-gray-900 break-keep-ko @container">
+  대시보드
+</h2>
+```
+
+---
+
+## 9. 배경 디자인 시스템
+
+### 9.1 그라디언트 배경
+
+```tsx
+interface GradientBackgroundProps {
+  variant: 'moonwave' | 'sunset' | 'ocean' | 'forest' | 'purple';
+  direction: 'vertical' | 'horizontal' | 'diagonal';
+  children: React.ReactNode;
+}
+
+const GradientBackground: React.FC<GradientBackgroundProps> = ({
+  variant = 'moonwave',
+  direction = 'vertical',
+  children
+}) => {
+  const gradients = {
+    moonwave: 'from-[#667eea] to-[#764ba2]',
+    sunset: 'from-[#f093fb] to-[#f5576c]',
+    ocean: 'from-[#4facfe] to-[#00f2fe]',
+    forest: 'from-[#43e97b] to-[#38f9d7]',
+    purple: 'from-[#fa709a] to-[#fee140]'
+  };
+  
+  const directions = {
+    vertical: 'bg-gradient-to-b',
+    horizontal: 'bg-gradient-to-r',
+    diagonal: 'bg-gradient-to-br'
+  };
+  
+  return (
+    <div className={cn(directions[direction], gradients[variant], 'min-h-screen')}>
+      {children}
+    </div>
+  );
+};
+```
+
+### 9.2 웨이브 효과
+
+```tsx
+interface WaveEffectProps {
+  type: 'single' | 'double' | 'triple';
+  color: string;
+  opacity: number;
+  height: number;
+  children: React.ReactNode;
+}
+
+const WaveEffect: React.FC<WaveEffectProps> = ({
+  type = 'single',
+  color = '#3b82f6',
+  opacity = 0.6,
+  height = 100,
+  children
+}) => {
+  return (
+    <div className="relative overflow-hidden">
+      <div className="absolute inset-0">
+        <svg 
+          className={cn('absolute bottom-0 w-full', `wave-${type}`)}
+          style={{ height: `${height}px`, opacity }}
+          viewBox="0 0 1440 320"
+        >
+          <path 
+            fill={color} 
+            d="M0,192L48,181.3C96,171,192,149,288,154.7C384,160,480,192,576,213.3C672,235,768,245,864,218.7C960,192,1056,128,1152,106.7C1248,85,1344,107,1392,117.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+          />
+        </svg>
+      </div>
+      <div className="relative z-10">
+        {children}
+      </div>
+    </div>
+  );
+};
+```
+
+### 9.3 글래스 카드
+
+```tsx
+interface GlassCardProps {
+  variant: 'light' | 'medium' | 'dark';
+  children: React.ReactNode;
+  className?: string;
+}
+
+const GlassCard: React.FC<GlassCardProps> = ({
+  variant = 'medium',
+  children,
+  className
+}) => {
+  const variants = {
+    light: 'bg-white/25 backdrop-blur-sm border-white/18',
+    medium: 'bg-white/35 backdrop-blur-md border-white/25',
+    dark: 'bg-white/45 backdrop-blur-lg border-white/30'
+  };
+  
+  return (
+    <div className={cn(
+      'rounded-xl border p-6',
+      'shadow-lg hover:shadow-xl',
+      'transition-all duration-300',
+      variants[variant],
+      className
+    )}>
+      {children}
+    </div>
+  );
+};
+```
+
+---
+
+## 10. 접근성 가이드라인
+
+### 10.1 컬러 대비
+- **최소 대비율**: 4.5:1 (WCAG AA)
+- **큰 텍스트**: 3:1 (18pt 이상)
+- **UI 컴포넌트**: 3:1
+
+### 10.2 키보드 내비게이션
+```tsx
+// 포커스 가시성
+className="focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+
+// 키보드 접근성
+<button 
+  tabIndex={0}
+  onKeyDown={(e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      handleClick();
+    }
+  }}
+>
+```
+
+### 10.3 스크린 리더
+```tsx
+// ARIA 레이블
+<button aria-label="구독 추가하기">
+  <PlusIcon className="w-5 h-5" />
+</button>
+
+// 상태 표시
+<div role="status" aria-live="polite">
+  <span className="sr-only">로딩 중...</span>
+</div>
+```
+
+---
+
+## 11. 개발 가이드라인
+
+### 11.1 프로젝트 구조
+```
+src/
+├── components/
+│   ├── ui/              # 기본 UI 컴포넌트
+│   ├── tailwind-ui/     # Tailwind UI 커스터마이징 컴포넌트
+│   ├── layout/          # 레이아웃 컴포넌트
+│   └── features/        # 기능별 컴포넌트
+├── styles/
+│   ├── globals.css      # 글로벌 스타일
+│   └── components.css   # 컴포넌트 스타일
+├── lib/
+│   └── utils.ts         # 유틸리티 함수
+└── types/
+    └── index.ts         # 타입 정의
+```
+
+### 11.2 클래스 조합 유틸리티
+
+```typescript
+// lib/utils.ts
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+```
+
+### 11.3 성능 최적화
+
+#### 동적 클래스 생성
+```tsx
+// 잘못된 방식
+const bgClass = `bg-${color}-500`;
+
+// 올바른 방식
+const colorMap = {
+  red: 'bg-red-500',
+  blue: 'bg-blue-500',
+  green: 'bg-green-500'
+};
+const bgClass = colorMap[color];
+```
+
+#### PurgeCSS 설정
+```javascript
+// tailwind.config.js
+module.exports = {
+  content: [
+    './src/**/*.{js,jsx,ts,tsx}',
+    './public/index.html'
+  ],
+  safelist: [
+    'bg-red-500',
+    'bg-green-500',
+    'bg-blue-500',
+    /^text-(red|green|blue)-(400|500|600)$/,
+  ]
+}
+```
+
+### 11.4 컴포넌트 작성 체크리스트
+
+- [ ] TypeScript 타입 정의
+- [ ] Pretendard 폰트 클래스 적용
+- [ ] Container Query 반응형 처리
+- [ ] 접근성 속성 추가
+- [ ] 다크모드 지원
+- [ ] Props 인터페이스 export
+- [ ] displayName 설정 (디버깅용)
+- [ ] Tailwind UI 패턴 참고
+
+### 11.5 레이아웃 통합 예시
+
+```tsx
+// 전체 앱 레이아웃
+const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <div className="min-h-screen flex flex-col">
+      {/* 고정 헤더 */}
+      <Header serviceButtons={[...]} />
+      
+      {/* 메인 콘텐츠 (헤더 높이만큼 패딩) */}
+      <main className="flex-1 pt-16">
+        {children}
+      </main>
+      
+      {/* 푸터 */}
+      <Footer />
+    </div>
+  );
+};
+```
+
+### 11.6 Tailwind UI 통합 워크플로우
+
+1. **컴포넌트 선택**: Tailwind UI에서 필요한 컴포넌트 패턴 선택
+2. **브랜드 적용**: Moonwave 컬러와 폰트 시스템 적용
+3. **반응형 개선**: Container Queries 추가로 더 나은 반응형 구현
+4. **접근성 강화**: ARIA 레이블과 키보드 내비게이션 보완
+5. **타입 안전성**: TypeScript 인터페이스 정의
+6. **재사용성**: 공통 컴포넌트로 추출하여 라이브러리화
+
+---
+
+## 부록: 빠른 참조
+
+### 자주 사용하는 클래스 조합
+
+```css
+/* 카드 */
+.moonwave-card {
+  @apply bg-white rounded-xl border border-gray-200 shadow-sm 
+         hover:shadow-lg transition-shadow duration-200 @container;
+}
+
+/* 버튼 */
+.moonwave-button {
+  @apply font-pretendard font-semibold rounded-lg px-4 py-2
+         transition-colors duration-200 focus:outline-none 
+         focus:ring-2 focus:ring-offset-2 tracking-ko-normal;
+}
+
+/* 입력 필드 */
+.moonwave-input {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-md
+         focus:outline-none focus:ring-2 focus:ring-blue-500
+         font-pretendard tracking-ko-normal;
+}
+
+/* 글래스 버튼 */
+.glass-button {
+  @apply p-3 rounded-lg bg-white/20 backdrop-blur-md 
+         border border-white/30 hover:bg-white/30 
+         transition-all duration-200 transform active:scale-95;
+}
+
+/* Tailwind UI 테이블 */
+.moonwave-table {
+  @apply min-w-full divide-y divide-gray-300;
+}
+
+/* Tailwind UI 배지 */
+.moonwave-badge {
+  @apply inline-flex items-center rounded-md px-2 py-1 text-xs 
+         font-medium ring-1 ring-inset;
+}
+```
+
+### Container Query 브레이크포인트
+
+| 크기 | 클래스 | 픽셀 |
+|------|--------|------|
+| 2xs | `@2xs:` | 256px |
+| xs | `@xs:` | 320px |
+| sm | `@sm:` | 384px |
+| md | `@md:` | 448px |
+| lg | `@lg:` | 512px |
+| xl | `@xl:` | 576px |
+| 2xl | `@2xl:` | 672px |
+
+### 아이콘 라이브러리 참조
+
+```tsx
+// Radix Icons (최우선)
+import { 
+  CheckIcon, 
+  Cross2Icon, 
+  PlusIcon,
+  HomeIcon,
+  PersonIcon 
+} from '@radix-ui/react-icons';
+
+// Lucide React (차선)
+import { 
+  Home, 
+  User, 
+  Bell, 
+  Settings, 
+  Plus, 
+  Menu 
+} from 'lucide-react';
+
+```
