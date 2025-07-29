@@ -2,13 +2,49 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/png" href="/moonwave_log.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Moonwave 오안나 음악 플레이어</title>
-    <meta name="description" content="평범함에서 특별함으로 - 13곡의 음악 여정을 위한 완전한 개발 가이드" />
+    <meta name="description" content="평범함에서 특별함으로 - 13곡의 음악 여정을 위한 완전한 음악 플레이어" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0ea5e9" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Moonwave" />
+    <link rel="apple-touch-icon" href="/moonwave_log.png" />
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- SEO Meta Tags -->
+    <meta name="keywords" content="음악, 플레이어, 오안나, 문유, Moonwave, 한국음악" />
+    <meta name="author" content="Moonwave Team" />
+    <meta property="og:title" content="Moonwave 오안나 음악 플레이어" />
+    <meta property="og:description" content="평범함에서 특별함으로 - 13곡의 음악 여정" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://oh.moonwave.kr" />
+    <meta property="og:image" content="https://oh.moonwave.kr/moonwave_log.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Moonwave 오안나 음악 플레이어" />
+    <meta name="twitter:description" content="평범함에서 특별함으로 - 13곡의 음악 여정" />
+    <meta name="twitter:image" content="https://oh.moonwave.kr/moonwave_log.png" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
