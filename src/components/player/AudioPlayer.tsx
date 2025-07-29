@@ -20,7 +20,7 @@ interface AudioPlayerProps {
   onNext: () => void;
   onToggleRepeat: () => void;
   onToggleShuffle: () => void;
-  onDownload?: (track: { title: string; artist: string }) => void;
+  onDownload?: ((track: { title: string; artist: string }) => void) | undefined;
   className?: string;
 }
 

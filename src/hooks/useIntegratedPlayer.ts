@@ -1,40 +1,34 @@
 import { useEffect, useCallback } from 'react';
 import { useAudioPlayer } from './useAudioPlayer';
-import { usePlayerState, usePlayerActions, Track } from './usePlayerState';
+import { usePlayerState } from './usePlayerState';
 import { useAudioPreloader } from './useAudioPreloader';
+import { Track } from '@/types';
 
 export const useIntegratedPlayer = () => {
   const audioPlayer = useAudioPlayer();
-  const { state } = usePlayerState();
-  const actions = usePlayerActions();
+  const { state, actions } = usePlayerState();
   const audioPreloader = useAudioPreloader();
 
   // 오디오 플레이어 상태를 전역 상태와 동기화
   useEffect(() => {
-    actions.setPlaying(audioPlayer.isPlaying);
-    actions.setCurrentTime(audioPlayer.currentTime);
-    actions.setDuration(audioPlayer.duration);
-    actions.setVolume(audioPlayer.volume);
-    actions.setMuted(audioPlayer.isMuted);
-    actions.setLoading(audioPlayer.isLoading);
-    actions.setError(audioPlayer.error);
-  }, [
-    audioPlayer.isPlaying,
-    audioPlayer.currentTime,
-    audioPlayer.duration,
-    audioPlayer.volume,
-    audioPlayer.isMuted,
-    audioPlayer.isLoading,
-    audioPlayer.error,
-    actions,
-  ]);
-
-  // 현재 트랙이 변경되면 오디오 로드
-  useEffect(() => {
     if (state.currentTrack) {
-      audioPlayer.loadAudio(state.currentTrack.audioUrl);
+      audioPlayer.loadTrack(state.currentTrack);
     }
   }, [state.currentTrack, audioPlayer]);
+
+  // 재생/정지 상태 동기화
+  useEffect(() => {
+    if (state.isPlaying) {
+      audioPlayer.play();
+    } else {
+      audioPlayer.pause();
+    }
+  }, [state.isPlaying, audioPlayer]);
+
+  // 볼륨 동기화
+  useEffect(() => {
+    audioPlayer.setVolume(state.volume);
+  }, [state.volume, audioPlayer]);
 
   // 다음 곡 프리로드
   useEffect(() => {
@@ -42,56 +36,68 @@ export const useIntegratedPlayer = () => {
       const nextIndex = state.currentIndex + 1;
       if (nextIndex < state.playlist.length) {
         const nextTrack = state.playlist[nextIndex];
-        audioPreloader.preloadAudio(nextTrack.audioUrl).catch(error => {
+        if (nextTrack) {
+          audioPreloader.preloadAudio(nextTrack.file).catch(error => {
           console.warn('Failed to preload next track:', error);
         });
+        }
       }
     }
   }, [state.playlist, state.currentIndex, audioPreloader]);
 
-  // 재생/정지 상태 동기화
-  useEffect(() => {
-    if (state.isPlaying && !audioPlayer.isPlaying) {
-      audioPlayer.play();
-    } else if (!state.isPlaying && audioPlayer.isPlaying) {
-      audioPlayer.pause();
-    }
-  }, [state.isPlaying, audioPlayer]);
+  // 오디오 이벤트 핸들러
+  const handleTimeUpdate = useCallback(() => {
+    // currentTime은 audioPlayer에서 직접 가져올 수 없으므로 state에서 사용
+    actions.seek(state.currentTime);
+  }, [state.currentTime, actions]);
 
-  // 볼륨 동기화
-  useEffect(() => {
-    if (Math.abs(state.volume - audioPlayer.volume) > 0.01) {
-      audioPlayer.setVolume(state.volume);
-    }
-  }, [state.volume, audioPlayer]);
+  const handleLoadedMetadata = useCallback(() => {
+    // duration은 자동으로 업데이트됨
+  }, []);
 
-  // 음소거 동기화
+  const handleEnded = useCallback(() => {
+    actions.playNext();
+  }, [actions]);
+
+  const handleError = useCallback((error: Event) => {
+    console.error('Audio playback error:', error);
+    actions.clearError();
+  }, [actions]);
+
+  // 오디오 이벤트 리스너 설정
   useEffect(() => {
-    if (state.isMuted !== audioPlayer.isMuted) {
-      audioPlayer.toggleMute();
+    const audio = audioPlayer.audioRef?.current;
+    if (audio) {
+      audio.addEventListener('timeupdate', handleTimeUpdate);
+      audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.addEventListener('ended', handleEnded);
+      audio.addEventListener('error', handleError);
+
+      return () => {
+        audio.removeEventListener('timeupdate', handleTimeUpdate);
+        audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+        audio.removeEventListener('ended', handleEnded);
+        audio.removeEventListener('error', handleError);
+      };
     }
-  }, [state.isMuted, audioPlayer]);
+    return undefined;
+  }, [audioPlayer.audioRef, handleTimeUpdate, handleLoadedMetadata, handleEnded, handleError]);
 
   // 트랙 재생 함수
   const playTrack = useCallback(
     async (track: Track, index?: number) => {
-      actions.setCurrentTrack(track);
+      actions.playTrack(track);
       if (index !== undefined) {
-        actions.setCurrentIndex(index);
+        // 인덱스 설정은 playTrack에서 처리됨
       }
-      actions.setPlaying(true);
     },
     [actions]
   );
 
   // 재생/정지 토글
   const togglePlay = useCallback(async () => {
-    if (state.isPlaying) {
-      actions.setPlaying(false);
-    } else {
-      actions.setPlaying(true);
-    }
-  }, [state.isPlaying, actions]);
+    actions.togglePlay();
+  }, [actions]);
 
   // 시간 이동
   const seekTo = useCallback(
@@ -109,28 +115,20 @@ export const useIntegratedPlayer = () => {
     [actions]
   );
 
-  // 음소거 토글
-  const toggleMute = useCallback(() => {
-    actions.setMuted(!state.isMuted);
-  }, [state.isMuted, actions]);
-
   // 다음 곡
   const playNext = useCallback(() => {
-    actions.nextTrack();
+    actions.playNext();
   }, [actions]);
 
   // 이전 곡
   const playPrevious = useCallback(() => {
-    actions.previousTrack();
+    actions.playPrevious();
   }, [actions]);
 
   // 반복 모드 변경
   const cycleRepeatMode = useCallback(() => {
-    const modes: Array<'none' | 'one' | 'all'> = ['none', 'one', 'all'];
-    const currentIndex = modes.indexOf(state.repeatMode);
-    const nextIndex = (currentIndex + 1) % modes.length;
-    actions.setRepeatMode(modes[nextIndex]);
-  }, [state.repeatMode, actions]);
+    actions.toggleRepeat();
+  }, [actions]);
 
   // 셔플 토글
   const toggleShuffle = useCallback(() => {
@@ -141,7 +139,7 @@ export const useIntegratedPlayer = () => {
   const downloadCurrentTrack = useCallback(() => {
     if (state.currentTrack) {
       const link = document.createElement('a');
-      link.href = state.currentTrack.audioUrl;
+      link.href = state.currentTrack.file;
       link.download = `${state.currentTrack.artist} - ${state.currentTrack.title}.mp3`;
       document.body.appendChild(link);
       link.click();
@@ -156,30 +154,16 @@ export const useIntegratedPlayer = () => {
       
       // 플레이리스트 설정 후 첫 번째 곡 프리로드
       if (tracks.length > 0) {
-        audioPreloader.preloadAudio(tracks[0].audioUrl).catch(error => {
+        const firstTrack = tracks[0];
+        if (firstTrack) {
+          audioPreloader.preloadAudio(firstTrack.file).catch(error => {
           console.warn('Failed to preload first track:', error);
         });
+        }
       }
     },
     [actions, audioPreloader]
   );
-
-  // 현재 트랙이 끝났을 때 처리
-  useEffect(() => {
-    if (state.currentTrack && state.duration > 0 && state.currentTime >= state.duration) {
-      if (state.repeatMode === 'one') {
-        // 한 곡 반복: 현재 곡 다시 재생
-        audioPlayer.seek(0);
-        audioPlayer.play();
-      } else if (state.repeatMode === 'all') {
-        // 전체 반복: 다음 곡으로
-        playNext();
-      } else {
-        // 반복 없음: 재생 정지
-        actions.setPlaying(false);
-      }
-    }
-  }, [state.currentTime, state.duration, state.repeatMode, state.currentTrack, playNext, actions, audioPlayer]);
 
   // 키보드 단축키 지원
   useEffect(() => {
@@ -227,11 +211,6 @@ export const useIntegratedPlayer = () => {
           const newVolumeDown = Math.max(0, state.volume - 0.1);
           setVolume(newVolumeDown);
           break;
-        case 'KeyM':
-          e.preventDefault();
-          // M: 음소거 토글
-          toggleMute();
-          break;
         case 'KeyR':
           e.preventDefault();
           // R: 반복 모드 변경
@@ -255,7 +234,6 @@ export const useIntegratedPlayer = () => {
     playNext,
     seekTo,
     setVolume,
-    toggleMute,
     cycleRepeatMode,
     toggleShuffle,
     state.currentTime,
@@ -270,7 +248,6 @@ export const useIntegratedPlayer = () => {
     currentTime: state.currentTime,
     duration: state.duration,
     volume: state.volume,
-    isMuted: state.isMuted,
     isLoading: state.isLoading,
     error: state.error,
     playlist: state.playlist,
@@ -283,7 +260,6 @@ export const useIntegratedPlayer = () => {
     togglePlay,
     seekTo,
     setVolume,
-    toggleMute,
     playNext,
     playPrevious,
     cycleRepeatMode,

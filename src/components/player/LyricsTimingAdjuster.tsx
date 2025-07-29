@@ -36,7 +36,11 @@ export const LyricsTimingAdjuster: React.FC<LyricsTimingAdjusterProps> = ({
       const line = syncLines[i];
       const nextLine = syncLines[i + 1];
       
-      if (time >= line.startTime && (!nextLine || time < nextLine.endTime)) {
+      if (!line) continue;
+      const lineStartTime = line.startTime || line.time;
+      const lineEndTime = line.endTime || (nextLine ? (nextLine.startTime || nextLine.time) : Infinity);
+      
+      if (time >= lineStartTime && time < lineEndTime) {
         return i;
       }
     }
@@ -65,13 +69,15 @@ export const LyricsTimingAdjuster: React.FC<LyricsTimingAdjusterProps> = ({
       : Math.min(syncLines.length - 1, currentLineIndex + 1);
     
     const targetLine = syncLines[targetIndex];
-    seekToTime(targetLine.startTime);
+    if (targetLine) {
+      seekToTime(targetLine.startTime || targetLine.time);
+    }
   }, [currentLineIndex, syncLines, seekToTime]);
 
   // 라인 편집 시작
   const startEditing = useCallback((lineIndex: number) => {
     setSelectedLineIndex(lineIndex);
-    setEditTime(syncLines[lineIndex].startTime);
+    setEditTime(syncLines[lineIndex]?.startTime || syncLines[lineIndex]?.time || 0);
     setIsEditing(true);
   }, [syncLines]);
 
@@ -79,13 +85,17 @@ export const LyricsTimingAdjuster: React.FC<LyricsTimingAdjusterProps> = ({
   const finishEditing = useCallback(() => {
     if (selectedLineIndex >= 0 && selectedLineIndex < syncLines.length) {
       const updatedLines = [...syncLines];
-      updatedLines[selectedLineIndex] = {
-        ...updatedLines[selectedLineIndex],
-        startTime: editTime,
-        endTime: selectedLineIndex < syncLines.length - 1 
-          ? syncLines[selectedLineIndex + 1].startTime 
-          : editTime + 5, // 기본 5초
-      };
+              const existingLine = updatedLines[selectedLineIndex];
+        if (existingLine) {
+          updatedLines[selectedLineIndex] = {
+            ...existingLine,
+            time: editTime,
+            startTime: editTime,
+            endTime: selectedLineIndex < syncLines.length - 1 
+              ? (syncLines[selectedLineIndex + 1]?.startTime || syncLines[selectedLineIndex + 1]?.time || 0)
+              : editTime + 5, // 기본 5초
+          };
+        }
       
       onSyncLinesUpdate(updatedLines);
     }
@@ -104,8 +114,9 @@ export const LyricsTimingAdjuster: React.FC<LyricsTimingAdjusterProps> = ({
   const adjustAllTimings = useCallback((offset: number) => {
     const updatedLines = syncLines.map(line => ({
       ...line,
-      startTime: Math.max(0, line.startTime + offset),
-      endTime: Math.max(0, line.endTime + offset),
+      time: Math.max(0, ((line?.time || line?.startTime) || 0) + offset),
+      startTime: Math.max(0, (line.startTime || line.time) + offset),
+      endTime: Math.max(0, (line.endTime || 0) + offset),
     }));
     
     onSyncLinesUpdate(updatedLines);
@@ -201,7 +212,7 @@ export const LyricsTimingAdjuster: React.FC<LyricsTimingAdjusterProps> = ({
                     {line.text}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
-                    {line.startTime.toFixed(2)}s - {line.endTime.toFixed(2)}s
+                    {(line.startTime || line.time || 0).toFixed(2)}s - {(line.endTime || 0).toFixed(2)}s
                   </p>
                 </div>
                 

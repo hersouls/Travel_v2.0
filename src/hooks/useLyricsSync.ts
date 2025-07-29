@@ -41,8 +41,11 @@ export const useLyricsSync = ({
       const line = syncLines[i];
       const nextLine = syncLines[i + 1];
 
-      if (adjustedTime >= line.startTime && 
-          (!nextLine || adjustedTime < nextLine.endTime)) {
+      if (!line) continue;
+      const lineStartTime = line.startTime || line.time;
+      const lineEndTime = line.endTime || (nextLine ? (nextLine.startTime || nextLine.time) : Infinity);
+      
+      if (adjustedTime >= lineStartTime && adjustedTime < lineEndTime) {
         return i;
       }
     }
@@ -123,8 +126,10 @@ export const useLyricsSync = ({
   const getProgressInCurrentLine = useCallback(() => {
     if (!currentLine || !nextLine) return 0;
 
-    const lineDuration = nextLine.startTime - currentLine.startTime;
-    const elapsedInLine = currentTime - currentLine.startTime;
+    const currentStartTime = currentLine.startTime || currentLine.time;
+    const nextStartTime = nextLine.startTime || nextLine.time;
+    const lineDuration = nextStartTime - currentStartTime;
+    const elapsedInLine = currentTime - currentStartTime;
     
     return Math.max(0, Math.min(1, elapsedInLine / lineDuration));
   }, [currentLine, nextLine, currentTime]);

@@ -49,7 +49,7 @@ export const TestAudioPlayer: React.FC = () => {
           <div>현재 시간: {formatTime(player.currentTime)}</div>
           <div>총 시간: {formatTime(player.duration)}</div>
           <div>볼륨: {Math.round(player.volume * 100)}%</div>
-          <div>음소거: {player.isMuted ? '예' : '아니오'}</div>
+          <div>음소거: {'아니오'}</div>
           <div>반복 모드: {player.repeatMode}</div>
           <div>셔플: {player.isShuffled ? '켜짐' : '꺼짐'}</div>
         </div>
@@ -81,13 +81,13 @@ export const TestAudioPlayer: React.FC = () => {
             이전
           </button>
           <button
-            onClick={player.toggleMute}
+            onClick={() => {}}
             className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700"
           >
-            {player.isMuted ? '음소거 해제' : '음소거'}
+            음소거 (비활성화)
           </button>
           <button
-            onClick={player.toggleRepeat}
+            onClick={player.cycleRepeatMode}
             className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
           >
             반복: {player.repeatMode}
@@ -125,7 +125,7 @@ export const TestAudioPlayer: React.FC = () => {
           max={player.duration || 0}
           step="1"
           value={player.currentTime}
-          onChange={(e) => player.seek(parseFloat(e.target.value))}
+          onChange={(e) => player.seekTo(parseFloat(e.target.value))}
           className="w-full"
         />
         <div className="text-gray-300 mt-1">

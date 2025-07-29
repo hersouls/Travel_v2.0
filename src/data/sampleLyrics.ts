@@ -4,6 +4,7 @@ import { SyncLine } from '@/types';
 export const sampleLyrics: SyncLine[] = [
   {
     id: 'line-1',
+    time: 0.0,
     startTime: 0.0,
     endTime: 3.5,
     text: '평범한 하루를 보내던 나',
@@ -12,6 +13,7 @@ export const sampleLyrics: SyncLine[] = [
   },
   {
     id: 'line-2',
+    time: 3.5,
     startTime: 3.5,
     endTime: 7.0,
     text: '특별한 순간을 만났어',
@@ -20,6 +22,7 @@ export const sampleLyrics: SyncLine[] = [
   },
   {
     id: 'line-3',
+    time: 7.0,
     startTime: 7.0,
     endTime: 10.5,
     text: '음악이 들려오는 그곳에서',
@@ -28,6 +31,7 @@ export const sampleLyrics: SyncLine[] = [
   },
   {
     id: 'line-4',
+    time: 10.5,
     startTime: 10.5,
     endTime: 14.0,
     text: '마음이 설레기 시작했어',
@@ -36,6 +40,7 @@ export const sampleLyrics: SyncLine[] = [
   },
   {
     id: 'line-5',
+    time: 14.0,
     startTime: 14.0,
     endTime: 17.5,
     text: '리듬에 맞춰 춤추는 듯',
@@ -44,6 +49,7 @@ export const sampleLyrics: SyncLine[] = [
   },
   {
     id: 'line-6',
+    time: 17.5,
     startTime: 17.5,
     endTime: 21.0,
     text: '자유롭게 흔들리는 몸',
@@ -52,6 +58,7 @@ export const sampleLyrics: SyncLine[] = [
   },
   {
     id: 'line-7',
+    time: 21.0,
     startTime: 21.0,
     endTime: 24.5,
     text: '그때 알았어 내 안의 열정',
@@ -60,6 +67,7 @@ export const sampleLyrics: SyncLine[] = [
   },
   {
     id: 'line-8',
+    time: 24.5,
     startTime: 24.5,
     endTime: 28.0,
     text: '음악이 나를 깨워주었어',
@@ -68,6 +76,7 @@ export const sampleLyrics: SyncLine[] = [
   },
   {
     id: 'line-9',
+    time: 28.0,
     startTime: 28.0,
     endTime: 31.5,
     text: '더 이상 평범하지 않아',
@@ -76,6 +85,7 @@ export const sampleLyrics: SyncLine[] = [
   },
   {
     id: 'line-10',
+    time: 31.5,
     startTime: 31.5,
     endTime: 35.0,
     text: '특별한 나로 변해가',
@@ -84,6 +94,7 @@ export const sampleLyrics: SyncLine[] = [
   },
   {
     id: 'line-11',
+    time: 35.0,
     startTime: 35.0,
     endTime: 38.5,
     text: '음악과 함께하는 시간',
@@ -92,6 +103,7 @@ export const sampleLyrics: SyncLine[] = [
   },
   {
     id: 'line-12',
+    time: 38.5,
     startTime: 38.5,
     endTime: 42.0,
     text: '그 순간이 영원하길',
@@ -100,6 +112,7 @@ export const sampleLyrics: SyncLine[] = [
   },
   {
     id: 'line-13',
+    time: 42.0,
     startTime: 42.0,
     endTime: 45.5,
     text: '평범함에서 특별함으로',
@@ -108,6 +121,7 @@ export const sampleLyrics: SyncLine[] = [
   },
   {
     id: 'line-14',
+    time: 45.5,
     startTime: 45.5,
     endTime: 49.0,
     text: '음악이 이끄는 여정',
@@ -116,6 +130,7 @@ export const sampleLyrics: SyncLine[] = [
   },
   {
     id: 'line-15',
+    time: 49.0,
     startTime: 49.0,
     endTime: 52.5,
     text: '함께 걸어가는 우리',

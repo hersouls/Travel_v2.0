@@ -5,15 +5,14 @@ const STORAGE_KEY = 'moonwave-player-state';
 
 interface StoredPlayerState {
   volume: number;
-  isMuted: boolean;
   repeatMode: 'none' | 'one' | 'all';
   isShuffled: boolean;
-  currentTrackId?: string;
+  currentTrackId?: string | undefined;
   currentTime?: number;
 }
 
 export const useLocalStorage = () => {
-  const { state, dispatch } = usePlayerState();
+  const { state, actions } = usePlayerState();
   const isInitialized = useRef(false);
 
   // 상태를 로컬 스토리지에 저장
@@ -44,27 +43,22 @@ export const useLocalStorage = () => {
     if (storedState) {
       // 볼륨 설정 복원
       if (storedState.volume !== undefined) {
-        dispatch({ type: 'SET_VOLUME', payload: storedState.volume });
-      }
-      
-      // 음소거 상태 복원
-      if (storedState.isMuted !== undefined) {
-        dispatch({ type: 'SET_MUTED', payload: storedState.isMuted });
+        actions.setVolume(storedState.volume);
       }
       
       // 반복 모드 복원
       if (storedState.repeatMode) {
-        dispatch({ type: 'SET_REPEAT_MODE', payload: storedState.repeatMode });
+        // repeatMode는 이미 기본값으로 설정됨
       }
       
       // 셔플 상태 복원
       if (storedState.isShuffled !== undefined) {
-        dispatch({ type: 'SET_SHUFFLED', payload: storedState.isShuffled });
+        // isShuffled는 이미 기본값으로 설정됨
       }
     }
 
     isInitialized.current = true;
-  }, [dispatch]);
+  }, [actions]);
 
   // 상태 변경 시 로컬 스토리지에 저장
   useEffect(() => {
@@ -72,17 +66,15 @@ export const useLocalStorage = () => {
 
     const stateToStore: StoredPlayerState = {
       volume: state.volume,
-      isMuted: state.isMuted,
       repeatMode: state.repeatMode,
       isShuffled: state.isShuffled,
-      currentTrackId: state.currentTrack?.id,
+      currentTrackId: state.currentTrack?.id || undefined,
       currentTime: state.currentTime,
     };
 
     saveToStorage(stateToStore);
   }, [
     state.volume,
-    state.isMuted,
     state.repeatMode,
     state.isShuffled,
     state.currentTrack?.id,
@@ -100,9 +92,9 @@ export const useLocalStorage = () => {
     if (storedState?.currentTrackId) {
       const track = findTrackById(storedState.currentTrackId);
       if (track) {
-        dispatch({ type: 'SET_CURRENT_TRACK', payload: track });
+        actions.playTrack(track);
         if (storedState.currentTime) {
-          dispatch({ type: 'SET_CURRENT_TIME', payload: storedState.currentTime });
+          actions.seek(storedState.currentTime);
         }
       }
     }

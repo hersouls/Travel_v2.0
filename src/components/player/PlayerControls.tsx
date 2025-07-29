@@ -16,7 +16,7 @@ interface PlayerControlsProps {
   onNext: () => void;
   onToggleShuffle: () => void;
   onCycleRepeat: () => void;
-  onDownload?: (track: { title: string; artist: string }) => void;
+  onDownload?: ((track: { title: string; artist: string }) => void) | undefined;
   isShuffled: boolean;
   repeatMode: 'none' | 'one' | 'all';
   isLoading: boolean;

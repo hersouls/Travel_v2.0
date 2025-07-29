@@ -117,7 +117,7 @@ export const LyricsTestPage: React.FC = () => {
           <div>
             <h2 className="text-2xl font-semibold text-white mb-4">실시간 가사 싱크</h2>
             <LyricsSync
-              track={{ ...sampleTrack, lyrics: syncLines }}
+              lyrics={syncLines}
               currentTime={currentTime}
               className="h-96"
             />

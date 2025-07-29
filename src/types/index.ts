@@ -15,8 +15,14 @@ export interface Track {
 
 // 가사 싱크 라인 타입
 export interface SyncLine {
+  id?: string; // 고유 식별자 (선택사항)
   time: number; // 시간 (초)
+  startTime?: number; // 시작 시간 (초) - 하위 호환성
+  endTime?: number; // 끝 시간 (초) - 하위 호환성
   text: string; // 가사 텍스트
+  translation?: string; // 번역 (선택사항)
+  isHighlighted?: boolean; // 현재 하이라이트 여부
+  confidence?: number; // 타이밍 정확도 (0-1)
 }
 
 // 가사 싱크 설정 타입

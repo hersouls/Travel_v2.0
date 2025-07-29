@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Track } from './usePlayerState';
+import { Track } from '@/types';
 
 interface PlaylistData {
   tracks: Track[];
@@ -62,7 +62,7 @@ export const useTrackData = () => {
     return tracks.filter(track => 
       track.title.toLowerCase().includes(lowerQuery) ||
       track.artist.toLowerCase().includes(lowerQuery) ||
-      (track.lyrics && track.lyrics.toLowerCase().includes(lowerQuery))
+      (track.lyrics && track.lyrics.some(line => line.text.toLowerCase().includes(lowerQuery)))
     );
   };
 

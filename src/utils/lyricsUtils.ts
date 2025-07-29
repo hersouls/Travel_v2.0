@@ -16,6 +16,7 @@ export const parseLyricsToSyncLines = (
   
   return lines.map((line, index) => ({
     id: `line-${index}`,
+    time: startTime + (index * lineDuration),
     startTime: startTime + (index * lineDuration),
     endTime: startTime + ((index + 1) * lineDuration),
     text: line.trim(),
@@ -36,9 +37,9 @@ export const parseLRCToSyncLines = (lrcContent: string): SyncLine[] => {
     // LRC 형식: [mm:ss.xx]가사텍스트
     const timeMatch = line.match(/\[(\d{2}):(\d{2})\.(\d{2})\]/);
     if (timeMatch) {
-      const minutes = parseInt(timeMatch[1]);
-      const seconds = parseInt(timeMatch[2]);
-      const centiseconds = parseInt(timeMatch[3]);
+      const minutes = parseInt(timeMatch[1] || '0');
+      const seconds = parseInt(timeMatch[2] || '0');
+      const centiseconds = parseInt(timeMatch[3] || '0');
       const startTime = minutes * 60 + seconds + centiseconds / 100;
       
       // 가사 텍스트 추출
@@ -47,6 +48,7 @@ export const parseLRCToSyncLines = (lrcContent: string): SyncLine[] => {
       if (text) {
         syncLines.push({
           id: `line-${index}`,
+          time: startTime,
           startTime,
           endTime: startTime + 3, // 기본 3초 지속
           text,
@@ -57,11 +59,17 @@ export const parseLRCToSyncLines = (lrcContent: string): SyncLine[] => {
   });
   
   // 시간순으로 정렬
-  syncLines.sort((a, b) => a.startTime - b.startTime);
+  syncLines.sort((a, b) => (a.startTime || a.time) - (b.startTime || b.time));
   
   // endTime 조정 (다음 라인의 startTime으로 설정)
   for (let i = 0; i < syncLines.length - 1; i++) {
-    syncLines[i].endTime = syncLines[i + 1].startTime;
+    if (syncLines[i] && syncLines[i + 1]) {
+      const currentLine = syncLines[i];
+      const nextLine = syncLines[i + 1];
+      if (currentLine && nextLine) {
+        currentLine.endTime = (nextLine.startTime || nextLine.time || 0);
+      }
+    }
   }
   
   return syncLines;
@@ -75,9 +83,10 @@ export const parseLRCToSyncLines = (lrcContent: string): SyncLine[] => {
 export const convertSyncLinesToLRC = (syncLines: SyncLine[]): string => {
   return syncLines
     .map(line => {
-      const minutes = Math.floor(line.startTime / 60);
-      const seconds = Math.floor(line.startTime % 60);
-      const centiseconds = Math.floor((line.startTime % 1) * 100);
+      const startTime = line.startTime || line.time;
+      const minutes = Math.floor(startTime / 60);
+      const seconds = Math.floor(startTime % 60);
+      const centiseconds = Math.floor((startTime % 1) * 100);
       
       const timeString = `[${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${centiseconds.toString().padStart(2, '0')}]`;
       
@@ -98,8 +107,9 @@ export const adjustLyricsTiming = (
 ): SyncLine[] => {
   return syncLines.map(line => ({
     ...line,
-    startTime: Math.max(0, line.startTime + offset),
-    endTime: Math.max(0, line.endTime + offset),
+    time: Math.max(0, ((line?.time || line?.startTime) || 0) + offset),
+    startTime: Math.max(0, (line.startTime || line.time) + offset),
+    endTime: Math.max(0, (line.endTime || 0) + offset),
   }));
 };
 
@@ -121,21 +131,30 @@ export const validateLyricsTiming = (syncLines: SyncLine[]) => {
     const current = syncLines[i];
     const next = syncLines[i + 1];
     
-    if (current.startTime >= next.startTime) {
-      issues.push(`라인 ${i + 1}: 시작 시간이 다음 라인보다 늦거나 같습니다.`);
-    }
-    
-    if (current.endTime > next.startTime) {
-      issues.push(`라인 ${i + 1}: 끝 시간이 다음 라인 시작 시간과 겹칩니다.`);
+    if (current && next) {
+      const currentStartTime = current.startTime || current.time;
+      const nextStartTime = next.startTime || next.time;
+      const currentEndTime = current.endTime || 0;
+      
+      if (currentStartTime >= nextStartTime) {
+        issues.push(`라인 ${i + 1}: 시작 시간이 다음 라인보다 늦거나 같습니다.`);
+      }
+      
+      if (currentEndTime > nextStartTime) {
+        issues.push(`라인 ${i + 1}: 끝 시간이 다음 라인 시작 시간과 겹칩니다.`);
+      }
     }
   }
   
   // 음수 시간 검증
   syncLines.forEach((line, index) => {
-    if (line.startTime < 0) {
+    const startTime = line.startTime || line.time;
+    const endTime = line.endTime || 0;
+    
+    if (startTime < 0) {
       issues.push(`라인 ${index + 1}: 시작 시간이 음수입니다.`);
     }
-    if (line.endTime < 0) {
+    if (endTime < 0) {
       issues.push(`라인 ${index + 1}: 끝 시간이 음수입니다.`);
     }
   });
@@ -196,7 +215,9 @@ export const getLyricsStats = (syncLines: SyncLine[]) => {
   }
   
   const totalLines = syncLines.length;
-  const totalDuration = syncLines[syncLines.length - 1].endTime - syncLines[0].startTime;
+  const lastLine = syncLines[syncLines.length - 1];
+  const firstLine = syncLines[0];
+  const totalDuration = (lastLine?.endTime || lastLine?.time || 0) - (firstLine?.startTime || firstLine?.time || 0);
   const averageLineDuration = totalDuration / totalLines;
   const totalCharacters = syncLines.reduce((sum, line) => sum + line.text.length, 0);
   const averageCharactersPerLine = totalCharacters / totalLines;
