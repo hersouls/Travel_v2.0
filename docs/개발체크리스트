@@ -24,30 +24,30 @@
 ### 1.1 프로젝트 생성 및 기본 설정
 
 #### 문유 작업
-- [ ] GitHub 저장소 `hersouls/Oh_v1.0` 생성
-- [ ] 프로젝트 README.md 작성 (프로젝트 개요, 기술 스택, 설치 방법)
-- [ ] 도메인 `oh.moonwave.kr` DNS 설정
+- [x] GitHub 저장소 `hersouls/Oh_v1.0` 생성
+- [x] 프로젝트 README.md 작성 (프로젝트 개요, 기술 스택, 설치 방법)
+- [x] 도메인 `oh.moonwave.kr` DNS 설정
 - [ ] GitHub Pages 설정 (gh-pages 브랜치 자동 배포)
 
 #### Cursor 작업
-- [ ] Vite + React + TypeScript 프로젝트 생성
-- [ ] 기본 프로젝트 구조 설정 (`src/`, `public/`, `docs/`)
-- [ ] ESLint, Prettier 설정
-- [ ] Git 초기 설정 및 첫 커밋
+- [x] Vite + React + TypeScript 프로젝트 생성
+- [x] 기본 프로젝트 구조 설정 (`src/`, `public/`, `docs/`)
+- [x] ESLint, Prettier 설정
+- [x] Git 초기 설정 및 첫 커밋
 
 ### 1.2 개발 환경 설정
 
 #### 문유 작업
-- [ ] 개발용 도메인 설정 (로컬 개발 환경)
-- [ ] 음원 파일 준비 (13곡 MP3 파일)
-- [ ] 커버 이미지 준비 (13곡 커버 이미지)
-- [ ] Moonwave 로고 파일 준비
+- [x] 개발용 도메인 설정 (로컬 개발 환경)
+- [x] 음원 파일 준비 (13곡 MP3 파일)
+- [x] 커버 이미지 준비 (13곡 커버 이미지)
+- [x] Moonwave 로고 파일 준비
 
 #### Cursor 작업
-- [ ] Node.js 버전 설정 (v18+)
-- [ ] 개발 서버 설정 (포트 3000)
-- [ ] 핫 리로드 설정
-- [ ] 빌드 스크립트 설정
+- [x] Node.js 버전 설정 (v18+)
+- [x] 개발 서버 설정 (포트 3000)
+- [x] 핫 리로드 설정
+- [x] 빌드 스크립트 설정
 
 ---
 
@@ -56,26 +56,26 @@
 ### 2.1 핵심 의존성 설치
 
 #### Cursor 작업
-- [ ] React 18 설치 및 설정
-- [ ] TypeScript 설정 (`tsconfig.json`)
-- [ ] Vite 설정 (`vite.config.ts`)
-- [ ] Tailwind CSS 설치 및 설정
+- [x] React 18 설치 및 설정
+- [x] TypeScript 설정 (`tsconfig.json`)
+- [x] Vite 설정 (`vite.config.ts`)
+- [x] Tailwind CSS 설치 및 설정
 - [ ] Catalyst UI 설치 및 설정
 
 ### 2.2 추가 라이브러리 설치
 
 #### Cursor 작업
-- [ ] React Router DOM 설치 (라우팅)
-- [ ] 아이콘 라이브러리 설치 (`@heroicons/react`, `lucide-react`)
-- [ ] 유틸리티 라이브러리 설치 (`clsx`, `tailwind-merge`)
+- [x] React Router DOM 설치 (라우팅)
+- [x] 아이콘 라이브러리 설치 (`@heroicons/react`, `lucide-react`)
+- [x] 유틸리티 라이브러리 설치 (`clsx`, `tailwind-merge`)
 - [ ] 오디오 관련 라이브러리 설치 (필요시)
 
 ### 2.3 설정 파일 구성
 
 #### Cursor 작업
-- [ ] `tailwind.config.js` 설정 (Moonwave 브랜드 컬러, Pretendard 폰트)
-- [ ] `package.json` 스크립트 설정 (dev, build, preview)
-- [ ] TypeScript 타입 정의 파일 생성
+- [x] `tailwind.config.js` 설정 (Moonwave 브랜드 컬러, Pretendard 폰트)
+- [x] `package.json` 스크립트 설정 (dev, build, preview)
+- [x] TypeScript 타입 정의 파일 생성
 - [ ] 환경 변수 설정 (`.env`)
 
 ---
@@ -85,30 +85,30 @@
 ### 3.1 디렉토리 구조 생성
 
 #### Cursor 작업
-- [ ] `src/components/` 디렉토리 생성
-  - [ ] `src/components/ui/` (기본 UI 컴포넌트)
-  - [ ] `src/components/player/` (음악 플레이어 컴포넌트)
-  - [ ] `src/components/layout/` (레이아웃 컴포넌트)
-  - [ ] `src/components/intro/` (인트로 페이지 컴포넌트)
-- [ ] `src/pages/` 디렉토리 생성
-- [ ] `src/hooks/` 디렉토리 생성
-- [ ] `src/utils/` 디렉토리 생성
-- [ ] `src/types/` 디렉토리 생성
-- [ ] `src/styles/` 디렉토리 생성
+- [x] `src/components/` 디렉토리 생성
+  - [x] `src/components/ui/` (기본 UI 컴포넌트)
+  - [x] `src/components/player/` (음악 플레이어 컴포넌트)
+  - [x] `src/components/layout/` (레이아웃 컴포넌트)
+  - [x] `src/components/intro/` (인트로 페이지 컴포넌트)
+- [x] `src/pages/` 디렉토리 생성
+- [x] `src/hooks/` 디렉토리 생성
+- [x] `src/utils/` 디렉토리 생성
+- [x] `src/types/` 디렉토리 생성
+- [x] `src/styles/` 디렉토리 생성
 
 ### 3.2 정적 파일 구조
 
 #### 문유 작업
-- [ ] `public/music/` 디렉토리 생성 및 13곡 MP3 파일 업로드
-- [ ] `public/covers/` 디렉토리 생성 및 13곡 커버 이미지 업로드
-- [ ] `public/moonwave_log.png` 업로드 (PWA 앱 아이콘)
+- [x] `public/music/` 디렉토리 생성 및 13곡 MP3 파일 업로드
+- [x] `public/covers/` 디렉토리 생성 및 13곡 커버 이미지 업로드
+- [x] `public/moonwave_log.png` 업로드 (PWA 앱 아이콘)
 - [ ] `public/sample-tracks.json` 생성 (트랙 메타데이터)
 
 #### Cursor 작업
-- [ ] `public/manifest.json` 생성 (PWA 설정)
-- [ ] `public/robots.txt` 생성
+- [x] `public/manifest.json` 생성 (PWA 설정)
+- [x] `public/robots.txt` 생성
 - [ ] `public/favicon.ico` 설정
-- [ ] `public/CNAME` 파일 생성 (도메인 설정)
+- [x] `public/CNAME` 파일 생성 (도메인 설정)
 
 ---
 
@@ -117,56 +117,56 @@
 ### 4.1 기본 UI 컴포넌트
 
 #### Cursor 작업
-- [ ] `Button` 컴포넌트 개발 (글래스모피즘 스타일)
-- [ ] `Card` 컴포넌트 개발 (트랙 카드용)
-- [ ] `Typography` 컴포넌트 개발 (한글 최적화)
-- [ ] `Loading` 컴포넌트 개발
+- [x] `Button` 컴포넌트 개발 (글래스모피즘 스타일)
+- [x] `Card` 컴포넌트 개발 (트랙 카드용)
+- [x] `Typography` 컴포넌트 개발 (한글 최적화)
+- [x] `Loading` 컴포넌트 개발
 - [ ] `Modal` 컴포넌트 개발 (필요시)
 
 ### 4.2 음악 플레이어 컴포넌트
 
 #### Cursor 작업
-- [ ] `AudioPlayer` 컴포넌트 개발
-  - [ ] 재생/정지 기능
-  - [ ] 진행바 (Slider)
-  - [ ] 볼륨 조절
-  - [ ] 시간 표시
-- [ ] `TrackCard` 컴포넌트 개발
-  - [ ] 커버 이미지 표시
-  - [ ] 재생 버튼 오버레이
-  - [ ] 트랙 정보 표시
+- [x] `AudioPlayer` 컴포넌트 개발
+  - [x] 재생/정지 기능
+  - [x] 진행바 (Slider)
+  - [x] 볼륨 조절
+  - [x] 시간 표시
+- [x] `TrackCard` 컴포넌트 개발
+  - [x] 커버 이미지 표시
+  - [x] 재생 버튼 오버레이
+  - [x] 트랙 정보 표시
 - [ ] `LyricsSync` 컴포넌트 개발
   - [ ] 실시간 가사 하이라이트
   - [ ] 오디오 시간과 싱크
-- [ ] `PlayerControls` 컴포넌트 개발
-  - [ ] 이전/다음 곡 버튼
-  - [ ] 반복/셔플 버튼
+- [x] `PlayerControls` 컴포넌트 개발
+  - [x] 이전/다음 곡 버튼
+  - [x] 반복/셔플 버튼
   - [ ] 다운로드 버튼
 
 ### 4.3 레이아웃 컴포넌트
 
 #### Cursor 작업
-- [ ] `Header` 컴포넌트 개발
-  - [ ] Moonwave 로고
-  - [ ] 네비게이션 메뉴
-  - [ ] 반응형 디자인
+- [x] `Header` 컴포넌트 개발
+  - [x] Moonwave 로고
+  - [x] 네비게이션 메뉴
+  - [x] 반응형 디자인
 - [ ] `Footer` 컴포넌트 개발 (필요시)
-- [ ] `Layout` 컴포넌트 개발
-  - [ ] 고정 헤더
+- [x] `Layout` 컴포넌트 개발
+  - [x] 고정 헤더
   - [ ] 고정 플레이어
-  - [ ] 메인 콘텐츠 영역
+  - [x] 메인 콘텐츠 영역
 
 ### 4.4 인트로 페이지 컴포넌트
 
 #### Cursor 작업
-- [ ] `IntroPage` 컴포넌트 개발
-  - [ ] 그라디언트 배경
-  - [ ] 애니메이션 효과
-  - [ ] 시작 버튼
-- [ ] `AboutPage` 컴포넌트 개발
-  - [ ] 오안나 프로필
-  - [ ] 타임라인
-  - [ ] 스토리 섹션
+- [x] `IntroPage` 컴포넌트 개발
+  - [x] 그라디언트 배경
+  - [x] 애니메이션 효과
+  - [x] 시작 버튼
+- [x] `AboutPage` 컴포넌트 개발
+  - [x] 오안나 프로필
+  - [x] 타임라인
+  - [x] 스토리 섹션
 
 ---
 
