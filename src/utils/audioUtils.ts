@@ -139,7 +139,7 @@ export const extractAudioMetadata = async (file: File): Promise<{
 // 오디오 스트림 URL 생성 (Web Audio API용)
 export const createAudioStream = (audioElement: HTMLAudioElement): MediaStream | null => {
   try {
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const source = audioContext.createMediaElementSource(audioElement);
     const destination = audioContext.createMediaStreamDestination();
     
@@ -156,7 +156,7 @@ export const createAudioStream = (audioElement: HTMLAudioElement): MediaStream |
 // 오디오 스펙트럼 분석 (기본)
 export const analyzeAudioSpectrum = (audioElement: HTMLAudioElement): number[] => {
   try {
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const analyser = audioContext.createAnalyser();
     const source = audioContext.createMediaElementSource(audioElement);
     

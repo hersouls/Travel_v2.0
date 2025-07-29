@@ -1,5 +1,13 @@
 import { useEffect, useCallback, useRef } from 'react';
 
+// Browser API type declarations
+declare global {
+  interface Window {
+    PerformanceObserver: typeof PerformanceObserver;
+    webkitAudioContext: typeof AudioContext;
+  }
+}
+
 interface PerformanceMetrics {
   FCP: number; // First Contentful Paint
   LCP: number; // Largest Contentful Paint
@@ -12,6 +20,16 @@ interface PerformanceMonitorOptions {
   onMetricsUpdate?: (metrics: PerformanceMetrics) => void;
   onError?: (error: Error) => void;
   enabled?: boolean;
+}
+
+// Performance entry types
+interface FirstInputEntry extends PerformanceEntry {
+  processingStart: number;
+}
+
+interface LayoutShiftEntry extends PerformanceEntry {
+  value: number;
+  hadRecentInput: boolean;
 }
 
 export const usePerformanceMonitor = (options: PerformanceMonitorOptions = {}) => {
@@ -82,7 +100,7 @@ export const usePerformanceMonitor = (options: PerformanceMonitorOptions = {}) =
         const entries = list.getEntries();
         entries.forEach((entry) => {
           if (entry.entryType === 'first-input') {
-            const firstInputEntry = entry as any;
+            const firstInputEntry = entry as FirstInputEntry;
             metricsRef.current.FID = firstInputEntry.processingStart - entry.startTime;
             onMetricsUpdate?.(metricsRef.current);
           }
@@ -105,7 +123,7 @@ export const usePerformanceMonitor = (options: PerformanceMonitorOptions = {}) =
         const entries = list.getEntries();
         entries.forEach((entry) => {
           if (entry.entryType === 'layout-shift') {
-            const layoutShiftEntry = entry as any;
+            const layoutShiftEntry = entry as LayoutShiftEntry;
             if (!layoutShiftEntry.hadRecentInput) {
               clsValue += layoutShiftEntry.value;
               metricsRef.current.CLS = clsValue;
