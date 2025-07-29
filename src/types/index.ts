@@ -69,7 +69,7 @@ export interface AppState {
 // 오디오 이벤트 타입
 export interface AudioEvent {
   type: 'play' | 'pause' | 'ended' | 'timeupdate' | 'error';
-  data?: any;
+  data?: Record<string, unknown>;
 }
 
 // UI 상태 타입

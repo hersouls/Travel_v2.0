@@ -61,6 +61,9 @@ export default [
         requestAnimationFrame: 'readonly',
         // Performance API
         performance: 'readonly',
+        PerformanceObserver: 'readonly',
+        PerformanceNavigationTiming: 'readonly',
+        AudioContext: 'readonly',
         // Jest globals
         jest: 'readonly',
         describe: 'readonly',

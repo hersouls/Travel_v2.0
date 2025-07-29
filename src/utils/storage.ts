@@ -46,22 +46,22 @@ export const clearStorage = (): void => {
 };
 
 // 플레이어 상태 저장
-export const savePlayerState = (state: any): void => {
+export const savePlayerState = (state: Record<string, unknown>): void => {
   setStorageItem(STORAGE_KEYS.PLAYER_STATE, state);
 };
 
 // 플레이어 상태 불러오기
-export const loadPlayerState = (): any => {
+export const loadPlayerState = (): Record<string, unknown> | null => {
   return getStorageItem(STORAGE_KEYS.PLAYER_STATE, null);
 };
 
 // 사용자 설정 저장
-export const saveUserSettings = (settings: any): void => {
+export const saveUserSettings = (settings: Record<string, unknown>): void => {
   setStorageItem(STORAGE_KEYS.USER_SETTINGS, settings);
 };
 
 // 사용자 설정 불러오기
-export const loadUserSettings = (): any => {
+export const loadUserSettings = (): Record<string, unknown> => {
   return getStorageItem(STORAGE_KEYS.USER_SETTINGS, {
     autoPlay: false,
     crossfade: false,
