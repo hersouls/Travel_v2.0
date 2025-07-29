@@ -1,18 +1,6 @@
 import '@testing-library/jest-dom';
 
-// Mock TextEncoder and TextDecoder for Jest environment
-(async () => {
-  if (typeof global.TextEncoder === 'undefined') {
-    const { TextEncoder } = await import('util');
-    global.TextEncoder = TextEncoder;
-  }
-  if (typeof global.TextDecoder === 'undefined') {
-    const { TextDecoder } = await import('util');
-    global.TextDecoder = TextDecoder;
-  }
-})();
-
-// Mock window.matchMedia
+// Mock for window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: jest.fn().mockImplementation(query => ({
@@ -27,39 +15,43 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
-// Mock IntersectionObserver
+// Mock for IntersectionObserver
 global.IntersectionObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),
   disconnect: jest.fn(),
 }));
 
-// Mock ResizeObserver
+// Mock for ResizeObserver
 global.ResizeObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),
   disconnect: jest.fn(),
 }));
 
-// Mock Audio API
-Object.defineProperty(window, 'Audio', {
-  writable: true,
+// Mock for HTMLMediaElement
+Object.defineProperty(window.HTMLMediaElement.prototype, 'play', {
   value: jest.fn().mockImplementation(() => ({
     play: jest.fn().mockResolvedValue(undefined),
     pause: jest.fn(),
     load: jest.fn(),
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
-    currentTime: 0,
-    duration: 0,
-    volume: 1,
-    muted: false,
-    paused: true,
-    ended: false,
   })),
 });
 
-// Mock Howler.js
+// Mock for localStorage
+const localStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
+  length: 0,
+  key: jest.fn(),
+};
+global.localStorage = localStorageMock;
+
+// Mock for Howler
 jest.mock('howler', () => ({
   Howl: jest.fn().mockImplementation(() => ({
     play: jest.fn(),

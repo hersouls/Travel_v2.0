@@ -66,7 +66,7 @@ export const Layout: React.FC<LayoutProps> = ({
             onNext={playerHandlers.onNext}
             onToggleRepeat={playerHandlers.onToggleRepeat}
             onToggleShuffle={playerHandlers.onToggleShuffle}
-            onDownload={playerHandlers.onDownload}
+            onDownload={playerHandlers.onDownload || undefined}
             className="p-4"
           />
         </div>

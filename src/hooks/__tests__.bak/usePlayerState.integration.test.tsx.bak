@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react';
-
-import usePlayerState from '../usePlayerState';
+import { Track } from '../../types';
+import { usePlayerState } from '../usePlayerState';
 
 // Mock localStorage
 const localStorageMock = {
@@ -8,22 +8,21 @@ const localStorageMock = {
   setItem: jest.fn(),
   removeItem: jest.fn(),
   clear: jest.fn(),
+  length: 0,
+  key: jest.fn(),
 };
-Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock,
-});
 
 // Mock Howler
 const mockHowl = {
-  play: vi.fn(),
-  pause: vi.fn(),
-  stop: vi.fn(),
-  volume: vi.fn(),
-  seek: vi.fn(),
-  on: vi.fn(),
-  off: vi.fn(),
-  duration: vi.fn(() => 180),
-  playing: vi.fn(() => false),
+  play: jest.fn(),
+  pause: jest.fn(),
+  stop: jest.fn(),
+  volume: jest.fn(),
+  seek: jest.fn(),
+  on: jest.fn(),
+  off: jest.fn(),
+  duration: jest.fn(() => 180),
+  playing: jest.fn(() => false),
 };
 
 jest.mock('howler', () => ({
@@ -35,24 +34,38 @@ jest.mock('howler', () => ({
   },
 }));
 
-const mockTrack = {
-  id: 1,
+// Mock tracks
+const mockTrack: Track = {
+  id: '1',
   title: '테스트 트랙',
-  artist: '테스트 아티스트',
+  artist: '오안나',
+  duration: 180,
+  file: '/music/test.mp3',
   cover: '/covers/test.jpg',
-  audio: '/audio/test.mp3',
-  lyrics: '테스트 가사',
+  description: '테스트용 트랙입니다.',
 };
+
+const secondTrack: Track = {
+  id: '2',
+  title: '두 번째 트랙',
+  artist: '오안나',
+  duration: 200,
+  file: '/music/test2.mp3',
+  cover: '/covers/test2.jpg',
+  description: '두 번째 테스트용 트랙입니다.',
+};
+
+const tracks = [mockTrack, secondTrack];
 
 describe('usePlayerState Integration Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    localStorageMock.getItem.mockClear();
-    localStorageMock.setItem.mockClear();
+    localStorageMock.getItem.mockReturnValue(null);
+    localStorageMock.setItem.mockReturnValue(undefined);
   });
 
   test('초기 상태가 올바르게 설정된다', () => {
-    const { result } = renderHook(() => usePlayerState());
+    const { result } = renderHook(() => usePlayerState(tracks));
 
     expect(result.current.isPlaying).toBe(false);
     expect(result.current.currentTrack).toBeNull();
@@ -61,9 +74,9 @@ describe('usePlayerState Integration Tests', () => {
   });
 
   test('트랙을 재생하면 상태가 올바르게 변경된다', async () => {
-    const { result } = renderHook(() => usePlayerState());
+    const { result } = renderHook(() => usePlayerState(tracks));
 
-    act(() => {
+    await act(async () => {
       result.current.playTrack(mockTrack);
     });
 
@@ -73,16 +86,14 @@ describe('usePlayerState Integration Tests', () => {
   });
 
   test('재생 중인 트랙을 일시정지하면 상태가 올바르게 변경된다', async () => {
-    const { result } = renderHook(() => usePlayerState());
+    const { result } = renderHook(() => usePlayerState(tracks));
 
-    // 먼저 트랙 재생
-    act(() => {
+    await act(async () => {
       result.current.playTrack(mockTrack);
     });
 
-    // 일시정지
-    act(() => {
-      result.current.pauseTrack();
+    await act(async () => {
+      result.current.togglePlay();
     });
 
     expect(result.current.isPlaying).toBe(false);
@@ -90,7 +101,7 @@ describe('usePlayerState Integration Tests', () => {
   });
 
   test('볼륨을 변경하면 상태가 올바르게 업데이트된다', () => {
-    const { result } = renderHook(() => usePlayerState());
+    const { result } = renderHook(() => usePlayerState(tracks));
 
     act(() => {
       result.current.setVolume(0.5);
@@ -101,7 +112,7 @@ describe('usePlayerState Integration Tests', () => {
   });
 
   test('음소거 상태가 올바르게 토글된다', () => {
-    const { result } = renderHook(() => usePlayerState());
+    const { result } = renderHook(() => usePlayerState(tracks));
 
     act(() => {
       result.current.toggleMute();
@@ -117,17 +128,13 @@ describe('usePlayerState Integration Tests', () => {
   });
 
   test('다른 트랙을 재생하면 이전 트랙이 자동으로 정지된다', async () => {
-    const { result } = renderHook(() => usePlayerState());
+    const { result } = renderHook(() => usePlayerState(tracks));
 
-    const secondTrack = { ...mockTrack, id: 2, title: '테스트 트랙 2' };
-
-    // 첫 번째 트랙 재생
-    act(() => {
+    await act(async () => {
       result.current.playTrack(mockTrack);
     });
 
-    // 두 번째 트랙 재생
-    act(() => {
+    await act(async () => {
       result.current.playTrack(secondTrack);
     });
 
@@ -136,30 +143,29 @@ describe('usePlayerState Integration Tests', () => {
   });
 
   test('진행률이 올바르게 업데이트된다', () => {
-    const { result } = renderHook(() => usePlayerState());
+    const { result } = renderHook(() => usePlayerState(tracks));
 
     act(() => {
-      result.current.updateProgress(30);
+      result.current.setProgress(30);
     });
 
     expect(result.current.progress).toBe(30);
   });
 
   test('재생 시간이 올바르게 업데이트된다', () => {
-    const { result } = renderHook(() => usePlayerState());
+    const { result } = renderHook(() => usePlayerState(tracks));
 
     act(() => {
-      result.current.updateCurrentTime(60);
+      result.current.setCurrentTime(60);
     });
 
     expect(result.current.currentTime).toBe(60);
   });
 
   test('트랙이 끝나면 자동으로 다음 트랙으로 넘어간다', async () => {
-    const { result } = renderHook(() => usePlayerState());
+    const { result } = renderHook(() => usePlayerState(tracks));
 
-    // 트랙 재생
-    act(() => {
+    await act(async () => {
       result.current.playTrack(mockTrack);
     });
 
@@ -172,51 +178,44 @@ describe('usePlayerState Integration Tests', () => {
   });
 
   test('로컬 스토리지에 설정이 저장된다', () => {
-    const { result } = renderHook(() => usePlayerState());
+    const { result } = renderHook(() => usePlayerState(tracks));
 
     act(() => {
-      result.current.setVolume(0.7);
+      result.current.setVolume(0.8);
     });
 
     expect(localStorageMock.setItem).toHaveBeenCalledWith(
       'player-volume',
-      '0.7'
+      '0.8'
     );
   });
 
   test('로컬 스토리지에서 설정을 불러온다', () => {
     localStorageMock.getItem.mockReturnValue('0.8');
-
-    const { result } = renderHook(() => usePlayerState());
+    const { result } = renderHook(() => usePlayerState(tracks));
 
     expect(result.current.volume).toBe(0.8);
     expect(localStorageMock.getItem).toHaveBeenCalledWith('player-volume');
   });
 
   test('재생 목록이 올바르게 관리된다', () => {
-    const { result } = renderHook(() => usePlayerState());
-
-    const tracks = [mockTrack, { ...mockTrack, id: 2 }];
-
-    act(() => {
-      result.current.setPlaylist(tracks);
-    });
+    const { result } = renderHook(() => usePlayerState(tracks));
 
     expect(result.current.playlist).toEqual(tracks);
   });
 
   test('재생 모드가 올바르게 변경된다', () => {
-    const { result } = renderHook(() => usePlayerState());
+    const { result } = renderHook(() => usePlayerState(tracks));
 
     act(() => {
-      result.current.setPlayMode('repeat');
+      result.current.setRepeatMode('repeat');
     });
 
-    expect(result.current.playMode).toBe('repeat');
+    expect(result.current.repeatMode).toBe('repeat');
   });
 
   test('에러 상태가 올바르게 처리된다', () => {
-    const { result } = renderHook(() => usePlayerState());
+    const { result } = renderHook(() => usePlayerState(tracks));
 
     act(() => {
       result.current.setError('오디오 로딩 실패');
@@ -226,7 +225,7 @@ describe('usePlayerState Integration Tests', () => {
   });
 
   test('로딩 상태가 올바르게 관리된다', () => {
-    const { result } = renderHook(() => usePlayerState());
+    const { result } = renderHook(() => usePlayerState(tracks));
 
     act(() => {
       result.current.setLoading(true);
