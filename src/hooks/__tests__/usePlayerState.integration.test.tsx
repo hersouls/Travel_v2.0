@@ -15,15 +15,15 @@ Object.defineProperty(window, 'localStorage', {
 
 // Mock Howler
 const mockHowl = {
-  play: vi.fn(),
-  pause: vi.fn(),
-  stop: vi.fn(),
-  volume: vi.fn(),
-  seek: vi.fn(),
-  on: vi.fn(),
-  off: vi.fn(),
-  duration: vi.fn(() => 180),
-  playing: vi.fn(() => false),
+  play: jest.fn(),
+  pause: jest.fn(),
+  stop: jest.fn(),
+  volume: jest.fn(),
+  seek: jest.fn(),
+  on: jest.fn(),
+  off: jest.fn(),
+  duration: jest.fn(() => 180),
+  playing: jest.fn(() => false),
 };
 
 jest.mock('howler', () => ({

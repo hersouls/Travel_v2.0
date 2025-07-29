@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
 import App from '../App';
 
 // Mock the tracks data
@@ -37,7 +38,11 @@ describe('Routing Integration Tests', () => {
   });
 
   test('기본 경로(/)에서 메인 페이지가 렌더링된다', () => {
-    render(<App />);
+    render(
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    );
 
     // 메인 페이지 요소들이 표시되는지 확인
     expect(screen.getByText(/Moonwave/i)).toBeInTheDocument();
@@ -46,7 +51,11 @@ describe('Routing Integration Tests', () => {
   test('/tracks 경로에서 트랙 목록 페이지가 렌더링된다', async () => {
     // URL을 /tracks로 변경
     window.history.pushState({}, '', '/tracks');
-    render(<App />);
+    render(
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    );
 
     await waitFor(() => {
       expect(screen.getByText('테스트 트랙 1')).toBeInTheDocument();
@@ -57,7 +66,11 @@ describe('Routing Integration Tests', () => {
   test('/track/:id 경로에서 트랙 상세 페이지가 렌더링된다', async () => {
     // URL을 /track/1로 변경
     window.history.pushState({}, '', '/track/1');
-    render(<App />);
+    render(
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    );
 
     await waitFor(() => {
       expect(screen.getByText('테스트 트랙 1')).toBeInTheDocument();
@@ -67,7 +80,11 @@ describe('Routing Integration Tests', () => {
   test('존재하지 않는 경로에서 404 페이지가 렌더링된다', () => {
     // URL을 존재하지 않는 경로로 변경
     window.history.pushState({}, '', '/not-found');
-    render(<App />);
+    render(
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    );
 
     // 404 페이지 또는 에러 메시지가 표시되는지 확인
     expect(screen.getByText(/404|not found|error/i)).toBeInTheDocument();
@@ -76,7 +93,11 @@ describe('Routing Integration Tests', () => {
   test('트랙 카드를 클릭하면 해당 트랙의 상세 페이지로 이동한다', async () => {
     // URL을 직접 변경하여 테스트
     window.history.pushState({}, '', '/tracks');
-    render(<App />);
+    render(
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    );
 
     // 트랙이 로드된 후 확인
     await waitFor(() => {
@@ -94,6 +115,11 @@ describe('Routing Integration Tests', () => {
   });
 
   test('브라우저 뒤로가기 버튼이 올바르게 작동한다', async () => {
+    render(
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    );
 
     // 트랙이 로드된 후 확인
     await waitFor(() => {
