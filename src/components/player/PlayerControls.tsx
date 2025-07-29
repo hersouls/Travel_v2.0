@@ -16,7 +16,7 @@ interface PlayerControlsProps {
   onNext: () => void;
   onToggleShuffle: () => void;
   onCycleRepeat: () => void;
-  onDownload?: () => void;
+  onDownload?: ((track: { title: string; artist: string }) => void) | undefined;
   isShuffled: boolean;
   repeatMode: 'none' | 'one' | 'all';
   isLoading: boolean;
@@ -60,7 +60,7 @@ export const PlayerControls: React.FC<PlayerControlsProps> = ({
 
   const handleDownload = () => {
     if (onDownload && currentTrack) {
-      onDownload();
+      onDownload(currentTrack);
     }
   };
 

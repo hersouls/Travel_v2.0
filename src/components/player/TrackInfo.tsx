@@ -1,5 +1,5 @@
 import React from 'react';
-import { Track } from '@/hooks/usePlayerState';
+import { Track } from '@/types';
 
 interface TrackInfoProps {
   track: Track;
@@ -11,7 +11,7 @@ export const TrackInfo: React.FC<TrackInfoProps> = ({ track }) => {
       {/* 커버 이미지 */}
       <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
         <img
-          src={track.coverUrl}
+          src={track.cover}
           alt={track.title}
           className="w-full h-full object-cover"
           loading="lazy"

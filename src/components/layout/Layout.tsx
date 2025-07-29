@@ -1,7 +1,7 @@
 import React from 'react';
 import { Header } from './Header';
 import { Footer } from './Footer';
-import { PlayerControls } from '@/components/player/PlayerControls';
+import { AudioPlayer } from '@/components/player/AudioPlayer';
 import { Track } from '@/types';
 
 interface LayoutProps {
@@ -11,22 +11,22 @@ interface LayoutProps {
   showPlayer?: boolean;
   playerState?: {
     isPlaying: boolean;
-    isMuted: boolean;
+    currentTime: number;
+    duration: number;
     volume: number;
     repeatMode: 'none' | 'one' | 'all';
     isShuffled: boolean;
     currentTrack?: Track;
   };
   playerHandlers?: {
-    onPlay: () => void;
-    onPause: () => void;
+    onTogglePlay: () => void;
+    onSeek: (time: number) => void;
+    onVolumeChange: (volume: number) => void;
     onPrevious: () => void;
     onNext: () => void;
-    onToggleMute: () => void;
-    onVolumeChange: (volume: number) => void;
     onToggleRepeat: () => void;
     onToggleShuffle: () => void;
-    onDownload?: (track: Track) => void;
+    onDownload?: (track: { title: string; artist: string }) => void;
   };
   className?: string;
 }
@@ -49,24 +49,25 @@ export const Layout: React.FC<LayoutProps> = ({
       </main>
 
       {/* 고정 플레이어 */}
-      {showPlayer && playerState && playerHandlers && (
-        <div className="fixed bottom-0 left-0 right-0 z-40 p-4">
-          <PlayerControls
+      {showPlayer && playerState && playerHandlers && playerState.currentTrack && (
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-black/20 backdrop-blur-md border-t border-white/10">
+          <AudioPlayer
             isPlaying={playerState.isPlaying}
-            isMuted={playerState.isMuted}
+            currentTime={playerState.currentTime}
+            duration={playerState.duration}
             volume={playerState.volume}
             repeatMode={playerState.repeatMode}
             isShuffled={playerState.isShuffled}
             currentTrack={playerState.currentTrack}
-            onPlay={playerHandlers.onPlay}
-            onPause={playerHandlers.onPause}
+            onTogglePlay={playerHandlers.onTogglePlay}
+            onSeek={playerHandlers.onSeek}
+            onVolumeChange={playerHandlers.onVolumeChange}
             onPrevious={playerHandlers.onPrevious}
             onNext={playerHandlers.onNext}
-            onToggleMute={playerHandlers.onToggleMute}
-            onVolumeChange={playerHandlers.onVolumeChange}
             onToggleRepeat={playerHandlers.onToggleRepeat}
             onToggleShuffle={playerHandlers.onToggleShuffle}
-            onDownload={playerHandlers.onDownload || undefined}
+            onDownload={playerHandlers.onDownload}
+            className="p-4"
           />
         </div>
       )}

@@ -6,7 +6,7 @@ interface AudioCache {
 
 export const useAudioPreloader = () => {
   const audioCache = useRef<AudioCache>({});
-  const preloadQueue = useRef<string[]>([]);
+  // const preloadQueue = useRef<string[]>([]); // 사용하지 않는 변수
   const isPreloading = useRef(false);
 
   // 오디오 프리로드
@@ -43,7 +43,7 @@ export const useAudioPreloader = () => {
   }, [preloadAudio]);
 
   // 큐 기반 프리로드 (메모리 효율적)
-  const preloadQueue = useCallback(async (sources: string[], concurrency = 3): Promise<void> => {
+  const preloadQueueAsync = useCallback(async (sources: string[], concurrency = 3): Promise<void> => {
     if (isPreloading.current) {
       return;
     }
@@ -92,7 +92,7 @@ export const useAudioPreloader = () => {
   return {
     preloadAudio,
     preloadMultiple,
-    preloadQueue,
+    preloadQueue: preloadQueueAsync,
     getCachedAudio,
     removeFromCache,
     clearCache,

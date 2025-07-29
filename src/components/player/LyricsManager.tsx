@@ -212,7 +212,7 @@ export const LyricsManager: React.FC<LyricsManagerProps> = ({
                   <p className="text-sm text-gray-300">검색 결과: {searchResults.length}개</p>
                   {searchResults.slice(0, 3).map(index => (
                     <p key={index} className="text-sm text-white mt-1">
-                      {syncLines[index].text}
+                      {syncLines[index]?.text || ''}
                     </p>
                   ))}
                 </div>

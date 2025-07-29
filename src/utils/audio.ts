@@ -1,21 +1,25 @@
 /**
  * 시간을 MM:SS 형식으로 포맷팅
  */
-export const formatTime = (seconds: number): string => {
-  if (isNaN(seconds) || seconds < 0) return '0:00';
-  
+export function formatTime(seconds: number): string {
+  if (isNaN(seconds) || seconds < 0) {
+    return '0:00';
+  }
+
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = Math.floor(seconds % 60);
   
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-};
+}
 
 /**
  * 시간을 HH:MM:SS 형식으로 포맷팅 (1시간 이상)
  */
-export const formatTimeLong = (seconds: number): string => {
-  if (isNaN(seconds) || seconds < 0) return '0:00:00';
-  
+export function formatTimeLong(seconds: number): string {
+  if (isNaN(seconds) || seconds < 0) {
+    return '0:00:00';
+  }
+
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
   const remainingSeconds = Math.floor(seconds % 60);
@@ -25,7 +29,7 @@ export const formatTimeLong = (seconds: number): string => {
   } else {
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   }
-};
+}
 
 /**
  * 퍼센트를 시간으로 변환
@@ -65,20 +69,20 @@ export const estimateDuration = (fileSize: number, bitrate: number = 128): numbe
 };
 
 /**
- * 오디오 볼륨을 데시벨로 변환
+ * 볼륨을 데시벨로 변환
  */
-export const volumeToDb = (volume: number): number => {
-  if (volume === 0) return -Infinity;
+export function volumeToDb(volume: number): number {
+  if (volume <= 0) return -Infinity;
   return 20 * Math.log10(volume);
-};
+}
 
 /**
  * 데시벨을 볼륨으로 변환
  */
-export const dbToVolume = (db: number): number => {
+export function dbToVolume(db: number): number {
   if (db === -Infinity) return 0;
   return Math.pow(10, db / 20);
-};
+}
 
 /**
  * 오디오 버퍼링 상태 확인
@@ -93,3 +97,32 @@ export const isAudioBuffering = (audio: HTMLAudioElement): boolean => {
 export const isAudioReady = (audio: HTMLAudioElement): boolean => {
   return audio.readyState >= 2; // HAVE_CURRENT_DATA 이상
 };
+
+/**
+ * 오디오 파일의 메타데이터를 추출
+ */
+export async function getAudioMetadata(file: File): Promise<{
+  duration: number;
+  title?: string;
+  artist?: string;
+  album?: string;
+}> {
+  return new Promise((resolve, reject) => {
+    const audio = new Audio();
+    const url = URL.createObjectURL(file);
+    
+    audio.addEventListener('loadedmetadata', () => {
+      URL.revokeObjectURL(url);
+      resolve({
+        duration: audio.duration,
+      });
+    });
+    
+    audio.addEventListener('error', () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('Failed to load audio file'));
+    });
+    
+    audio.src = url;
+  });
+}
