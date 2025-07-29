@@ -2,9 +2,9 @@ import React, { Suspense, lazy, ComponentType } from 'react';
 import { Loading } from './ui/Loading';
 
 interface LazyLoaderProps {
-  component: () => Promise<{ default: ComponentType<any> }>;
+  component: () => Promise<{ default: ComponentType<Record<string, unknown>> }>;
   fallback?: React.ReactNode;
-  props?: Record<string, any>;
+  props?: Record<string, unknown>;
 }
 
 export const LazyLoader: React.FC<LazyLoaderProps> = ({ 
