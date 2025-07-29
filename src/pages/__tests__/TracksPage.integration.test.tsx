@@ -1,40 +1,40 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { Track } from '@/types';
 
-import TracksPage from '../TracksPage';
+import { TracksPage } from '../TracksPage';
 
 // Mock the tracks data
-const mockTracks = [
+const mockTracks: Track[] = [
   {
-    id: 1,
+    id: '1',
     title: '테스트 트랙 1',
     artist: '테스트 아티스트',
+    duration: 180,
+    file: '/audio/test1.mp3',
     cover: '/covers/test1.jpg',
-    audio: '/audio/test1.mp3',
-    lyrics: '테스트 가사 1',
+    description: '테스트 트랙 1 설명',
   },
   {
-    id: 2,
+    id: '2',
     title: '테스트 트랙 2',
     artist: '테스트 아티스트',
+    duration: 200,
+    file: '/audio/test2.mp3',
     cover: '/covers/test2.jpg',
-    audio: '/audio/test2.mp3',
-    lyrics: '테스트 가사 2',
+    description: '테스트 트랙 2 설명',
   },
 ];
 
-// Mock the tracks data module
-jest.mock('../../data/tracks', () => ({
-  tracks: mockTracks,
-}));
+// Mock fetch for tracks data
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    json: () => Promise.resolve({ tracks: mockTracks }),
+  })
+) as jest.Mock;
 
 const renderWithRouter = (component: React.ReactElement) => {
-  return render(
-    <BrowserRouter>
-      {component}
-    </BrowserRouter>
-  );
+  return render(component);
 };
 
 describe('TracksPage Integration Tests', () => {
@@ -45,15 +45,17 @@ describe('TracksPage Integration Tests', () => {
   test('페이지가 올바르게 렌더링되고 트랙 목록을 표시한다', async () => {
     renderWithRouter(<TracksPage />);
 
-    // 페이지 제목 확인
-    expect(screen.getByText('Moonwave')).toBeInTheDocument();
-    expect(screen.getByText('오안나')).toBeInTheDocument();
+    // 로딩 상태 확인
+    expect(screen.getByText('트랙을 불러오는 중...')).toBeInTheDocument();
 
     // 트랙 목록이 표시되는지 확인
     await waitFor(() => {
       expect(screen.getByText('테스트 트랙 1')).toBeInTheDocument();
       expect(screen.getByText('테스트 트랙 2')).toBeInTheDocument();
     });
+
+    // 페이지 제목 확인
+    expect(screen.getByText('오안나의 음악')).toBeInTheDocument();
   });
 
   test('트랙을 클릭하면 상세 페이지로 이동한다', async () => {
@@ -77,16 +79,21 @@ describe('TracksPage Integration Tests', () => {
 
     renderWithRouter(<TracksPage />);
 
-    // 모바일에서도 트랙 목록이 표시되는지 확인
-    expect(screen.getByText('Moonwave')).toBeInTheDocument();
+    // 모바일에서도 로딩 상태가 표시되는지 확인
+    expect(screen.getByText('트랙을 불러오는 중...')).toBeInTheDocument();
   });
 
   test('트랙 커버 이미지가 올바르게 로드된다', async () => {
     renderWithRouter(<TracksPage />);
 
-    // 이미지 요소들이 존재하는지 확인
-    const images = screen.getAllByRole('img');
-    expect(images.length).toBeGreaterThan(0);
+    // 로딩 상태 확인
+    expect(screen.getByText('트랙을 불러오는 중...')).toBeInTheDocument();
+
+    // 트랙이 로드된 후 이미지 요소들이 존재하는지 확인
+    await waitFor(() => {
+      const images = screen.getAllByRole('img');
+      expect(images.length).toBeGreaterThan(0);
+    });
   });
 
   test('페이지 로딩 시 애니메이션이 적용된다', () => {
