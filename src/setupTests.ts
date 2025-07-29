@@ -1,12 +1,16 @@
 import '@testing-library/jest-dom';
 
 // Mock TextEncoder and TextDecoder for Jest environment
-if (typeof global.TextEncoder === 'undefined') {
-  global.TextEncoder = require('util').TextEncoder;
-}
-if (typeof global.TextDecoder === 'undefined') {
-  global.TextDecoder = require('util').TextDecoder;
-}
+(async () => {
+  if (typeof global.TextEncoder === 'undefined') {
+    const { TextEncoder } = await import('util');
+    global.TextEncoder = TextEncoder;
+  }
+  if (typeof global.TextDecoder === 'undefined') {
+    const { TextDecoder } = await import('util');
+    global.TextDecoder = TextDecoder;
+  }
+})();
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {

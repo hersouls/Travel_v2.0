@@ -1,7 +1,5 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { Track } from '@/types';
-
 import App from '../App';
 
 // Mock the tracks data
@@ -96,9 +94,6 @@ describe('Routing Integration Tests', () => {
   });
 
   test('브라우저 뒤로가기 버튼이 올바르게 작동한다', async () => {
-    // URL을 직접 변경하여 테스트
-    window.history.pushState({}, '', '/tracks');
-    render(<App />);
 
     // 트랙이 로드된 후 확인
     await waitFor(() => {

@@ -5,7 +5,7 @@ import { Track } from '@/types';
 
 // Mock child components
 jest.mock('../PlayerControls', () => ({
-  PlayerControls: ({ onTogglePlay, onPrevious, onNext }: any) => (
+  PlayerControls: ({ onTogglePlay, onPrevious, onNext }: { onTogglePlay: () => void; onPrevious: () => void; onNext: () => void }) => (
     <div data-testid="player-controls">
       <button onClick={onTogglePlay} data-testid="toggle-play">Play/Pause</button>
       <button onClick={onPrevious} data-testid="previous">Previous</button>
@@ -15,7 +15,7 @@ jest.mock('../PlayerControls', () => ({
 }));
 
 jest.mock('../ProgressBar', () => ({
-  ProgressBar: ({ onSeek }: any) => (
+  ProgressBar: ({ onSeek }: { onSeek: (time: number) => void }) => (
     <div data-testid="progress-bar">
       <input 
         type="range" 
@@ -27,7 +27,7 @@ jest.mock('../ProgressBar', () => ({
 }));
 
 jest.mock('../VolumeControl', () => ({
-  VolumeControl: ({ onVolumeChange }: any) => (
+  VolumeControl: ({ onVolumeChange }: { onVolumeChange: (volume: number) => void }) => (
     <div data-testid="volume-control">
       <input 
         type="range" 
@@ -39,7 +39,7 @@ jest.mock('../VolumeControl', () => ({
 }));
 
 jest.mock('../TrackInfo', () => ({
-  TrackInfo: ({ track }: any) => (
+  TrackInfo: ({ track }: { track: Track }) => (
     <div data-testid="track-info">
       <h3>{track.title}</h3>
       <p>{track.artist}</p>

@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 
-// Environment Variables
+// Environment Variables - used by Vite
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface ImportMetaEnv {
   readonly VITE_APP_NAME: string
   readonly VITE_APP_VERSION: string
@@ -20,9 +21,7 @@ interface ImportMetaEnv {
   readonly VITE_ENABLE_PREFETCH: string
 }
 
-interface _ImportMeta {
-  readonly env: ImportMetaEnv
-}
+// ImportMeta is already defined by Vite
 
 // Global Types
 declare global {
@@ -83,13 +82,16 @@ interface CustomEventMap {
   'audio:pause': CustomEvent<{ trackId: string }>
   'audio:ended': CustomEvent<{ trackId: string }>
   'audio:timeupdate': CustomEvent<{ currentTime: number; duration: number }>
-  'player:statechange': CustomEvent<{ state: any }>
-  'track:select': CustomEvent<{ track: any }>
+  'player:statechange': CustomEvent<{ state: unknown }>
+  'track:select': CustomEvent<{ track: unknown }>
   'lyrics:sync': CustomEvent<{ lineId: string; time: number }>
 }
 
 declare global {
-  interface DocumentEventMap extends CustomEventMap {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  interface DocumentEventMap extends CustomEventMap {
+    // Custom events are defined in CustomEventMap
+  }
 }
 
 export {}
