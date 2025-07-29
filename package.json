@@ -1,5 +1,5 @@
 {
-  "name": "workspace",
+  "name": "moonwave-oh-anna-player",
   "version": "1.0.0",
   "description": "> \"평범함에서 특별함으로\" - 재능보다 노력으로, 한계를 넘어 자신만의 빛을 찾아가는 여정을 13개의 트랙으로 표현한 음악 플레이어",
   "main": "index.js",
@@ -12,19 +12,36 @@
     "preview": "vite preview",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint src --ext ts,tsx --fix",
-    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\""
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "type-check": "tsc --noEmit",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rf dist",
+    "analyze": "npm run build && npx vite-bundle-analyzer dist",
+    "deploy": "npm run build && npm run preview"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hersouls/Oh_v1.0.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "music-player",
+    "react",
+    "typescript",
+    "tailwindcss",
+    "moonwave",
+    "oh-anna",
+    "korean-music"
+  ],
+  "author": "Moonwave Team",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/hersouls/Oh_v1.0/issues"
   },
-  "homepage": "https://github.com/hersouls/Oh_v1.0#readme",
+  "homepage": "https://oh.moonwave.kr",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@tailwindcss/typography": "^0.5.16",
