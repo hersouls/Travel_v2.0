@@ -23,6 +23,8 @@ export const LyricsSync: React.FC<LyricsSyncProps> = ({
 
   useEffect(() => {
     // 현재 시간에 맞는 가사 인덱스 찾기
+    if (!lyrics || lyrics.length === 0) return;
+    
     let newIndex = 0;
     for (let i = 0; i < lyrics.length; i++) {
       if (currentTime >= (lyrics[i]?.time || 0)) {
