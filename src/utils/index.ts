@@ -32,31 +32,8 @@ export function getCoverUrl(filename: string): string {
   return `/covers/${filename}`;
 }
 
-// 로컬 스토리지 유틸리티
-export const storage = {
-  get: (key: string) => {
-    try {
-      const item = localStorage.getItem(key);
-      return item ? JSON.parse(item) : null;
-    } catch {
-      return null;
-    }
-  },
-  set: (key: string, value: any) => {
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
-    } catch {
-      // 무시
-    }
-  },
-  remove: (key: string) => {
-    try {
-      localStorage.removeItem(key);
-    } catch {
-      // 무시
-    }
-  },
-};
+export * from './audio';
+export * from './storage';
 
 // 디바운스 함수
 export function debounce<T extends (...args: any[]) => any>(

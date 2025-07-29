@@ -1,18 +1,19 @@
-// Track 인터페이스 정의
+// Track 관련 타입
 export interface Track {
   id: string;
   title: string;
   artist: string;
-  description: string;
-  audioUrl: string;
-  coverUrl: string;
+  album?: string;
   duration: number;
+  coverUrl: string;
+  audioUrl: string;
+  description?: string;
   lyrics?: SyncLine[];
   interpretation?: string;
   releaseDate?: string;
 }
 
-// 가사 싱크 라인 인터페이스
+// 가사 싱크 라인 타입
 export interface SyncLine {
   id: string;
   startTime: number;
@@ -21,7 +22,7 @@ export interface SyncLine {
   translation?: string;
 }
 
-// 플레이어 상태 인터페이스
+// 플레이어 상태 타입
 export interface PlayerState {
   currentTrack: Track | null;
   isPlaying: boolean;
@@ -30,77 +31,47 @@ export interface PlayerState {
   volume: number;
   isMuted: boolean;
   repeatMode: 'none' | 'one' | 'all';
-  shuffle: boolean;
+  isShuffled: boolean;
   playlist: Track[];
   currentIndex: number;
 }
 
-// 앱 상태 인터페이스
+// 앱 상태 타입
 export interface AppState {
-  currentPage: string;
   isLoading: boolean;
   error: string | null;
-  userPreferences: {
-    theme: 'light' | 'dark' | 'auto';
-    language: 'ko' | 'en';
-    autoplay: boolean;
-  };
+  theme: 'light' | 'dark' | 'auto';
+  language: 'ko' | 'en';
+  isFirstVisit: boolean;
 }
 
-// 오안나 프로필 인터페이스
-export interface Profile {
-  name: string;
-  birthYear: number;
-  sport: string;
-  achievements: Achievement[];
-  timeline: TimelineEvent[];
-  story: string;
-  quotes: string[];
-}
-
-// 성과 인터페이스
-export interface Achievement {
-  year: number;
-  title: string;
-  description: string;
-  category: 'national' | 'international' | 'personal';
-}
-
-// 타임라인 이벤트 인터페이스
-export interface TimelineEvent {
-  year: number;
-  title: string;
-  description: string;
-  image?: string;
-}
-
-// UI 컴포넌트 props 인터페이스
-export interface ButtonProps {
-  children: React.ReactNode;
-  onClick?: () => void;
-  variant?: 'primary' | 'secondary' | 'ghost';
-  size?: 'sm' | 'md' | 'lg';
-  disabled?: boolean;
-  className?: string;
-}
-
-export interface CardProps {
-  children: React.ReactNode;
-  className?: string;
-  onClick?: () => void;
-  hover?: boolean;
-}
-
-export interface TrackCardProps {
-  track: Track;
-  isPlaying?: boolean;
-  onPlay?: (track: Track) => void;
-  onPause?: () => void;
-  className?: string;
-}
-
-// 오디오 이벤트 인터페이스
+// 오디오 이벤트 타입
 export interface AudioEvent {
   type: 'play' | 'pause' | 'ended' | 'timeupdate' | 'error';
   data?: any;
+}
+
+// UI 상태 타입
+export interface UIState {
+  isPlayerVisible: boolean;
+  isPlaylistVisible: boolean;
+  isLyricsVisible: boolean;
+  activeTab: 'lyrics' | 'interpretation' | 'sync';
+}
+
+// API 응답 타입
+export interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  message?: string;
+}
+
+// 사용자 설정 타입
+export interface UserSettings {
+  autoPlay: boolean;
+  crossfade: boolean;
+  highQuality: boolean;
+  downloadEnabled: boolean;
+  notifications: boolean;
 }
