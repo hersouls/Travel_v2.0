@@ -5,7 +5,6 @@ interface ProgressBarProps {
   currentTime: number;
   duration: number;
   onSeek: (time: number) => void;
-  isLoading: boolean;
   className?: string;
 }
 
@@ -13,14 +12,13 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   currentTime,
   duration,
   onSeek,
-  isLoading,
   className = '',
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragTime, setDragTime] = useState(0);
   const progressRef = useRef<HTMLDivElement>(null);
 
-  const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
+
   const displayTime = isDragging ? dragTime : currentTime;
   const displayProgress = duration > 0 ? (displayTime / duration) * 100 : 0;
 
@@ -34,7 +32,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (!progressRef.current || isLoading) return;
+    if (!progressRef.current) return;
     
     setIsDragging(true);
     const newTime = getTimeFromEvent(e.clientX);
@@ -42,12 +40,14 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (!progressRef.current || isLoading) return;
+    if (!progressRef.current) return;
     
     setIsDragging(true);
     const touch = e.touches[0];
-    const newTime = getTimeFromEvent(touch.clientX);
-    setDragTime(newTime);
+    if (touch) {
+      const newTime = getTimeFromEvent(touch.clientX);
+      setDragTime(newTime);
+    }
   };
 
   const handleMouseMove = (e: MouseEvent) => {
@@ -62,8 +62,10 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
     
     e.preventDefault(); // 스크롤 방지
     const touch = e.touches[0];
-    const newTime = getTimeFromEvent(touch.clientX);
-    setDragTime(newTime);
+    if (touch) {
+      const newTime = getTimeFromEvent(touch.clientX);
+      setDragTime(newTime);
+    }
   };
 
   const handleMouseUp = () => {
@@ -94,21 +96,24 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
         document.removeEventListener('touchend', handleTouchEnd);
       };
     }
+    return undefined;
   }, [isDragging, dragTime, duration, onSeek]);
 
   const handleClick = (e: React.MouseEvent) => {
-    if (!progressRef.current || isLoading) return;
+    if (!progressRef.current) return;
     
     const newTime = getTimeFromEvent(e.clientX);
     onSeek(newTime);
   };
 
   const handleTouch = (e: React.TouchEvent) => {
-    if (!progressRef.current || isLoading) return;
+    if (!progressRef.current) return;
     
     const touch = e.touches[0];
-    const newTime = getTimeFromEvent(touch.clientX);
-    onSeek(newTime);
+    if (touch) {
+      const newTime = getTimeFromEvent(touch.clientX);
+      onSeek(newTime);
+    }
   };
 
   return (
@@ -128,10 +133,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
         onClick={handleClick}
         onTouchEnd={handleTouch}
       >
-        {/* 로딩 인디케이터 */}
-        {isLoading && (
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse" />
-        )}
+
 
         {/* 진행률 */}
         <div

@@ -1,40 +1,38 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import { PlayIcon, PauseIcon } from '@heroicons/react/24/solid';
-import { Track } from '@/hooks/usePlayerState';
-import { useIntegratedPlayer } from '@/hooks/useIntegratedPlayer';
+import { Track } from '@/types';
+import { cn } from '@/utils/cn';
 
 interface TrackCardProps {
   track: Track;
-  index: number;
+  onPlay?: (track: Track) => void;
+  isCurrentTrack?: boolean;
+  isPlaying?: boolean;
   className?: string;
 }
 
-export const TrackCard: React.FC<TrackCardProps> = ({
+export const TrackCard: React.FC<TrackCardProps> = memo(({
   track,
-  index,
-  className = '',
+  onPlay,
+  isCurrentTrack = false,
+  isPlaying = false,
+  className,
 }) => {
-  const { currentTrack, isPlaying, playTrack } = useIntegratedPlayer();
-  
-  const isCurrentTrack = currentTrack?.id === track.id;
+  const handlePlayClick = useCallback(() => {
+    onPlay?.(track);
+  }, [track, onPlay]);
+
   const isPlayingCurrent = isCurrentTrack && isPlaying;
 
-  const handlePlayClick = () => {
-    if (isCurrentTrack) {
-      // 현재 트랙이면 재생/정지 토글
-      // 이는 AudioPlayer에서 처리됨
-    } else {
-      // 다른 트랙이면 해당 트랙 재생
-      playTrack(track, index);
-    }
-  };
-
   return (
-    <div className={`group relative bg-black/20 backdrop-blur-md border border-white/10 rounded-lg overflow-hidden hover:border-white/20 transition-all duration-300 ${className}`}>
+    <div className={cn(
+      "group relative bg-black/20 backdrop-blur-md border border-white/10 rounded-lg overflow-hidden hover:border-white/20 transition-all duration-300",
+      className
+    )}>
       {/* 커버 이미지 */}
       <div className="relative aspect-square overflow-hidden">
         <img
-          src={track.coverUrl}
+          src={track.cover}
           alt={track.title}
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           loading="lazy"
@@ -67,8 +65,12 @@ export const TrackCard: React.FC<TrackCardProps> = ({
       <div className="p-4">
         <h3 className="text-white font-medium truncate mb-1">{track.title}</h3>
         <p className="text-gray-300 text-sm truncate mb-2">{track.artist}</p>
-        <p className="text-gray-400 text-xs line-clamp-2">{track.description}</p>
+        {track.description && (
+          <p className="text-gray-400 text-xs line-clamp-2">{track.description}</p>
+        )}
       </div>
     </div>
   );
-};
+});
+
+TrackCard.displayName = 'TrackCard';

@@ -1,20 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { TrackCard } from '@/components/player/TrackCard';
-import { AudioPlayer } from '@/components/player/AudioPlayer';
-import { Track, useIntegratedPlayer } from '@/hooks/useIntegratedPlayer';
+import { Track } from '@/types';
 
 export const TracksPage: React.FC = () => {
   const [tracks, setTracks] = useState<Track[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { setPlaylist } = useIntegratedPlayer();
 
   useEffect(() => {
     const loadTracks = async () => {
       try {
         const response = await fetch('/sample-tracks.json');
         const data = await response.json();
-        setTracks(data);
-        setPlaylist(data);
+        setTracks(data.tracks);
         setIsLoading(false);
       } catch (error) {
         console.error('Failed to load tracks:', error);
@@ -23,7 +20,7 @@ export const TracksPage: React.FC = () => {
     };
 
     loadTracks();
-  }, [setPlaylist]);
+  }, []);
 
   if (isLoading) {
     return (
@@ -50,18 +47,12 @@ export const TracksPage: React.FC = () => {
 
       {/* 트랙 그리드 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-        {tracks.map((track, index) => (
+        {tracks.map((track) => (
           <TrackCard
             key={track.id}
             track={track}
-            index={index}
           />
         ))}
-      </div>
-
-      {/* 플레이어 (고정) */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-black/80 backdrop-blur-md border-t border-white/10">
-        <AudioPlayer />
       </div>
     </div>
   );

@@ -5,23 +5,18 @@ export interface Track {
   artist: string;
   album?: string;
   duration: number;
-  coverUrl: string;
-  audioUrl: string;
+  file: string;
+  cover: string;
   description?: string;
   lyrics?: SyncLine[];
   interpretation?: string;
   releaseDate?: string;
 }
 
-// 가사 싱크 라인 타입 (개선된 버전)
+// 가사 싱크 라인 타입
 export interface SyncLine {
-  id: string;
-  startTime: number; // 시작 시간 (초)
-  endTime: number;   // 끝 시간 (초)
-  text: string;      // 가사 텍스트
-  translation?: string; // 번역 (선택사항)
-  isHighlighted?: boolean; // 현재 하이라이트 여부
-  confidence?: number; // 타이밍 정확도 (0-1)
+  time: number; // 시간 (초)
+  text: string; // 가사 텍스트
 }
 
 // 가사 싱크 설정 타입

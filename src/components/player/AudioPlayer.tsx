@@ -1,37 +1,47 @@
 import React from 'react';
-import { useIntegratedPlayer } from '@/hooks/useIntegratedPlayer';
 import { PlayerControls } from './PlayerControls';
 import { ProgressBar } from './ProgressBar';
 import { VolumeControl } from './VolumeControl';
 import { TrackInfo } from './TrackInfo';
+import { Track } from '@/types';
 
 interface AudioPlayerProps {
+  isPlaying: boolean;
+  currentTime: number;
+  duration: number;
+  volume: number;
+  repeatMode: 'none' | 'one' | 'all';
+  isShuffled: boolean;
+  currentTrack?: Track;
+  onTogglePlay: () => void;
+  onSeek: (time: number) => void;
+  onVolumeChange: (volume: number) => void;
+  onPrevious: () => void;
+  onNext: () => void;
+  onToggleRepeat: () => void;
+  onToggleShuffle: () => void;
+  onDownload?: (track: { title: string; artist: string }) => void;
   className?: string;
 }
 
-export const AudioPlayer: React.FC<AudioPlayerProps> = ({ className = '' }) => {
-  const {
-    currentTrack,
-    isPlaying,
-    currentTime,
-    duration,
-    volume,
-    isMuted,
-    isLoading,
-    error,
-    togglePlay,
-    seekTo,
-    setVolume,
-    toggleMute,
-    playNext,
-    playPrevious,
-    cycleRepeatMode,
-    toggleShuffle,
-    downloadCurrentTrack,
-    repeatMode,
-    isShuffled,
-    audioRef,
-  } = useIntegratedPlayer();
+export const AudioPlayer: React.FC<AudioPlayerProps> = ({
+  isPlaying,
+  currentTime,
+  duration,
+  volume,
+  repeatMode,
+  isShuffled,
+  currentTrack,
+  onTogglePlay,
+  onSeek,
+  onVolumeChange,
+  onPrevious,
+  onNext,
+  onToggleRepeat,
+  onToggleShuffle,
+  onDownload,
+  className,
+}) => {
 
   if (!currentTrack) {
     return null;
@@ -39,16 +49,6 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ className = '' }) => {
 
   return (
     <div className={`bg-black/20 backdrop-blur-md border border-white/10 rounded-lg p-4 ${className}`}>
-      {/* 오디오 요소 (숨김) */}
-      <audio ref={audioRef} preload="metadata" />
-      
-      {/* 에러 메시지 */}
-      {error && (
-        <div className="text-red-400 text-sm mb-2 text-center">
-          {error}
-        </div>
-      )}
-
       {/* 트랙 정보 */}
       <TrackInfo track={currentTrack} />
 
@@ -56,8 +56,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ className = '' }) => {
       <ProgressBar
         currentTime={currentTime}
         duration={duration}
-        onSeek={seekTo}
-        isLoading={isLoading}
+        onSeek={onSeek}
         className="my-4"
       />
 
@@ -66,23 +65,21 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ className = '' }) => {
         {/* 볼륨 컨트롤 */}
         <VolumeControl
           volume={volume}
-          isMuted={isMuted}
-          onVolumeChange={setVolume}
-          onToggleMute={toggleMute}
+          onVolumeChange={onVolumeChange}
         />
 
         {/* 플레이어 컨트롤 */}
         <PlayerControls
           isPlaying={isPlaying}
-          onTogglePlay={togglePlay}
-          onPrevious={playPrevious}
-          onNext={playNext}
-          onToggleShuffle={toggleShuffle}
-          onCycleRepeat={cycleRepeatMode}
-          onDownload={downloadCurrentTrack}
+          onTogglePlay={onTogglePlay}
+          onPrevious={onPrevious}
+          onNext={onNext}
+          onToggleShuffle={onToggleShuffle}
+          onCycleRepeat={onToggleRepeat}
+                      onDownload={onDownload || undefined}
           isShuffled={isShuffled}
           repeatMode={repeatMode}
-          isLoading={isLoading}
+          isLoading={false}
           currentTrack={currentTrack}
         />
       </div>

@@ -1,187 +1,220 @@
-import { createContext, useContext, useReducer, ReactNode } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { Track } from '@/types';
 
-export interface Track {
-  id: string;
-  title: string;
-  artist: string;
-  src: string;
-  cover: string;
-  duration?: number;
-  lyrics?: string;
-  interpretation?: string;
-}
+export type RepeatMode = 'none' | 'one' | 'all';
 
-export interface PlayerState {
+interface PlayerState {
   currentTrack: Track | null;
-  playlist: Track[];
-  currentIndex: number;
   isPlaying: boolean;
-  isShuffled: boolean;
-  repeatMode: 'none' | 'one' | 'all';
-  volume: number;
-  isMuted: boolean;
   currentTime: number;
   duration: number;
+  volume: number;
+  repeatMode: RepeatMode;
+  isShuffled: boolean;
+  playlist: Track[];
+  currentIndex: number;
   isLoading: boolean;
   error: string | null;
 }
 
-type PlayerAction =
-  | { type: 'SET_CURRENT_TRACK'; payload: Track }
-  | { type: 'SET_PLAYLIST'; payload: Track[] }
-  | { type: 'SET_CURRENT_INDEX'; payload: number }
-  | { type: 'SET_PLAYING'; payload: boolean }
-  | { type: 'SET_SHUFFLED'; payload: boolean }
-  | { type: 'SET_REPEAT_MODE'; payload: 'none' | 'one' | 'all' }
-  | { type: 'SET_VOLUME'; payload: number }
-  | { type: 'SET_MUTED'; payload: boolean }
-  | { type: 'SET_CURRENT_TIME'; payload: number }
-  | { type: 'SET_DURATION'; payload: number }
-  | { type: 'SET_LOADING'; payload: boolean }
-  | { type: 'SET_ERROR'; payload: string | null }
-  | { type: 'NEXT_TRACK' }
-  | { type: 'PREVIOUS_TRACK' }
-  | { type: 'TOGGLE_SHUFFLE' }
-  | { type: 'TOGGLE_REPEAT' }
-  | { type: 'RESET' };
-
-const initialState: PlayerState = {
-  currentTrack: null,
-  playlist: [],
-  currentIndex: -1,
-  isPlaying: false,
-  isShuffled: false,
-  repeatMode: 'none',
-  volume: 1,
-  isMuted: false,
-  currentTime: 0,
-  duration: 0,
-  isLoading: false,
-  error: null,
-};
-
-function playerReducer(state: PlayerState, action: PlayerAction): PlayerState {
-  switch (action.type) {
-    case 'SET_CURRENT_TRACK':
-      return { ...state, currentTrack: action.payload };
-    
-    case 'SET_PLAYLIST':
-      return { ...state, playlist: action.payload };
-    
-    case 'SET_CURRENT_INDEX':
-      return { ...state, currentIndex: action.payload };
-    
-    case 'SET_PLAYING':
-      return { ...state, isPlaying: action.payload };
-    
-    case 'SET_SHUFFLED':
-      return { ...state, isShuffled: action.payload };
-    
-    case 'SET_REPEAT_MODE':
-      return { ...state, repeatMode: action.payload };
-    
-    case 'SET_VOLUME':
-      return { ...state, volume: action.payload };
-    
-    case 'SET_MUTED':
-      return { ...state, isMuted: action.payload };
-    
-    case 'SET_CURRENT_TIME':
-      return { ...state, currentTime: action.payload };
-    
-    case 'SET_DURATION':
-      return { ...state, duration: action.payload };
-    
-    case 'SET_LOADING':
-      return { ...state, isLoading: action.payload };
-    
-    case 'SET_ERROR':
-      return { ...state, error: action.payload };
-    
-    case 'NEXT_TRACK': {
-      const nextIndex = state.currentIndex + 1;
-      if (nextIndex >= state.playlist.length) {
-        if (state.repeatMode === 'all') {
-          return { ...state, currentIndex: 0 };
-        }
-        return state; // 재생 목록 끝
-      }
-      return { ...state, currentIndex: nextIndex };
-    }
-    
-    case 'PREVIOUS_TRACK': {
-      const prevIndex = state.currentIndex - 1;
-      if (prevIndex < 0) {
-        if (state.repeatMode === 'all') {
-          return { ...state, currentIndex: state.playlist.length - 1 };
-        }
-        return state; // 재생 목록 시작
-      }
-      return { ...state, currentIndex: prevIndex };
-    }
-    
-    case 'TOGGLE_SHUFFLE':
-      return { ...state, isShuffled: !state.isShuffled };
-    
-    case 'TOGGLE_REPEAT': {
-      const modes: ('none' | 'one' | 'all')[] = ['none', 'one', 'all'];
-      const currentIndex = modes.indexOf(state.repeatMode);
-      const nextIndex = (currentIndex + 1) % modes.length;
-      return { ...state, repeatMode: modes[nextIndex] };
-    }
-    
-    case 'RESET':
-      return initialState;
-    
-    default:
-      return state;
-  }
-}
-
-interface PlayerContextType {
+interface UsePlayerStateReturn {
   state: PlayerState;
-  dispatch: React.Dispatch<PlayerAction>;
+  actions: {
+    play: () => Promise<void>;
+    pause: () => void;
+    togglePlay: () => Promise<void>;
+    seek: (time: number) => void;
+    setVolume: (volume: number) => void;
+    playTrack: (track: Track) => Promise<void>;
+    playTrackById: (trackId: string) => Promise<void>;
+    playNext: () => void;
+    playPrevious: () => void;
+    toggleRepeat: () => void;
+    toggleShuffle: () => void;
+    setPlaylist: (tracks: Track[]) => void;
+    clearError: () => void;
+  };
 }
 
-const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
+export const usePlayerState = (initialPlaylist: Track[] = []): UsePlayerStateReturn => {
+  const [state, setState] = useState<PlayerState>({
+    currentTrack: null,
+    isPlaying: false,
+    currentTime: 0,
+    duration: 0,
+    volume: 0.7,
+    repeatMode: 'none',
+    isShuffled: false,
+    playlist: initialPlaylist,
+    currentIndex: -1,
+    isLoading: false,
+    error: null,
+  });
 
-export const PlayerProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [state, dispatch] = useReducer(playerReducer, initialState);
+  // 로컬 스토리지에서 상태 복원
+  useEffect(() => {
+    const savedState = localStorage.getItem('moonwave-player-state');
+    if (savedState) {
+      try {
+        const parsed = JSON.parse(savedState);
+        setState(prev => ({
+          ...prev,
+          volume: parsed.volume ?? prev.volume,
+          repeatMode: parsed.repeatMode ?? prev.repeatMode,
+          isShuffled: parsed.isShuffled ?? prev.isShuffled,
+        }));
+      } catch (error) {
+        console.error('Failed to restore player state:', error);
+      }
+    }
+  }, []);
 
-  return (
-    <PlayerContext.Provider value={{ state, dispatch }}>
-      {children}
-    </PlayerContext.Provider>
-  );
-};
+  // 상태 변경시 로컬 스토리지에 저장
+  useEffect(() => {
+    const stateToSave = {
+      volume: state.volume,
+      repeatMode: state.repeatMode,
+      isShuffled: state.isShuffled,
+    };
+    localStorage.setItem('moonwave-player-state', JSON.stringify(stateToSave));
+  }, [state.volume, state.repeatMode, state.isShuffled]);
 
-export const usePlayerState = () => {
-  const context = useContext(PlayerContext);
-  if (context === undefined) {
-    throw new Error('usePlayerState must be used within a PlayerProvider');
-  }
-  return context;
-};
+  const play = useCallback(async () => {
+    setState(prev => ({ ...prev, isPlaying: true, error: null }));
+  }, []);
 
-// 편의 함수들
-export const usePlayerActions = () => {
-  const { dispatch } = usePlayerState();
-  
+  const pause = useCallback(() => {
+    setState(prev => ({ ...prev, isPlaying: false }));
+  }, []);
+
+  const togglePlay = useCallback(async () => {
+    if (state.currentTrack) {
+      if (state.isPlaying) {
+        pause();
+      } else {
+        await play();
+      }
+    }
+  }, [state.currentTrack, state.isPlaying, play, pause]);
+
+  const seek = useCallback((time: number) => {
+    setState(prev => ({ ...prev, currentTime: time }));
+  }, []);
+
+  const setVolume = useCallback((volume: number) => {
+    setState(prev => ({ ...prev, volume: Math.max(0, Math.min(1, volume)) }));
+  }, []);
+
+  const playTrack = useCallback(async (track: Track) => {
+    const trackIndex = state.playlist.findIndex(t => t.id === track.id);
+    setState(prev => ({
+      ...prev,
+      currentTrack: track,
+      currentIndex: trackIndex,
+      isPlaying: true,
+      currentTime: 0,
+      duration: 0,
+      isLoading: true,
+      error: null,
+    }));
+  }, [state.playlist]);
+
+  const playTrackById = useCallback(async (trackId: string) => {
+    const track = state.playlist.find(t => t.id === trackId);
+    if (track) {
+      await playTrack(track);
+    }
+  }, [state.playlist, playTrack]);
+
+  const playNext = useCallback(() => {
+    if (state.playlist.length === 0) return;
+
+    let nextIndex = state.currentIndex + 1;
+    
+    // 셔플 모드일 때 랜덤 선택
+    if (state.isShuffled) {
+      nextIndex = Math.floor(Math.random() * state.playlist.length);
+    }
+    
+    // 반복 모드 처리
+    if (nextIndex >= state.playlist.length) {
+      if (state.repeatMode === 'all') {
+        nextIndex = 0;
+      } else if (state.repeatMode === 'one') {
+        nextIndex = state.currentIndex;
+      } else {
+        return; // 재생 중지
+      }
+    }
+
+    const nextTrack = state.playlist[nextIndex];
+    if (nextTrack) {
+      playTrack(nextTrack);
+    }
+  }, [state.playlist, state.currentIndex, state.isShuffled, state.repeatMode, playTrack]);
+
+  const playPrevious = useCallback(() => {
+    if (state.playlist.length === 0) return;
+
+    let prevIndex = state.currentIndex - 1;
+    
+    // 셔플 모드일 때 랜덤 선택
+    if (state.isShuffled) {
+      prevIndex = Math.floor(Math.random() * state.playlist.length);
+    }
+    
+    // 반복 모드 처리
+    if (prevIndex < 0) {
+      if (state.repeatMode === 'all') {
+        prevIndex = state.playlist.length - 1;
+      } else if (state.repeatMode === 'one') {
+        prevIndex = state.currentIndex;
+      } else {
+        return; // 재생 중지
+      }
+    }
+
+    const prevTrack = state.playlist[prevIndex];
+    if (prevTrack) {
+      playTrack(prevTrack);
+    }
+  }, [state.playlist, state.currentIndex, state.isShuffled, state.repeatMode, playTrack]);
+
+  const toggleRepeat = useCallback(() => {
+    const modes: RepeatMode[] = ['none', 'one', 'all'];
+    const currentIndex = modes.indexOf(state.repeatMode);
+    const nextIndex = (currentIndex + 1) % modes.length;
+    setState(prev => ({ ...prev, repeatMode: modes[nextIndex] as RepeatMode }));
+  }, [state.repeatMode]);
+
+  const toggleShuffle = useCallback(() => {
+    setState(prev => ({ ...prev, isShuffled: !prev.isShuffled }));
+  }, []);
+
+  const setPlaylist = useCallback((tracks: Track[]) => {
+    setState(prev => ({ ...prev, playlist: tracks }));
+  }, []);
+
+  const clearError = useCallback(() => {
+    setState(prev => ({ ...prev, error: null }));
+  }, []);
+
   return {
-    setCurrentTrack: (track: Track) => dispatch({ type: 'SET_CURRENT_TRACK', payload: track }),
-    setPlaylist: (playlist: Track[]) => dispatch({ type: 'SET_PLAYLIST', payload: playlist }),
-    setCurrentIndex: (index: number) => dispatch({ type: 'SET_CURRENT_INDEX', payload: index }),
-    setPlaying: (playing: boolean) => dispatch({ type: 'SET_PLAYING', payload: playing }),
-    setVolume: (volume: number) => dispatch({ type: 'SET_VOLUME', payload: volume }),
-    setMuted: (muted: boolean) => dispatch({ type: 'SET_MUTED', payload: muted }),
-    setCurrentTime: (time: number) => dispatch({ type: 'SET_CURRENT_TIME', payload: time }),
-    setDuration: (duration: number) => dispatch({ type: 'SET_DURATION', payload: duration }),
-    setLoading: (loading: boolean) => dispatch({ type: 'SET_LOADING', payload: loading }),
-    setError: (error: string | null) => dispatch({ type: 'SET_ERROR', payload: error }),
-    nextTrack: () => dispatch({ type: 'NEXT_TRACK' }),
-    previousTrack: () => dispatch({ type: 'PREVIOUS_TRACK' }),
-    toggleShuffle: () => dispatch({ type: 'TOGGLE_SHUFFLE' }),
-    toggleRepeat: () => dispatch({ type: 'TOGGLE_REPEAT' }),
-    reset: () => dispatch({ type: 'RESET' }),
+    state,
+    actions: {
+      play,
+      pause,
+      togglePlay,
+      seek,
+      setVolume,
+      playTrack,
+      playTrackById,
+      playNext,
+      playPrevious,
+      toggleRepeat,
+      toggleShuffle,
+      setPlaylist,
+      clearError,
+    },
   };
 };
