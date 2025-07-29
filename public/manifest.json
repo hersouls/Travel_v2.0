@@ -1,0 +1,27 @@
+{
+  "name": "Moonwave 오안나 음악 플레이어",
+  "short_name": "Moonwave",
+  "description": "평범함에서 특별함으로 - 13곡의 음악 여정을 위한 완전한 음악 플레이어",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0c4a6e",
+  "theme_color": "#0ea5e9",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/moonwave_log.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/moonwave_log.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["music", "entertainment"],
+  "lang": "ko",
+  "dir": "ltr"
+}
