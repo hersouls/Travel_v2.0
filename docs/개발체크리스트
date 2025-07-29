@@ -391,13 +391,13 @@
 ### 10.1 단위 테스트
 
 #### Cursor 작업
-- [ ] Jest 설정
-- [ ] React Testing Library 설정
-- [ ] 컴포넌트 테스트 작성
-  - [ ] Player 컴포넌트 테스트
-  - [ ] TrackCard 컴포넌트 테스트
-  - [ ] LyricsSync 컴포넌트 테스트
-- [ ] 훅 테스트 작성
+- [x] Jest 설정
+- [x] React Testing Library 설정
+- [x] 컴포넌트 테스트 작성
+  - [x] Player 컴포넌트 테스트
+  - [x] TrackCard 컴포넌트 테스트
+  - [x] LyricsSync 컴포넌트 테스트
+- [x] 훅 테스트 작성
 
 ### 10.2 통합 테스트
 
