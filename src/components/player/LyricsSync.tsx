@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, memo } from 'react';
 import { cn } from '@/utils/cn';
 
 interface SyncLine {
@@ -12,7 +12,7 @@ interface LyricsSyncProps {
   className?: string;
 }
 
-export const LyricsSync: React.FC<LyricsSyncProps> = ({
+export const LyricsSync: React.FC<LyricsSyncProps> = memo(({
   lyrics,
   currentTime,
   className
@@ -92,4 +92,6 @@ export const LyricsSync: React.FC<LyricsSyncProps> = ({
       ))}
     </div>
   );
-};
+});
+
+LyricsSync.displayName = 'LyricsSync';
