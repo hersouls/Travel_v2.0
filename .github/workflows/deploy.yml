@@ -6,6 +6,7 @@ on:
   pull_request:
     branches: [ main ]
 
+# Add explicit permissions
 permissions:
   contents: read
   pages: write
@@ -44,6 +45,7 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./dist
         cname: oh.moonwave.kr
+        force_orphan: true
         user_name: 'github-actions[bot]'
         user_email: 'github-actions[bot]@users.noreply.github.com'
 
