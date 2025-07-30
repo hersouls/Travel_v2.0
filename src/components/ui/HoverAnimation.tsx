@@ -19,7 +19,7 @@ export const HoverAnimation: React.FC<HoverAnimationProps> = ({
   intensity = 'medium',
   duration = 'normal',
   delay = 0,
-  trigger = 'hover',
+  _trigger = 'hover',
   disabled = false
 }) => {
   const typeClasses = {
@@ -65,7 +65,7 @@ export const HoverAnimation: React.FC<HoverAnimationProps> = ({
     slow: 'duration-500'
   };
 
-  const triggerClasses = {
+  const _triggerClasses = {
     hover: '',
     focus: 'focus:',
     both: 'hover: focus:'

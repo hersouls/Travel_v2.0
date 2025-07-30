@@ -141,7 +141,7 @@ export const Icon: React.FC<IconProps> = ({
   name,
   size = 'md',
   color = 'inherit',
-  variant = 'outline',
+  _variant = 'outline',
   className,
   onClick
 }) => {
@@ -190,15 +190,15 @@ export const Icon: React.FC<IconProps> = ({
 };
 
 // 특화된 아이콘 컴포넌트들
-export const PlayIcon = (props: Omit<IconProps, 'name'>) => <Icon {...props} name="play" />;
-export const PauseIcon = (props: Omit<IconProps, 'name'>) => <Icon {...props} name="pause" />;
-export const ForwardIcon = (props: Omit<IconProps, 'name'>) => <Icon {...props} name="forward" />;
-export const BackwardIcon = (props: Omit<IconProps, 'name'>) => <Icon {...props} name="backward" />;
-export const HeartIcon = (props: Omit<IconProps, 'name'>) => <Icon {...props} name="heart" />;
-export const ShareIcon = (props: Omit<IconProps, 'name'>) => <Icon {...props} name="share" />;
+export const PlayIconComponent = (props: Omit<IconProps, 'name'>) => <Icon {...props} name="play" />;
+export const PauseIconComponent = (props: Omit<IconProps, 'name'>) => <Icon {...props} name="pause" />;
+export const ForwardIconComponent = (props: Omit<IconProps, 'name'>) => <Icon {...props} name="forward" />;
+export const BackwardIconComponent = (props: Omit<IconProps, 'name'>) => <Icon {...props} name="backward" />;
+export const HeartIconComponent = (props: Omit<IconProps, 'name'>) => <Icon {...props} name="heart" />;
+export const ShareIconComponent = (props: Omit<IconProps, 'name'>) => <Icon {...props} name="share" />;
 export const MusicIcon = (props: Omit<IconProps, 'name'>) => <Icon {...props} name="music" />;
-export const HomeIcon = (props: Omit<IconProps, 'name'>) => <Icon {...props} name="home" />;
-export const UserIcon = (props: Omit<IconProps, 'name'>) => <Icon {...props} name="user" />;
+export const HomeIconComponent = (props: Omit<IconProps, 'name'>) => <Icon {...props} name="home" />;
+export const UserIconComponent = (props: Omit<IconProps, 'name'>) => <Icon {...props} name="user" />;
 export const SettingsIcon = (props: Omit<IconProps, 'name'>) => <Icon {...props} name="settings" />;
 export const CloseIcon = (props: Omit<IconProps, 'name'>) => <Icon {...props} name="close" />;
 export const SearchIcon = (props: Omit<IconProps, 'name'>) => <Icon {...props} name="search" />;
