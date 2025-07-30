@@ -171,7 +171,18 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
               </WaveButton>
               
               <WaveButton
-                onClick={onPlayPause}
+                onClick={() => {
+                  console.log('🎵 재생/일시정지 버튼 클릭됨');
+                  console.log('🎵 현재 트랙:', currentTrack?.title);
+                  console.log('🎵 현재 재생 상태:', isPlaying);
+                  console.log('🎵 트랙 URL:', currentTrack?.url);
+                  console.log('🎵 트랙 ID:', currentTrack?.id);
+                  
+                  // 사용자 상호작용 확인
+                  console.log('🎵 사용자 상호작용 감지됨');
+                  
+                  onPlayPause();
+                }}
                 variant="primary"
                 size="lg"
                 ariaLabel={isPlaying ? '일시정지' : '재생'}
