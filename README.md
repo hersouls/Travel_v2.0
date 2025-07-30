@@ -29,6 +29,8 @@
 
 **🌐 웹사이트**: [https://oh.moonwave.kr](https://oh.moonwave.kr)
 
+> **Note**: GitHub Pages deployment is being set up. The site will be available shortly.
+
 ## 🛠️ 기술 스택
 
 ### Frontend
