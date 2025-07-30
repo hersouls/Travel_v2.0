@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { render, screen, fireEvent } from '@testing-library/react';
 
 import { AudioPlayer } from '../AudioPlayer';
@@ -26,12 +26,13 @@ jest.mock('howler', () => ({
 }));
 
 const mockTrack = {
-  id: 1,
+  id: '1',
   title: '테스트 트랙',
   artist: '테스트 아티스트',
+  duration: 180,
+  file: '/audio/test.mp3',
   cover: '/covers/test.jpg',
-  audio: '/audio/test.mp3',
-  lyrics: '테스트 가사',
+  description: '테스트 트랙 설명',
 };
 
 describe('AudioPlayer Integration Tests', () => {
