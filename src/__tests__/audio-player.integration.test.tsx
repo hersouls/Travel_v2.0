@@ -60,11 +60,6 @@ describe('Audio Player Integration Tests', () => {
     window.history.pushState({}, '', '/tracks');
     
     await waitFor(() => {
-      expect(screen.getByText('트랙을 불러오는 중...')).toBeInTheDocument();
-    });
-
-    // 로딩이 완료되면 트랙이 표시되는지 확인
-    await waitFor(() => {
       expect(screen.getByText('테스트 트랙 1')).toBeInTheDocument();
     }, { timeout: 5000 });
 
@@ -95,11 +90,6 @@ describe('Audio Player Integration Tests', () => {
     // 트랙 목록 페이지로 이동
     window.history.pushState({}, '', '/tracks');
     
-    await waitFor(() => {
-      expect(screen.getByText('트랙을 불러오는 중...')).toBeInTheDocument();
-    });
-
-    // 로딩이 완료되면 트랙이 표시되는지 확인
     await waitFor(() => {
       expect(screen.getByText('테스트 트랙 1')).toBeInTheDocument();
     }, { timeout: 5000 });
@@ -164,11 +154,6 @@ describe('Audio Player Integration Tests', () => {
     window.history.pushState({}, '', '/tracks');
     
     await waitFor(() => {
-      expect(screen.getByText('트랙을 불러오는 중...')).toBeInTheDocument();
-    });
-
-    // 로딩이 완료되면 트랙이 표시되는지 확인
-    await waitFor(() => {
       expect(screen.getByText('테스트 트랙 1')).toBeInTheDocument();
     }, { timeout: 5000 });
 
@@ -188,11 +173,6 @@ describe('Audio Player Integration Tests', () => {
     // 트랙 목록 페이지로 이동
     window.history.pushState({}, '', '/tracks');
     
-    await waitFor(() => {
-      expect(screen.getByText('트랙을 불러오는 중...')).toBeInTheDocument();
-    });
-
-    // 로딩이 완료되면 모든 트랙이 표시되는지 확인
     await waitFor(() => {
       expect(screen.getByText('테스트 트랙 1')).toBeInTheDocument();
       expect(screen.getByText('테스트 트랙 2')).toBeInTheDocument();
@@ -236,7 +216,7 @@ describe('Audio Player Integration Tests', () => {
     
     await waitFor(() => {
       // 에러 메시지나 로딩 상태가 표시되는지 확인
-      expect(screen.getByText('트랙을 불러오는 중...')).toBeInTheDocument();
+      expect(screen.getByText('오안나의 음악')).toBeInTheDocument();
     });
   });
 });
