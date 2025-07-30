@@ -44,7 +44,7 @@ export const Layout: React.FC<LayoutProps> = ({
     <div className={`min-h-screen bg-gradient-to-br from-moonwave-900 via-moonwave-800 to-moonwave-900 ${className}`}>
       {showHeader && <Header />}
       
-      <main className={`${showHeader ? 'pt-20' : ''} ${showPlayer ? 'pb-32' : ''} min-h-screen`}>
+      <main className={`${showHeader ? 'pt-16 sm:pt-20' : ''} ${showPlayer ? 'pb-24 sm:pb-32' : ''} min-h-screen container-mobile sm:container-tablet lg:container-desktop`}>
         {children}
       </main>
 
@@ -67,7 +67,7 @@ export const Layout: React.FC<LayoutProps> = ({
             onToggleRepeat={playerHandlers.onToggleRepeat}
             onToggleShuffle={playerHandlers.onToggleShuffle}
             onDownload={playerHandlers.onDownload || undefined}
-            className="p-4"
+            className="p-2 sm:p-4"
           />
         </div>
       )}

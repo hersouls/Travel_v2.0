@@ -4,6 +4,127 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 반응형 유틸리티 클래스 */
+@layer utilities {
+  /* 모바일 우선 컨테이너 */
+  .container-mobile {
+    @apply w-full px-4 mx-auto;
+  }
+  
+  /* 태블릿 이상 컨테이너 */
+  .container-tablet {
+    @apply w-full px-6 mx-auto max-w-4xl;
+  }
+  
+  /* 데스크톱 컨테이너 */
+  .container-desktop {
+    @apply w-full px-8 mx-auto max-w-6xl;
+  }
+  
+  /* 반응형 그리드 */
+  .grid-mobile {
+    @apply grid grid-cols-1 gap-4;
+  }
+  
+  .grid-tablet {
+    @apply grid grid-cols-2 gap-6;
+  }
+  
+  .grid-desktop {
+    @apply grid grid-cols-3 gap-8;
+  }
+  
+  /* 반응형 텍스트 */
+  .text-responsive {
+    @apply text-sm sm:text-base lg:text-lg;
+  }
+  
+  .text-responsive-lg {
+    @apply text-lg sm:text-xl lg:text-2xl;
+  }
+  
+  .text-responsive-xl {
+    @apply text-xl sm:text-2xl lg:text-3xl;
+  }
+  
+  /* 터치 친화적 버튼 */
+  .btn-touch {
+    @apply min-h-[44px] min-w-[44px] px-4 py-2;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  
+  /* 터치 친화적 링크 */
+  .link-touch {
+    @apply min-h-[44px] min-w-[44px] px-4 py-2;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  
+  /* 터치 영역 최적화 */
+  .touch-area {
+    @apply min-h-[44px] min-w-[44px];
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  
+  /* 스와이프 제스처 지원 */
+  .swipe-container {
+    @apply overflow-x-auto scrollbar-hide;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* 가로 모드 대응 */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .landscape-compact {
+      @apply py-2;
+    }
+    
+    .landscape-header {
+      @apply py-2;
+    }
+    
+    .landscape-player {
+      @apply py-1;
+    }
+    
+    .landscape-content {
+      @apply py-4;
+    }
+  }
+  
+  /* 가로 모드에서 헤더 높이 조정 */
+  @media (orientation: landscape) {
+    .header-landscape {
+      @apply py-2;
+    }
+  }
+  
+  /* 오디오 플레이어 반응형 스타일 */
+  .audio-player {
+    @apply w-full;
+  }
+  
+  .audio-player-content {
+    @apply flex flex-col sm:flex-row items-center gap-3 sm:gap-4;
+  }
+  
+  .audio-player-controls {
+    @apply flex-1 flex flex-col sm:flex-row items-center gap-2 sm:gap-4;
+  }
+  
+  /* 모바일에서 플레이어 컴팩트 모드 */
+  @media (max-width: 640px) {
+    .audio-player-content {
+      @apply flex-row items-center justify-between;
+    }
+    
+    .audio-player-controls {
+      @apply flex-row items-center gap-2;
+    }
+  }
+}
+
 :root {
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
   line-height: 1.5;
@@ -31,10 +152,10 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 h1 {
