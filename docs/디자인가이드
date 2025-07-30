@@ -1,0 +1,866 @@
+# 🎨 Moonwave 오안나 음악 플레이어 디자인 가이드 v1.0
+
+## ⚠️ CRITICAL WARNINGS - READ FIRST
+
+**⚠️ IMPORTANT: Always cd Oh_v1.0 before running any commands**
+**⚠️ DO NOT create src folder manually - Vite already created it**
+**⚠️ GitHub Actions workflows must be in root .github folder**
+**⚠️ All development work must happen inside Oh_v1.0 directory**
+
+---
+
+## 1. 디자인 시스템 개요
+
+Moonwave 오안나 음악 플레이어는 **Utility-First CSS**와 **모바일 우선 반응형 디자인**을 기반으로 한 음악 플레이어 서비스입니다. 한글 타이포그래피 최적화와 접근성을 우선시하며, 13곡의 정적 음원을 위한 최적화된 UI/UX를 제공합니다.
+
+### 1.1 핵심 원칙
+
+- **Utility-First**: Tailwind CSS 기반의 유틸리티 클래스 우선
+- **Mobile-First**: 모바일 우선 반응형 디자인 (최소 375px 대응)
+- **Korean Typography**: Pretendard 폰트와 한글 최적화
+- **Accessibility First**: WCAG 2.1 AA 준수
+- **Music Player UX**: 음악 플레이어 특화 사용자 경험
+
+### 1.2 디자인 철학
+
+```
+Moonwave 오안나 = Utility-First CSS + Mobile-First + Korean Typography + Music Player UX
+```
+
+---
+
+## 2. 기술 스택
+
+### 2.1 핵심 기술
+
+- **CSS Framework**: Tailwind CSS 3.3+
+- **Typography**: Pretendard Variable Font
+- **Icons**: @radix-ui/react-icons, lucide-react, @heroicons/react
+- **Build Tool**: Vite
+- **Audio**: HTML5 <audio> 태그 + useRef 제어
+- **Type Safety**: TypeScript 5.0+
+
+### 2.2 설치 및 설정
+
+```bash
+# ⚠️ IMPORTANT: Make sure you're in Oh_v1.0 directory
+cd Oh_v1.0
+
+# 필수 패키지 설치
+npm install -D tailwindcss
+npm install clsx tailwind-merge
+
+# 아이콘 라이브러리 설치
+npm install @radix-ui/react-icons lucide-react @heroicons/react
+
+# Tailwind UI 추가 의존성
+npm install @headlessui/react @tailwindcss/forms @tailwindcss/typography @tailwindcss/aspect-ratio
+```
+
+```javascript
+// Oh_v1.0/tailwind.config.js
+module.exports = {
+  content: ['./src/**/*.{js,jsx,ts,tsx}'],
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['Pretendard Variable', 'Pretendard', ...defaultTheme.fontFamily.sans],
+      },
+      colors: {
+        moonwave: {
+          primary: '#3b82f6',
+          secondary: '#a855f7',
+          dark: '#1f2937',
+          light: '#f9fafb',
+        }
+      }
+    },
+  },
+  plugins: [
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
+    require('@tailwindcss/aspect-ratio'),
+  ],
+}
+```
+
+---
+
+## 3. 음악 플레이어 특화 디자인 토큰
+
+### 3.1 Spacing Scale
+```javascript
+// 음악 플레이어 최적화 간격 시스템
+const spacing = {
+  0: '0px',
+  1: '0.25rem',   // 4px
+  2: '0.5rem',    // 8px
+  3: '0.75rem',   // 12px
+  4: '1rem',      // 16px
+  6: '1.5rem',    // 24px
+  8: '2rem',      // 32px
+  12: '3rem',     // 48px
+  16: '4rem',     // 64px
+  20: '5rem',     // 80px
+  24: '6rem',     // 96px
+}
+```
+
+### 3.2 Border Radius
+```javascript
+const borderRadius = {
+  'none': '0',
+  'sm': '0.125rem',     // 2px
+  'DEFAULT': '0.25rem', // 4px
+  'md': '0.375rem',     // 6px
+  'lg': '0.5rem',       // 8px
+  'xl': '0.75rem',      // 12px
+  '2xl': '1rem',        // 16px
+  '3xl': '1.5rem',      // 24px
+  'full': '9999px',
+}
+```
+
+### 3.3 Shadow System
+```javascript
+const boxShadow = {
+  'sm': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+  'DEFAULT': '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+  'md': '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+  'lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+  'xl': '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+  '2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+  'soft': '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+  'glow': '0 0 20px rgba(59, 130, 246, 0.3)',
+  'premium': '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+}
+```
+
+### 3.4 아이콘 크기 표준
+
+```javascript
+const iconSizes = {
+  'xs': 'w-3 h-3',    // 12px
+  'sm': 'w-4 h-4',    // 16px
+  'md': 'w-5 h-5',    // 20px (기본)
+  'lg': 'w-6 h-6',    // 24px
+  'xl': 'w-8 h-8',    // 32px
+}
+```
+
+---
+
+## 4. 타이포그래피
+
+### 4.1 Pretendard 폰트 설정
+
+#### CDN 방식
+```html
+<link 
+  rel="stylesheet" 
+  as="style" 
+  crossorigin 
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+/>
+```
+
+#### 로컬 폰트 (Vite)
+```typescript
+// src/styles/fonts.css
+@font-face {
+  font-family: 'Pretendard Variable';
+  src: url('/fonts/PretendardVariable.woff2') format('woff2-variations');
+  font-weight: 45 920;
+  font-display: swap;
+}
+```
+
+### 4.2 타이포그래피 스케일
+
+```typescript
+// 타입 스케일 (rem 단위)
+const fontSize = {
+  'xs': ['0.75rem', { lineHeight: '1rem' }],      // 12px
+  'sm': ['0.875rem', { lineHeight: '1.25rem' }],  // 14px
+  'base': ['1rem', { lineHeight: '1.5rem' }],     // 16px
+  'lg': ['1.125rem', { lineHeight: '1.75rem' }],  // 18px
+  'xl': ['1.25rem', { lineHeight: '1.75rem' }],   // 20px
+  '2xl': ['1.5rem', { lineHeight: '2rem' }],      // 24px
+  '3xl': ['1.875rem', { lineHeight: '2.25rem' }], // 30px
+  '4xl': ['2.25rem', { lineHeight: '2.5rem' }],   // 36px
+  '5xl': ['3rem', { lineHeight: '1' }],           // 48px
+  '6xl': ['3.75rem', { lineHeight: '1' }],        // 60px
+  '7xl': ['4.5rem', { lineHeight: '1' }],         // 72px
+}
+```
+
+### 4.3 한글 최적화 유틸리티
+
+```css
+@layer utilities {
+  /* 한글 줄바꿈 최적화 */
+  .break-keep-ko {
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+  
+  /* 한글 자간 최적화 */
+  .tracking-ko-tight { letter-spacing: -0.02em; }
+  .tracking-ko-normal { letter-spacing: -0.01em; }
+  .tracking-ko-wide { letter-spacing: 0; }
+  
+  /* 숫자 최적화 */
+  .text-numeric {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
+  }
+}
+```
+
+### 4.4 타이포그래피 컴포넌트
+
+```tsx
+const Typography = {
+  H1: ({ children, className }) => (
+    <h1 className={cn(
+      'text-4xl sm:text-5xl lg:text-6xl',
+      'font-bold tracking-ko-tight',
+      'text-gray-900 break-keep-ko',
+      className
+    )}>
+      {children}
+    </h1>
+  ),
+  
+  Body: ({ children, className }) => (
+    <p className={cn(
+      'text-base lg:text-lg',
+      'font-normal tracking-ko-normal',
+      'text-gray-700 leading-relaxed break-keep-ko',
+      className
+    )}>
+      {children}
+    </p>
+  ),
+}
+```
+
+---
+
+## 5. 컬러 시스템
+
+### 5.1 브랜드 컬러
+
+```javascript
+const colors = {
+  moonwave: {
+    primary: {
+      50: '#eff6ff',
+      100: '#dbeafe',
+      200: '#bfdbfe',
+      300: '#93c5fd',
+      400: '#60a5fa',
+      500: '#3b82f6', // 주요 색상
+      600: '#2563eb',
+      700: '#1d4ed8',
+      800: '#1e40af',
+      900: '#1e3a8a',
+    },
+    secondary: {
+      50: '#faf5ff',
+      100: '#f3e8ff',
+      200: '#e9d5ff',
+      300: '#d8b4fe',
+      400: '#c084fc',
+      500: '#a855f7', // 보조 색상
+      600: '#9333ea',
+      700: '#7e22ce',
+      800: '#6b21a8',
+      900: '#581c87',
+    },
+  },
+}
+```
+
+### 5.2 시맨틱 컬러
+
+```javascript
+const semanticColors = {
+  success: {
+    light: '#d1fae5',
+    DEFAULT: '#10b981',
+    dark: '#065f46',
+  },
+  warning: {
+    light: '#fed7aa',
+    DEFAULT: '#f59e0b',
+    dark: '#92400e',
+  },
+  error: {
+    light: '#fee2e2',
+    DEFAULT: '#ef4444',
+    dark: '#991b1b',
+  },
+  info: {
+    light: '#dbeafe',
+    DEFAULT: '#3b82f6',
+    dark: '#1e40af',
+  },
+}
+```
+
+### 5.3 그라디언트 시스템
+
+```css
+/* 표준 그라디언트 */
+.gradient-moonwave {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.gradient-sunset {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.gradient-ocean {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+```
+
+---
+
+## 6. 레이아웃 시스템
+
+### 6.1 반응형 그리드
+
+```tsx
+// 반응형 그리드
+<div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+  {items.map(item => (
+    <Card key={item.id}>{item.content}</Card>
+  ))}
+</div>
+
+// 모바일 우선 그리드
+<div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+  {/* 아이템들 */}
+</div>
+```
+
+### 6.2 음악 플레이어 레이아웃
+
+```tsx
+// 메인 플레이어 레이아웃
+const MusicPlayerLayout = ({ children }) => {
+  return (
+    <div className="min-h-screen flex flex-col">
+      {/* 상단 네비게이션 */}
+      <header className="fixed top-0 left-0 right-0 z-50">
+        {/* 네비게이션 내용 */}
+      </header>
+      
+      {/* 메인 콘텐츠 */}
+      <main className="flex-1 pt-16 pb-24">
+        {children}
+      </main>
+      
+      {/* 하단 플레이어 */}
+      <footer className="fixed bottom-0 left-0 right-0 z-50">
+        {/* 플레이어 컨트롤 */}
+      </footer>
+    </div>
+  );
+};
+```
+
+---
+
+## 7. 음악 플레이어 컴포넌트
+
+### 7.1 트랙 카드 컴포넌트
+
+```tsx
+interface TrackCardProps {
+  track: {
+    id: number;
+    title: string;
+    artist: string;
+    coverUrl: string;
+    description: string;
+  };
+  isPlaying: boolean;
+  onPlay: () => void;
+}
+
+const TrackCard: React.FC<TrackCardProps> = ({ track, isPlaying, onPlay }) => {
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-shadow duration-200">
+      <div className="aspect-square relative overflow-hidden rounded-t-xl">
+        <img 
+          src={track.coverUrl} 
+          alt={`${track.title} 커버`}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+          <button
+            onClick={onPlay}
+            className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-colors"
+          >
+            {isPlaying ? (
+              <PauseIcon className="w-6 h-6 text-gray-900" />
+            ) : (
+              <PlayIcon className="w-6 h-6 text-gray-900 ml-1" />
+            )}
+          </button>
+        </div>
+      </div>
+      
+      <div className="p-4">
+        <h3 className="font-semibold text-gray-900 break-keep-ko">{track.title}</h3>
+        <p className="text-sm text-gray-600 mt-1">{track.artist}</p>
+        <p className="text-xs text-gray-500 mt-2 line-clamp-2 break-keep-ko">
+          {track.description}
+        </p>
+      </div>
+    </div>
+  );
+};
+```
+
+### 7.2 플레이어 컨트롤 컴포넌트
+
+```tsx
+interface PlayerControlsProps {
+  isPlaying: boolean;
+  currentTime: number;
+  duration: number;
+  volume: number;
+  onPlayPause: () => void;
+  onSeek: (time: number) => void;
+  onVolumeChange: (volume: number) => void;
+  onNext: () => void;
+  onPrevious: () => void;
+  onRepeat: () => void;
+}
+
+const PlayerControls: React.FC<PlayerControlsProps> = ({
+  isPlaying,
+  currentTime,
+  duration,
+  volume,
+  onPlayPause,
+  onSeek,
+  onVolumeChange,
+  onNext,
+  onPrevious,
+  onRepeat
+}) => {
+  return (
+    <div className="bg-white border-t border-gray-200 p-4">
+      {/* 진행바 */}
+      <div className="mb-4">
+        <input
+          type="range"
+          min="0"
+          max={duration}
+          value={currentTime}
+          onChange={(e) => onSeek(Number(e.target.value))}
+          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+        />
+        <div className="flex justify-between text-xs text-gray-500 mt-1">
+          <span>{formatTime(currentTime)}</span>
+          <span>{formatTime(duration)}</span>
+        </div>
+      </div>
+      
+      {/* 컨트롤 버튼들 */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={onPrevious}
+            className="p-2 rounded-full hover:bg-gray-100"
+          >
+            <SkipBackIcon className="w-5 h-5" />
+          </button>
+          
+          <button
+            onClick={onPlayPause}
+            className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center hover:bg-blue-600"
+          >
+            {isPlaying ? (
+              <PauseIcon className="w-6 h-6 text-white" />
+            ) : (
+              <PlayIcon className="w-6 h-6 text-white ml-1" />
+            )}
+          </button>
+          
+          <button
+            onClick={onNext}
+            className="p-2 rounded-full hover:bg-gray-100"
+          >
+            <SkipForwardIcon className="w-5 h-5" />
+          </button>
+        </div>
+        
+        <div className="flex items-center gap-2">
+          <VolumeIcon className="w-4 h-4 text-gray-500" />
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.1"
+            value={volume}
+            onChange={(e) => onVolumeChange(Number(e.target.value))}
+            className="w-20 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+
+### 7.3 가사 싱크 컴포넌트
+
+```tsx
+interface LyricsSyncProps {
+  lyrics: Array<{ time: number; line: string }>;
+  currentTime: number;
+}
+
+const LyricsSync: React.FC<LyricsSyncProps> = ({ lyrics, currentTime }) => {
+  const currentLineIndex = lyrics.findIndex(
+    (lyric, index) => 
+      currentTime >= lyric.time && 
+      (index === lyrics.length - 1 || currentTime < lyrics[index + 1].time)
+  );
+
+  return (
+    <div className="space-y-2 max-h-96 overflow-y-auto">
+      {lyrics.map((lyric, index) => (
+        <p
+          key={index}
+          className={cn(
+            'text-sm transition-colors duration-200',
+            index === currentLineIndex
+              ? 'text-blue-600 font-semibold'
+              : 'text-gray-600'
+          )}
+        >
+          {lyric.line}
+        </p>
+      ))}
+    </div>
+  );
+};
+```
+
+### 7.4 인트로 페이지 컴포넌트
+
+```tsx
+const IntroPage: React.FC = () => {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+      <div className="text-center text-white max-w-2xl mx-auto px-6">
+        <h1 className="text-4xl sm:text-6xl font-bold mb-6 break-keep-ko">
+          Moonwave 오안나
+        </h1>
+        <p className="text-xl mb-8 leading-relaxed break-keep-ko">
+          오안나가 자신의 리듬, 궤적, 침묵, 파동 위에 스스로 빛이 되어 
+          무대를 밝혀낸 마지막 선언곡들을 만나보세요.
+        </p>
+        <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+          음악 시작하기
+        </button>
+      </div>
+    </div>
+  );
+};
+```
+
+---
+
+## 8. 반응형 디자인 가이드
+
+### 8.1 브레이크포인트
+
+```javascript
+// Tailwind 기본 브레이크포인트
+const breakpoints = {
+  'sm': '640px',   // 모바일 가로
+  'md': '768px',   // 태블릿
+  'lg': '1024px',  // 데스크톱
+  'xl': '1280px',  // 큰 데스크톱
+  '2xl': '1536px', // 초대형
+}
+```
+
+### 8.2 모바일 우선 접근법
+
+```tsx
+// 모바일 우선 예시
+<div className="
+  grid grid-cols-1          // 모바일: 1열
+  sm:grid-cols-2           // 태블릿: 2열
+  lg:grid-cols-3           // 데스크톱: 3열
+  xl:grid-cols-4           // 큰 데스크톱: 4열
+  gap-4 sm:gap-6 lg:gap-8
+">
+  {/* 아이템들 */}
+</div>
+```
+
+### 8.3 터치 친화적 디자인
+
+```tsx
+// 터치 친화적 버튼
+<button className="
+  min-h-[44px]           // 최소 터치 영역
+  px-4 py-3              // 충분한 패딩
+  rounded-lg              // 둥근 모서리
+  active:scale-95         // 터치 피드백
+  transition-transform
+">
+  버튼
+</button>
+```
+
+---
+
+## 9. 접근성 가이드라인
+
+### 9.1 컬러 대비
+- **최소 대비율**: 4.5:1 (WCAG AA)
+- **큰 텍스트**: 3:1 (18pt 이상)
+- **UI 컴포넌트**: 3:1
+
+### 9.2 키보드 내비게이션
+```tsx
+// 포커스 가시성
+className="focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+
+// 키보드 접근성
+<button 
+  tabIndex={0}
+  onKeyDown={(e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      handleClick();
+    }
+  }}
+>
+```
+
+### 9.3 스크린 리더
+```tsx
+// ARIA 레이블
+<button aria-label="재생/정지">
+  <PlayIcon className="w-5 h-5" />
+</button>
+
+// 상태 표시
+<div role="status" aria-live="polite">
+  <span className="sr-only">재생 중...</span>
+</div>
+```
+
+---
+
+## 10. 개발 가이드라인
+
+### 10.1 프로젝트 구조
+```
+src/
+├── components/
+│   ├── ui/              # 기본 UI 컴포넌트
+│   ├── player/          # 음악 플레이어 컴포넌트
+│   ├── layout/          # 레이아웃 컴포넌트
+│   └── intro/           # 인트로 페이지 컴포넌트
+├── styles/
+│   ├── globals.css      # 글로벌 스타일
+│   └── components.css   # 컴포넌트 스타일
+├── lib/
+│   └── utils.ts         # 유틸리티 함수
+└── types/
+    └── index.ts         # 타입 정의
+```
+
+### 10.2 클래스 조합 유틸리티
+
+```typescript
+// lib/utils.ts
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+```
+
+### 10.3 성능 최적화
+
+#### 동적 클래스 생성
+```tsx
+// 잘못된 방식
+const bgClass = `bg-${color}-500`;
+
+// 올바른 방식
+const colorMap = {
+  red: 'bg-red-500',
+  blue: 'bg-blue-500',
+  green: 'bg-green-500'
+};
+const bgClass = colorMap[color];
+```
+
+#### PurgeCSS 설정
+```javascript
+// tailwind.config.js
+module.exports = {
+  content: [
+    './src/**/*.{js,jsx,ts,tsx}',
+    './public/index.html'
+  ],
+  safelist: [
+    'bg-red-500',
+    'bg-green-500',
+    'bg-blue-500',
+    /^text-(red|green|blue)-(400|500|600)$/,
+  ]
+}
+```
+
+### 10.4 컴포넌트 작성 체크리스트
+
+- [ ] TypeScript 타입 정의
+- [ ] Pretendard 폰트 클래스 적용
+- [ ] 모바일 우선 반응형 처리
+- [ ] 접근성 속성 추가
+- [ ] 터치 친화적 디자인
+- [ ] Props 인터페이스 export
+- [ ] displayName 설정 (디버깅용)
+- [ ] 음악 플레이어 특화 UX
+
+### 10.5 레이아웃 통합 예시
+
+```tsx
+// 전체 앱 레이아웃
+const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <div className="min-h-screen flex flex-col">
+      {/* 고정 헤더 */}
+      <Header />
+      
+      {/* 메인 콘텐츠 (헤더 높이만큼 패딩) */}
+      <main className="flex-1 pt-16 pb-24">
+        {children}
+      </main>
+      
+      {/* 고정 플레이어 */}
+      <PlayerControls />
+    </div>
+  );
+};
+```
+
+---
+
+## 부록: 빠른 참조
+
+### 자주 사용하는 클래스 조합
+
+```css
+/* 음악 카드 */
+.music-card {
+  @apply bg-white rounded-xl border border-gray-200 shadow-sm 
+         hover:shadow-lg transition-shadow duration-200;
+}
+
+/* 플레이어 버튼 */
+.player-button {
+  @apply font-pretendard font-semibold rounded-lg px-4 py-2
+         transition-colors duration-200 focus:outline-none 
+         focus:ring-2 focus:ring-offset-2 tracking-ko-normal;
+}
+
+/* 입력 필드 */
+.music-input {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-md
+         focus:outline-none focus:ring-2 focus:ring-blue-500
+         font-pretendard tracking-ko-normal;
+}
+
+/* 글래스 버튼 */
+.glass-button {
+  @apply p-3 rounded-lg bg-white/20 backdrop-blur-md 
+         border border-white/30 hover:bg-white/30 
+         transition-all duration-200 transform active:scale-95;
+}
+
+/* 플레이어 컨트롤 */
+.player-control {
+  @apply min-h-[44px] px-4 py-3 rounded-lg
+         active:scale-95 transition-transform;
+}
+```
+
+### 반응형 브레이크포인트
+
+| 크기 | 클래스 | 픽셀 | 용도 |
+|------|--------|------|------|
+| sm | `sm:` | 640px | 모바일 가로 |
+| md | `md:` | 768px | 태블릿 |
+| lg | `lg:` | 1024px | 데스크톱 |
+| xl | `xl:` | 1280px | 큰 데스크톱 |
+| 2xl | `2xl:` | 1536px | 초대형 |
+
+### 아이콘 라이브러리 참조
+
+```tsx
+// 음악 플레이어 아이콘
+import { 
+  PlayIcon,
+  PauseIcon,
+  SkipBackIcon,
+  SkipForwardIcon,
+  VolumeIcon,
+  RepeatIcon,
+  ShuffleIcon
+} from '@heroicons/react/24/solid';
+
+// 일반 UI 아이콘
+import { 
+  HomeIcon,
+  UserIcon,
+  BellIcon,
+  SettingsIcon,
+  PlusIcon,
+  MenuIcon 
+} from '@heroicons/react/24/outline';
+```
+
+### 음악 플레이어 특화 유틸리티
+
+```typescript
+// 시간 포맷팅
+export const formatTime = (seconds: number): string => {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+};
+
+// 볼륨 계산
+export const calculateVolume = (value: number): number => {
+  return Math.max(0, Math.min(1, value));
+};
+
+// 가사 싱크 찾기
+export const findCurrentLyric = (
+  lyrics: Array<{ time: number; line: string }>,
+  currentTime: number
+): number => {
+  return lyrics.findIndex(
+    (lyric, index) => 
+      currentTime >= lyric.time && 
+      (index === lyrics.length - 1 || currentTime < lyrics[index + 1].time)
+  );
+};
+```
