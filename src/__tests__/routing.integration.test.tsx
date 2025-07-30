@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import App from '../App';
+import { Track } from '../types';
 
 // Mock the tracks data
 const mockTracks: Track[] = [

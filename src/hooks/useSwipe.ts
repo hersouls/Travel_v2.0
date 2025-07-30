@@ -83,7 +83,7 @@ export const useSwipe = (
     }
 
     isSwiping.current = false;
-  }, [handlers, threshold, velocity, preventDefault]);
+  }, [handlers, threshold, velocity]);
 
   useEffect(() => {
     const element = elementRef.current;
