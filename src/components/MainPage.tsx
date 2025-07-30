@@ -5,8 +5,7 @@ import { WaveBackground } from './WaveBackground';
 import { GlassCard } from './GlassCard';
 import { WaveButton } from './WaveButton';
 import { Track } from '../types';
-import { tracks, getTracksByPhase } from '../data/tracks';
-import { ImageWithFallback } from './figma/ImageWithFallback';
+import { getTracksByPhase } from '../data/tracks';
 import { Typography } from './ui/typography';
 
 interface MainPageProps {

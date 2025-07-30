@@ -29,12 +29,7 @@ export const DetailPage: React.FC<DetailPageProps> = ({
     shine: 'from-yellow-400/30 to-amber-400/30',
   };
 
-  const themeColors = {
-    beginning: 'blue',
-    growth: 'purple',
-    challenge: 'orange',
-    shine: 'yellow',
-  };
+
 
   const tabs = [
     { id: 'lyrics', label: '가사', icon: '🎵' },

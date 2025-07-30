@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Play, Pause, Heart, Share, Download } from 'lucide-react';
+import { Play, Pause } from 'lucide-react';
 import { Track } from '../types';
 import { GlassCard } from './GlassCard';
 import { WaveButton } from './WaveButton';

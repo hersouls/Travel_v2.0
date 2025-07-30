@@ -1,6 +1,5 @@
 import React from 'react';
-import { ArrowLeft, User, Music, Award, Heart, Trophy, Target, Star, Calendar, Medal, ChevronRight } from 'lucide-react';
-import { TrackCard } from './TrackCard';
+import { ArrowLeft, Award, Heart, Trophy, Target, Star, Calendar, Medal, ChevronRight } from 'lucide-react';
 import { WaveBackground } from './WaveBackground';
 import { GlassCard } from './GlassCard';
 import { WaveButton } from './WaveButton';

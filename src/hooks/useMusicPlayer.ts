@@ -411,7 +411,7 @@ export const useMusicPlayer = () => {
         : tracks;
       
       // 현재 트랙의 인덱스를 셔플된 플레이리스트에서 찾기
-      const currentIndex = currentPlaylist.findIndex(t => t.id === musicState.currentTrack.id);
+      const currentIndex = currentPlaylist.findIndex(t => t.id === musicState.currentTrack?.id);
       if (currentIndex === -1) {
         console.log('🎵 현재 트랙이 셔플 플레이리스트에 없음');
         return currentPlaylist[0] || null;
@@ -434,7 +434,7 @@ export const useMusicPlayer = () => {
     }
     
     // sequential 모드: 현재 곡 이후 다음 순서 곡 자동재생
-    const currentIndex = tracks.findIndex(t => t.id === musicState.currentTrack.id);
+    const currentIndex = tracks.findIndex(t => t.id === musicState.currentTrack?.id);
     if (currentIndex === -1) {
       console.log('🎵 현재 트랙이 플레이리스트에 없음');
       return tracks[0] || null;
@@ -468,7 +468,7 @@ export const useMusicPlayer = () => {
         : tracks;
       
       // 현재 트랙의 인덱스를 셔플된 플레이리스트에서 찾기
-      const currentIndex = currentPlaylist.findIndex(t => t.id === musicState.currentTrack.id);
+      const currentIndex = currentPlaylist.findIndex(t => t.id === musicState.currentTrack?.id);
       if (currentIndex === -1) {
         console.log('🎵 현재 트랙이 셔플 플레이리스트에 없음');
         return currentPlaylist[currentPlaylist.length - 1] || null;
@@ -491,7 +491,7 @@ export const useMusicPlayer = () => {
     }
     
     // sequential 모드: 현재 곡 이전 순서 곡
-    const currentIndex = tracks.findIndex(t => t.id === musicState.currentTrack.id);
+    const currentIndex = tracks.findIndex(t => t.id === musicState.currentTrack?.id);
     if (currentIndex === -1) {
       console.log('🎵 현재 트랙이 플레이리스트에 없음');
       return tracks[tracks.length - 1] || null;

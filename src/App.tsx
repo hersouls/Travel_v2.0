@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense, startTransition } from 'react';
+import { useState, useEffect, Suspense, startTransition } from 'react';
 import { MainPage } from './components/MainPage';
 import { DetailPage } from './components/DetailPage';
 import { AboutPage } from './components/AboutPage';
@@ -12,7 +12,7 @@ import { tracks } from './data/tracks';
 export default function App() {
   const [currentPage, setCurrentPage] = useState<Page>('main');
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+
 
   const musicPlayer = useMusicPlayer();
 
@@ -70,18 +70,8 @@ export default function App() {
     });
   };
 
-  // 페이지별 로딩 상태 관리
+  // 페이지별 렌더링
   const renderPage = () => {
-    if (isLoading) {
-      return (
-        <div className="min-h-screen moonwave-background moonwave-starry flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-white"></div>
-            <p className="mt-4 text-white text-lg">로딩 중...</p>
-          </div>
-        </div>
-      );
-    }
 
     switch (currentPage) {
       case 'main':
