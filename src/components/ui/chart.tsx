@@ -52,7 +52,7 @@ export type ChartConfig = {
     icon?: React.ComponentType;
   } & (
     | { color?: string; theme?: never }
-    | { color?: never; theme: Record<keyof typeof THEMES, string> }
+    | { color?: never; theme: "light" | "dark" }
   );
 };
 
@@ -231,7 +231,7 @@ function ChartTooltipContent({
               )}
             >
               {formatter && item.value !== undefined && item.name ? (
-                formatter(item.value as number, item.name, item as ChartPayloadItem, 0, item.payload as { fill?: string })
+                formatter(item.value as number, item.name, item as ChartPayloadItem, 0, [item.payload as { fill?: string }])
               ) : (
                 <>
                   {itemConfig?.icon ? (
