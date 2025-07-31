@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4@sha256:270f299bd1b1198be61e6d0e2fb95697d6f986d9300d70b0bec8211ff33c9b0c
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
