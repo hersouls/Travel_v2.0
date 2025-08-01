@@ -85,7 +85,7 @@ export const useMusicPlayer = () => {
       audio.removeEventListener('error', handleError);
       audio.removeEventListener('canplay', handleCanPlay);
     };
-  }, [state.playMode]);
+  }, [state.playMode, handleTrackEnd]);
 
   // 볼륨 변경 시 오디오에 적용
   useEffect(() => {
@@ -102,7 +102,7 @@ export const useMusicPlayer = () => {
         console.log('🎵 한곡반복 모드: 현재 트랙 다시 재생');
         return currentTrack;
       
-      case 'shuffle':
+      case 'shuffle': {
         // 랜덤재생: 셔플된 트랙 목록에서 다음 트랙 선택
         if (shuffledTracksRef.current.length === 0) {
           // 셔플 목록이 비어있으면 새로 생성
@@ -123,13 +123,13 @@ export const useMusicPlayer = () => {
         
         console.log('🎵 랜덤재생 모드: 다음 트랙 선택', nextTrack.title);
         return nextTrack;
-      
-      case 'sequential':
-      default:
+      }
+      case 'sequential': {
         // 전체재생: 순차적으로 다음 트랙
         const nextTrack = getNextTrack(currentTrack.id);
         console.log('🎵 전체재생 모드: 다음 트랙 선택', nextTrack.title);
         return nextTrack;
+      }
     }
   }, [state.playMode]);
 
