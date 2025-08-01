@@ -224,10 +224,10 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
                 size="sm"
                 ariaLabel={`재생 모드: ${playMode}`}
                 className={cn(
-                  "w-8 h-8 sm:w-10 sm:h-10 rounded-full p-0 text-white transition-all duration-300",
-                  playMode === 'repeat-one' && "bg-blue-500/20 border-blue-500/30",
-                  playMode === 'sequential' && "bg-green-500/20 border-green-500/30",
-                  playMode === 'shuffle' && "bg-purple-500/20 border-purple-500/30"
+                  "w-8 h-8 sm:w-10 sm:h-10 rounded-full p-0 text-white transition-all duration-300 border",
+                  playMode === 'repeat-one' && "bg-blue-500/20 border-blue-500/50 shadow-lg shadow-blue-500/20",
+                  playMode === 'sequential' && "bg-green-500/20 border-green-500/50 shadow-lg shadow-green-500/20",
+                  playMode === 'shuffle' && "bg-purple-500/20 border-purple-500/50 shadow-lg shadow-purple-500/20"
                 )}
               >
                 {playMode === 'shuffle' ? (
@@ -239,13 +239,13 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
                 )}
               </WaveButton>
               <span className={cn(
-                "hidden sm:inline text-xs ml-1 transition-all duration-300",
+                "hidden sm:inline text-xs ml-1 font-semibold transition-all duration-300",
                 playMode === 'repeat-one' && "text-blue-400",
                 playMode === 'sequential' && "text-green-400",
                 playMode === 'shuffle' && "text-purple-400",
                 "text-white/80"
               )}>
-                {playMode === 'repeat-one' ? '1' : playMode === 'sequential' ? '→' : ''}
+                {playMode === 'repeat-one' ? '1' : playMode === 'sequential' ? '→' : '🔀'}
               </span>
             </div>
 
