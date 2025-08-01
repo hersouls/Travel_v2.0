@@ -25,75 +25,6 @@ export const useMusicPlayer = () => {
   const shuffledTracksRef = useRef<Track[]>([]);
   const currentShuffleIndexRef = useRef<number>(-1);
 
-  // Audio 요소 초기화
-  useEffect(() => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio();
-      audioRef.current.preload = 'metadata';
-    }
-
-    const audio = audioRef.current;
-
-    // 이벤트 리스너 설정
-    const handleLoadedMetadata = () => {
-      console.log('🎵 오디오 메타데이터 로드됨');
-      setState(prev => ({
-        ...prev,
-        duration: audio.duration || 0,
-      }));
-    };
-
-    const handleTimeUpdate = () => {
-      setState(prev => ({
-        ...prev,
-        currentTime: audio.currentTime,
-      }));
-    };
-
-    const handleEnded = () => {
-      console.log('🎵 트랙 재생 완료');
-      console.log('🎵 현재 재생 모드:', state.playMode);
-      
-      // 재생 모드에 따른 다음 트랙 처리
-      handleTrackEnd();
-    };
-
-    const handleError = (e: Event) => {
-      console.error('🎵 오디오 재생 오류:', e);
-      setState(prev => ({
-        ...prev,
-        isPlaying: false,
-      }));
-    };
-
-    const handleCanPlay = () => {
-      console.log('🎵 오디오 재생 준비됨');
-    };
-
-    // 이벤트 리스너 추가
-    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
-    audio.addEventListener('timeupdate', handleTimeUpdate);
-    audio.addEventListener('ended', handleEnded);
-    audio.addEventListener('error', handleError);
-    audio.addEventListener('canplay', handleCanPlay);
-
-    // 클린업
-    return () => {
-      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      audio.removeEventListener('timeupdate', handleTimeUpdate);
-      audio.removeEventListener('ended', handleEnded);
-      audio.removeEventListener('error', handleError);
-      audio.removeEventListener('canplay', handleCanPlay);
-    };
-  }, [state.playMode, handleTrackEnd]);
-
-  // 볼륨 변경 시 오디오에 적용
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = state.volume;
-    }
-  }, [state.volume]);
-
   // 재생 모드에 따른 다음 트랙 선택 로직
   const getNextTrackByMode = useCallback((currentTrack: Track) => {
     switch (state.playMode) {
@@ -183,6 +114,75 @@ export const useMusicPlayer = () => {
       }));
     }
   }, [state.currentTrack, getNextTrackByMode]);
+
+  // Audio 요소 초기화
+  useEffect(() => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
+      audioRef.current.preload = 'metadata';
+    }
+
+    const audio = audioRef.current;
+
+    // 이벤트 리스너 설정
+    const handleLoadedMetadata = () => {
+      console.log('🎵 오디오 메타데이터 로드됨');
+      setState(prev => ({
+        ...prev,
+        duration: audio.duration || 0,
+      }));
+    };
+
+    const handleTimeUpdate = () => {
+      setState(prev => ({
+        ...prev,
+        currentTime: audio.currentTime,
+      }));
+    };
+
+    const handleEnded = () => {
+      console.log('🎵 트랙 재생 완료');
+      console.log('🎵 현재 재생 모드:', state.playMode);
+      
+      // 재생 모드에 따른 다음 트랙 처리
+      handleTrackEnd();
+    };
+
+    const handleError = (e: Event) => {
+      console.error('🎵 오디오 재생 오류:', e);
+      setState(prev => ({
+        ...prev,
+        isPlaying: false,
+      }));
+    };
+
+    const handleCanPlay = () => {
+      console.log('🎵 오디오 재생 준비됨');
+    };
+
+    // 이벤트 리스너 추가
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('error', handleError);
+    audio.addEventListener('canplay', handleCanPlay);
+
+    // 클린업
+    return () => {
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('error', handleError);
+      audio.removeEventListener('canplay', handleCanPlay);
+    };
+  }, [state.playMode, handleTrackEnd]);
+
+  // 볼륨 변경 시 오디오에 적용
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = state.volume;
+    }
+  }, [state.volume]);
 
   const playTrack = useCallback(async (track: Track) => {
     if (!audioRef.current) return;
