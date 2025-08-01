@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Track } from '../types';
-import { getNextTrack, getPreviousTrack } from '../data/tracks';
+import { getNextTrack, getPreviousTrack, tracks } from '../data/tracks';
 
 export interface MusicPlayerState {
   currentTrack: Track | null;
@@ -22,6 +22,8 @@ export const useMusicPlayer = () => {
   });
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const shuffledTracksRef = useRef<Track[]>([]);
+  const currentShuffleIndexRef = useRef<number>(-1);
 
   // Audio 요소 초기화
   useEffect(() => {
@@ -50,11 +52,10 @@ export const useMusicPlayer = () => {
 
     const handleEnded = () => {
       console.log('🎵 트랙 재생 완료');
-      setState(prev => ({
-        ...prev,
-        isPlaying: false,
-        currentTime: 0,
-      }));
+      console.log('🎵 현재 재생 모드:', state.playMode);
+      
+      // 재생 모드에 따른 다음 트랙 처리
+      handleTrackEnd();
     };
 
     const handleError = (e: Event) => {
@@ -84,7 +85,7 @@ export const useMusicPlayer = () => {
       audio.removeEventListener('error', handleError);
       audio.removeEventListener('canplay', handleCanPlay);
     };
-  }, []);
+  }, [state.playMode]);
 
   // 볼륨 변경 시 오디오에 적용
   useEffect(() => {
@@ -92,6 +93,96 @@ export const useMusicPlayer = () => {
       audioRef.current.volume = state.volume;
     }
   }, [state.volume]);
+
+  // 재생 모드에 따른 다음 트랙 선택 로직
+  const getNextTrackByMode = useCallback((currentTrack: Track) => {
+    switch (state.playMode) {
+      case 'repeat-one':
+        // 한곡반복: 현재 트랙을 다시 재생
+        console.log('🎵 한곡반복 모드: 현재 트랙 다시 재생');
+        return currentTrack;
+      
+      case 'shuffle':
+        // 랜덤재생: 셔플된 트랙 목록에서 다음 트랙 선택
+        if (shuffledTracksRef.current.length === 0) {
+          // 셔플 목록이 비어있으면 새로 생성
+          shuffledTracksRef.current = [...tracks].sort(() => Math.random() - 0.5);
+          currentShuffleIndexRef.current = -1;
+        }
+        
+        // 현재 트랙이 셔플 목록에 있는지 확인하고 인덱스 찾기
+        if (currentShuffleIndexRef.current === -1) {
+          currentShuffleIndexRef.current = shuffledTracksRef.current.findIndex(
+            track => track.id === currentTrack.id
+          );
+        }
+        
+        // 다음 인덱스로 이동
+        currentShuffleIndexRef.current = (currentShuffleIndexRef.current + 1) % shuffledTracksRef.current.length;
+        const nextTrack = shuffledTracksRef.current[currentShuffleIndexRef.current];
+        
+        console.log('🎵 랜덤재생 모드: 다음 트랙 선택', nextTrack.title);
+        return nextTrack;
+      
+      case 'sequential':
+      default:
+        // 전체재생: 순차적으로 다음 트랙
+        const nextTrack = getNextTrack(currentTrack.id);
+        console.log('🎵 전체재생 모드: 다음 트랙 선택', nextTrack.title);
+        return nextTrack;
+    }
+  }, [state.playMode]);
+
+  // 트랙 재생 완료 시 처리
+  const handleTrackEnd = useCallback(() => {
+    if (!state.currentTrack || !audioRef.current) return;
+
+    const nextTrack = getNextTrackByMode(state.currentTrack);
+    
+    // 다음 트랙 재생
+    if (nextTrack) {
+      console.log('🎵 다음 트랙으로 자동 재생:', nextTrack.title);
+      
+      // 직접 트랙 재생 로직 실행
+      try {
+        audioRef.current.src = nextTrack.url;
+        audioRef.current.load();
+        
+        setState(prev => ({
+          ...prev,
+          currentTrack: nextTrack,
+          isPlaying: false,
+          currentTime: 0,
+        }));
+
+        audioRef.current.addEventListener('canplay', () => {
+          console.log('🎵 다음 트랙 재생 준비 완료, 재생 시작');
+          audioRef.current?.play().then(() => {
+            setState(prev => ({
+              ...prev,
+              isPlaying: true,
+            }));
+          }).catch((error) => {
+            console.error('🎵 다음 트랙 재생 실패:', error);
+            setState(prev => ({
+              ...prev,
+              isPlaying: false,
+            }));
+          });
+        }, { once: true });
+        
+      } catch (error) {
+        console.error('🎵 다음 트랙 로드 실패:', error);
+      }
+    } else {
+      // 재생할 트랙이 없으면 정지
+      setState(prev => ({
+        ...prev,
+        isPlaying: false,
+        currentTime: 0,
+      }));
+    }
+  }, [state.currentTrack, getNextTrackByMode]);
 
   const playTrack = useCallback(async (track: Track) => {
     if (!audioRef.current) return;
@@ -226,9 +317,9 @@ export const useMusicPlayer = () => {
     if (!state.currentTrack) return;
     
     console.log('🎵 다음 트랙으로 이동');
-    const nextTrack = getNextTrack(state.currentTrack.id);
+    const nextTrack = getNextTrackByMode(state.currentTrack);
     playTrack(nextTrack);
-  }, [state.currentTrack, playTrack]);
+  }, [state.currentTrack, getNextTrackByMode, playTrack]);
 
   const previousTrack = useCallback(() => {
     if (!state.currentTrack) return;
@@ -245,6 +336,14 @@ export const useMusicPlayer = () => {
     const newMode = modes[nextIndex];
     
     console.log('🎵 재생 모드 변경:', newMode);
+    
+    // 셔플 모드로 변경 시 셔플 목록 초기화
+    if (newMode === 'shuffle') {
+      shuffledTracksRef.current = [...tracks].sort(() => Math.random() - 0.5);
+      currentShuffleIndexRef.current = -1;
+      console.log('🎵 셔플 목록 생성됨');
+    }
+    
     setState(prev => ({
       ...prev,
       playMode: newMode,
