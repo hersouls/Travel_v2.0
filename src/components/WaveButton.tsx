@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { cn } from './ui/utils';
+import { cn } from '../lib/utils';
 
 interface WaveButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
-  variant?: 'primary' | 'secondary' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'ghost' | 'travel';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
   ariaLabel?: string;
@@ -30,9 +30,10 @@ export const WaveButton: React.FC<WaveButtonProps> = ({
   };
 
   const variants = {
-    primary: 'bg-white/20 backdrop-blur-xl border border-white/30 text-white hover:bg-white/30',
-    secondary: 'bg-white/10 backdrop-blur-md border border-white/20 text-white/90 hover:bg-white/20',
-    ghost: 'bg-white/5 backdrop-blur-sm border border-white/10 text-white/80 hover:bg-white/15'
+    primary: 'bg-primary-500/20 backdrop-blur-xl border border-primary-300/30 text-white hover:bg-primary-400/30',
+    secondary: 'bg-glass-medium backdrop-blur-md border border-white/20 text-white/90 hover:bg-glass-strong',
+    ghost: 'bg-glass-light backdrop-blur-sm border border-white/10 text-white/80 hover:bg-glass-medium',
+    travel: 'bg-gradient-to-r from-travel-blue/20 to-travel-purple/20 backdrop-blur-lg border border-travel-blue/30 text-white hover:from-travel-blue/30 hover:to-travel-purple/30'
   };
 
   const sizes = {

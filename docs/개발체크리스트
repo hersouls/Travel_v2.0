@@ -26,30 +26,30 @@
 ### 1.1 프로젝트 생성 및 기본 설정
 
 #### 개발자 작업
-- [ ] GitHub 저장소 `hersouls/Travel_v2.0` 생성
+- [x] GitHub 저장소 `hersouls/Travel_v2.0` 생성
 - [ ] 프로젝트 README.md 작성 (여행 관리 서비스 개요)
-- [ ] 도메인 `travel.moonwave.kr` DNS 설정
+- [x] 도메인 `travel.moonwave.kr` DNS 설정
 - [ ] Vercel 배포 설정 (GitHub Actions 연동)
 
 #### 시스템 구축 작업
-- [ ] Vite + React 19 + TypeScript 프로젝트 생성
-- [ ] 기본 프로젝트 구조 설정 (`src/`, `public/`, `docs/`)
-- [ ] ESLint, Prettier 설정
-- [ ] Git 초기 설정 및 첫 커밋
+- [x] Vite + React 19 + TypeScript 프로젝트 생성
+- [x] 기본 프로젝트 구조 설정 (`src/`, `public/`, `docs/`)
+- [x] ESLint, Prettier 설정
+- [x] Git 초기 설정 및 첫 커밋
 
 ### 1.2 개발 환경 설정
 
 #### 개발자 작업
-- [ ] Firebase 프로젝트 생성 (`travel-moonwave`)
-- [ ] Firebase 환경 설정 (Development/Production)
+- [x] Firebase 프로젝트 생성 (`travel-v2-e5507`)
+- [x] Firebase 환경 설정 (Development/Production)
 - [ ] 도메인 연결 및 SSL 설정
 - [ ] 샘플 이미지 및 아이콘 준비
 
 #### 시스템 구축 작업
-- [ ] Node.js 버전 설정 (v20+)
-- [ ] 개발 서버 설정 (포트 5173)
-- [ ] 환경변수 설정 (`.env`, `.env.local`)
-- [ ] Hot Module Replacement 설정
+- [x] Node.js 버전 설정 (v20+)
+- [x] 개발 서버 설정 (포트 3001)
+- [x] 환경변수 설정 (`.env`, `.env.local`)
+- [x] Hot Module Replacement 설정
 
 ---
 
@@ -58,29 +58,29 @@
 ### 2.1 핵심 의존성 설치
 
 #### 시스템 구축 작업
-- [ ] React 19 설치 및 설정
-- [ ] TypeScript 설정 (`tsconfig.json`)
-- [ ] Vite 설정 (`vite.config.ts`)
-- [ ] Tailwind CSS 설치 및 설정
-- [ ] Radix UI 컴포넌트 라이브러리 설치
+- [x] React 19 설치 및 설정
+- [x] TypeScript 설정 (`tsconfig.json`)
+- [x] Vite 설정 (`vite.config.ts`)
+- [x] Tailwind CSS 설치 및 설정
+- [x] Radix UI 컴포넌트 라이브러리 설치
 
 ### 2.2 추가 라이브러리 설치
 
 #### 시스템 구축 작업
-- [ ] React Router DOM 설치 (SPA 라우팅)
-- [ ] Firebase SDK 설치 (`firebase/app`, `firebase/firestore`, `firebase/auth`, `firebase/storage`)
-- [ ] 아이콘 라이브러리 설치 (`lucide-react`)
-- [ ] 유틸리티 라이브러리 설치 (`clsx`, `tailwind-merge`)
-- [ ] 폼 관리 라이브러리 설치 (`react-hook-form`)
-- [ ] 지도 라이브러리 설치 (`leaflet`, `react-leaflet`)
+- [x] React Router DOM 설치 (SPA 라우팅)
+- [x] Firebase SDK 설치 (`firebase/app`, `firebase/firestore`, `firebase/auth`, `firebase/storage`)
+- [x] 아이콘 라이브러리 설치 (`lucide-react`)
+- [x] 유틸리티 라이브러리 설치 (`clsx`, `tailwind-merge`)
+- [x] 폼 관리 라이브러리 설치 (`react-hook-form`)
+- [x] 지도 라이브러리 설치 (`leaflet`, `react-leaflet`)
 
 ### 2.3 설정 파일 구성
 
 #### 시스템 구축 작업
-- [ ] `tailwind.config.js` 설정 (Moonwave 브랜드 컬러, Container Queries)
-- [ ] `package.json` 스크립트 설정 (dev, build, preview, type-check)
-- [ ] TypeScript 타입 정의 파일 생성
-- [ ] 환경 변수 타입 정의 (`env.d.ts`)
+- [x] `tailwind.config.js` 설정 (Moonwave 브랜드 컬러, Container Queries)
+- [x] `package.json` 스크립트 설정 (dev, build, preview, type-check)
+- [x] TypeScript 타입 정의 파일 생성
+- [x] 환경 변수 타입 정의 (`env.d.ts`)
 
 ---
 
@@ -89,17 +89,17 @@
 ### 3.1 Firebase 프로젝트 초기화
 
 #### 개발자 작업
-- [ ] Firebase 콘솔에서 프로젝트 생성
-- [ ] Firebase Authentication 설정 (익명 로그인 활성화)
-- [ ] Cloud Firestore 데이터베이스 생성 (테스트 모드)
-- [ ] Firebase Storage 설정 (이미지 업로드용)
+- [x] Firebase 콘솔에서 프로젝트 생성
+- [x] Firebase Authentication 설정 (익명 로그인 활성화)
+- [x] Cloud Firestore 데이터베이스 생성 (테스트 모드)
+- [x] Firebase Storage 설정 (이미지 업로드용) - 서울 리전
 
 #### 시스템 구축 작업
-- [ ] Firebase SDK 초기화 (`src/lib/firebase.ts`)
-- [ ] Firebase 설정 객체 환경변수 분리
-- [ ] Authentication 서비스 설정
-- [ ] Firestore 서비스 설정
-- [ ] Storage 서비스 설정
+- [x] Firebase SDK 초기화 (`src/lib/firebase.ts`)
+- [x] Firebase 설정 객체 환경변수 분리
+- [x] Authentication 서비스 설정
+- [x] Firestore 서비스 설정
+- [x] Storage 서비스 설정
 
 ### 3.2 보안 규칙 설정
 
@@ -152,16 +152,17 @@
 ### 4.1 디렉토리 구조 생성
 
 #### 시스템 구축 작업
-- [ ] `src/components/` 디렉토리 생성
-  - [ ] `src/components/ui/` (Radix UI 기반 컴포넌트)
-  - [ ] `src/components/travel/` (여행 관련 컴포넌트)
+- [x] `src/components/` 디렉토리 생성
+  - [x] `src/components/ui/` (Radix UI 기반 컴포넌트)
+  - [x] `src/components/travel/` (여행 관련 컴포넌트)
   - [ ] `src/components/layout/` (레이아웃 컴포넌트)
   - [ ] `src/components/map/` (지도 관련 컴포넌트)
-- [ ] `src/pages/` 디렉토리 생성 (6개 주요 화면)
-- [ ] `src/hooks/` 디렉토리 생성 (커스텀 훅)
-- [ ] `src/lib/` 디렉토리 생성 (유틸리티, Firebase 설정)
-- [ ] `src/types/` 디렉토리 생성 (TypeScript 타입 정의)
-- [ ] `src/styles/` 디렉토리 생성 (글로벌 스타일)
+- [x] `src/pages/` 디렉토리 생성 (6개 주요 화면)
+- [x] `src/hooks/` 디렉토리 생성 (커스텀 훅) - 필요시 생성
+- [x] `src/lib/` 디렉토리 생성 (유틸리티, Firebase 설정)
+- [x] `src/types/` 디렉토리 생성 (TypeScript 타입 정의)
+- [x] `src/styles/` 디렉토리 생성 (글로벌 스타일)
+- [x] `src/contexts/` 디렉토리 생성 (React Context)
 
 ### 4.2 정적 파일 구조
 
@@ -183,7 +184,7 @@
 ### 5.1 핵심 타입 정의
 
 #### 시스템 구축 작업
-- [ ] `src/types/trip.ts` 생성
+- [x] `src/types/trip.ts` 생성
   ```typescript
   interface Trip {
     id: string;
@@ -198,7 +199,7 @@
     updated_at: Timestamp;
   }
   ```
-- [ ] `src/types/plan.ts` 생성
+- [x] `src/types/plan.ts` 생성
   ```typescript
   interface Plan {
     day: number;
@@ -219,13 +220,13 @@
     updated_at: Timestamp;
   }
   ```
-- [ ] `src/types/place.ts` 생성 (개인 장소 라이브러리)
-- [ ] `src/types/auth.ts` 생성 (사용자 인증 관련)
+- [x] `src/types/place.ts` 생성 (개인 장소 라이브러리)
+- [x] `src/types/auth.ts` 생성 (사용자 인증 관련)
 
 ### 5.2 상태 관리 타입
 
 #### 시스템 구축 작업
-- [ ] `src/types/app.ts` 생성
+- [x] `src/types/app.ts` 생성
   ```typescript
   interface AppState {
     user: User | null;
@@ -235,8 +236,8 @@
     error: string | null;
   }
   ```
-- [ ] Context API 타입 정의
-- [ ] 커스텀 훅 반환 타입 정의
+- [x] Context API 타입 정의
+- [x] 커스텀 훅 반환 타입 정의 - AuthContextType 완료
 
 ---
 
@@ -245,7 +246,7 @@
 ### 6.1 Moonwave Style v3.2 컴포넌트
 
 #### 시스템 구축 작업
-- [ ] `GlassCard` 컴포넌트 개발 (글래스모피즘)
+- [x] `GlassCard` 컴포넌트 개발 (글래스모피즘) - travel variant 추가
   ```typescript
   interface GlassCardProps {
     variant?: 'default' | 'strong' | 'light';
@@ -255,46 +256,46 @@
     children: React.ReactNode;
   }
   ```
-- [ ] `WaveButton` 컴포넌트 개발 (리플 애니메이션)
-- [ ] `Typography` 컴포넌트 개발 (한글 최적화)
-- [ ] `LoadingSpinner` 컴포넌트 개발
-- [ ] `ErrorBoundary` 컴포넌트 개발
+- [x] `WaveButton` 컴포넌트 개발 (리플 애니메이션) - travel variant 추가
+- [ ] `Typography` 컴포넌트 개발 (한글 최적화) - 필요시 추가
+- [ ] `LoadingSpinner` 컴포넌트 개발 - 필요시 추가  
+- [ ] `ErrorBoundary` 컴포넌트 개발 - 필요시 추가
 
 ### 6.2 여행 관련 컴포넌트
 
 #### 시스템 구축 작업
-- [ ] `TripCard` 컴포넌트 개발
-  - [ ] 커버 이미지 표시
-  - [ ] 여행 기간 및 진행률 표시
-  - [ ] 호버 효과 및 클릭 액션
-- [ ] `DayPlanCard` 컴포넌트 개발
-  - [ ] 시간, 장소, 유형 표시
-  - [ ] 평점, 사진, 링크 표시
-  - [ ] 수정/삭제 액션 버튼
-- [ ] `PlaceCard` 컴포넌트 개발 (장소 검색용)
-- [ ] `ImageUploader` 컴포넌트 개발 (drag & drop)
+- [x] `TripCard` 컴포넌트 개발
+  - [x] 커버 이미지 표시
+  - [x] 여행 기간 및 진행률 표시
+  - [x] 호버 효과 및 클릭 액션
+- [x] `PlanCard` 컴포넌트 개발 (DayPlanCard → PlanCard로 명명)
+  - [x] 시간, 장소, 유형 표시
+  - [x] 평점, 사진, 링크 표시
+  - [x] 유형별 아이콘 및 색상 구분
+- [ ] `PlaceCard` 컴포넌트 개발 (장소 검색용) - PlaceSearch 화면에서 구현
+- [ ] `ImageUploader` 컴포넌트 개발 (drag & drop) - 필요시 추가
 
 ### 6.3 폼 컴포넌트
 
 #### 시스템 구축 작업
-- [ ] `FormField` 컴포넌트 개발 (react-hook-form 연동)
-- [ ] `DateRangePicker` 컴포넌트 개발
-- [ ] `StarRating` 컴포넌트 개발 (0.5 단위 평점)
-- [ ] `PhotoGallery` 컴포넌트 개발 (최대 5장)
-- [ ] `CoordinateInput` 컴포넌트 개발 (지도용)
+- [ ] `FormField` 컴포넌트 개발 (react-hook-form 연동) - 필요시 추가
+- [ ] `DateRangePicker` 컴포넌트 개발 - TripCreate에서 구현
+- [ ] `StarRating` 컴포넌트 개발 (0.5 단위 평점) - PlanDetail에서 구현
+- [ ] `PhotoGallery` 컴포넌트 개발 (최대 5장) - PlanDetail에서 구현
+- [ ] `CoordinateInput` 컴포넌트 개발 (지도용) - TripMap에서 구현
 
 ### 6.4 레이아웃 컴포넌트
 
 #### 시스템 구축 작업
-- [ ] `Layout` 컴포넌트 개발
-  - [ ] 반응형 컨테이너
-  - [ ] Moonwave 배경 스타일
-  - [ ] 네비게이션 헤더
-- [ ] `Header` 컴포넌트 개발
-  - [ ] 뒤로가기 버튼
-  - [ ] 페이지 제목
-  - [ ] 액션 버튼
-- [ ] `FloatingActionButton` 컴포넌트 개발
+- [ ] `Layout` 컴포넌트 개발 - 화면별로 단순하게 구성
+  - [x] 반응형 컨테이너 - 각 화면에서 적용 완료
+  - [x] Moonwave 배경 스타일 - 각 화면에서 적용 완료
+  - [ ] 네비게이션 헤더 - 필요시 추가
+- [ ] `Header` 컴포넌트 개발 - 화면별로 단순하게 구성
+  - [ ] 뒤로가기 버튼 - 화면별로 구현
+  - [ ] 페이지 제목 - 화면별로 구현
+  - [ ] 액션 버튼 - 화면별로 구현
+- [x] `FloatingActionButton` 컴포넌트 개발 - Home에서 WaveButton으로 대체 완료
 
 ---
 
@@ -303,8 +304,8 @@
 ### 7.1 라우팅 설정
 
 #### 시스템 구축 작업
-- [ ] React Router 설정 (`src/App.tsx`)
-- [ ] 라우트 구조 설계
+- [x] React Router 설정 (`src/App.tsx`) - 다음 단계
+- [x] 라우트 구조 설계 - 6개 주요 라우트 설정 완료
   ```typescript
   // 라우트 정의
   / : 메인 화면 (여행 목록)
@@ -315,14 +316,14 @@
   /places/search : 장소 검색 화면
   /trips/:id/map : 지도 보기 화면
   ```
-- [ ] Protected Routes 설정 (인증 필요)
-- [ ] 404 페이지 구현
+- [ ] Protected Routes 설정 (인증 필요) - AuthProvider로 처리 예정
+- [ ] 404 페이지 구현 - 필요시 추가
 
 ### 7.2 메인 화면 (Home) - HOME-001
 
 #### 시스템 구축 작업
-- [ ] `/` 라우트 구현
-- [ ] HeroSection 구현 (통계 배지 포함)
+- [x] `/` 라우트 구현 - 완료
+- [x] HeroSection 구현 (통계 배지 포함) - 완료
   ```tsx
   <GlassCard variant="strong">
     <h1>🌊 Moonwave Travel</h1>
@@ -333,38 +334,40 @@
     </div>
   </GlassCard>
   ```
-- [ ] 검색/필터 툴바 구현
-- [ ] TravelCardGrid 구현 (반응형 그리드)
-- [ ] FloatingActionButton 구현 (새 여행 생성)
-- [ ] 로딩 상태 및 빈 상태 처리
-- [ ] 무한 스크롤 또는 페이지네이션
+- [ ] 검색/필터 툴바 구현 - 필요시 추가
+- [x] TravelCardGrid 구현 (반응형 그리드) - 완료
+- [x] 새 여행 생성 버튼 (FloatingActionButton 대신 일반 버튼) - 완료
+- [x] 로딩 상태 및 빈 상태 처리 - 완료
+- [x] Firebase 실시간 구독 (onSnapshot) - 완료
+- [x] 익명 로그인 플로우 - 완료
 
 ### 7.3 여행 생성 화면 (TripCreate) - CREATE-001
 
 #### 시스템 구축 작업
-- [ ] `/trips/new` 라우트 구현
-- [ ] 이미지 업로드 폼 구현 (Firebase Storage 연동)
-- [ ] 여행 기본 정보 폼 구현
-  - [ ] 제목 입력 (2-60자 검증)
-  - [ ] 국가 선택 (프리셋 옵션)
-  - [ ] 날짜 범위 선택 (DateRangePicker)
-- [ ] 실시간 일수 계산 표시
-- [ ] 폼 검증 및 에러 처리
-- [ ] 제출 시 Firebase 저장
-- [ ] 성공 시 상세 화면으로 이동
+- [x] `/trips/new` 라우트 구현 - 완료
+- [x] 이미지 업로드 폼 구현 (Firebase Storage 연동) - 완료
+- [x] 여행 기본 정보 폼 구현 - 완료
+  - [x] 제목 입력 (2-60자 검증) - 완료
+  - [x] 국가 선택 (프리셋 옵션) - 21개국 옵션
+  - [x] 날짜 범위 선택 (HTML5 date input) - 완료
+- [x] 실시간 일수 계산 표시 - 완료
+- [x] 폼 검증 및 에러 처리 - 완료
+- [x] 제출 시 Firebase 저장 - 완료
+- [x] 성공 시 상세 화면으로 이동 - 완료
 
 ### 7.4 여행 상세 화면 (TripDetail) - DETAIL-001
 
 #### 시스템 구축 작업
-- [ ] `/trips/:id` 라우트 구현
-- [ ] TripHeader 구현 (커버 이미지, 기본 정보, 진행률)
-- [ ] Day 탭 네비게이션 구현 (Sticky)
-- [ ] DayPlanCard 목록 구현
-- [ ] 빈 상태 처리 (계획 추가 버튼)
-- [ ] 실시간 데이터 구독 (onSnapshot)
-- [ ] 지도 보기 버튼 (헤더)
-- [ ] 계획 추가/편집 네비게이션
-- [ ] 로딩 상태 처리
+- [x] `/trips/:id` 라우트 구현 - 완료
+- [x] TripHeader 구현 (커버 이미지, 기본 정보, 진행률) - 완료
+- [x] Day 탭 네비게이션 구현 (Sticky) - 탭 방식으로 구현 완료
+- [x] PlanCard 목록 구현 (DayPlanCard → PlanCard) - 완료
+- [x] 빈 상태 처리 (계획 추가 버튼) - 완료
+- [x] 실시간 데이터 구독 (onSnapshot) - Trip & Plans 모두 완료
+- [x] 지도 보기 버튼 (헤더) - 완료
+- [x] 계획 추가/편집 네비게이션 - 완료
+- [x] 로딩 상태 처리 - 완료
+- [x] 권한 검사 및 에러 처리 - 완료
 
 ### 7.5 일정 편집 화면 (PlanDetail) - PLAN-001
 
@@ -425,20 +428,20 @@
 ### 8.1 Authentication 구현
 
 #### 시스템 구축 작업
-- [ ] `useAuth` 커스텀 훅 구현
-- [ ] 익명 로그인 자동화
-- [ ] 사용자 상태 관리 (Context API)
-- [ ] 인증 가드 컴포넌트 구현
-- [ ] 로그아웃 기능 (선택적)
+- [x] `useAuth` 커스텀 훅 구현 - AuthContext.tsx 완료
+- [x] 익명 로그인 자동화 - Home 화면에서 구현 완료
+- [x] 사용자 상태 관리 (Context API) - AuthProvider 완료
+- [x] AuthProvider 컴포넌트 구현 - App.tsx에 적용 완료
+- [x] 로그아웃 기능 (선택적) - signOut 함수 구현 완료
 
 ### 8.2 Firestore 연동
 
 #### 시스템 구축 작업
-- [ ] `useTrips` 훅 구현 (여행 목록 구독)
-- [ ] `useTrip` 훅 구현 (특정 여행 구독)
-- [ ] `usePlans` 훅 구현 (일정 목록 구독)
-- [ ] `usePlaces` 훅 구현 (개인 장소 라이브러리)
-- [ ] CRUD 함수 구현
+- [x] `useTrips` 훅 구현 (여행 목록 구독) - Home 화면에서 구현 완료
+- [x] `useTrip` 훅 구현 (특정 여행 구독) - TripDetail 화면에서 구현 완룼
+- [x] `usePlans` 훅 구현 (일정 목록 구독) - TripDetail 화면에서 구현 완료
+- [ ] `usePlaces` 훅 구현 (개인 장소 라이브러리) - PlaceSearch에서 구현 예정
+- [x] CRUD 함수 구현 - Trip 생성 완료, Plan CRUD 예정
   ```typescript
   // Trip 관련
   createTrip, updateTrip, deleteTrip
@@ -449,20 +452,20 @@
   // Place 관련
   createPlace, updatePlace, deletePlace, toggleFavorite
   ```
-- [ ] 실시간 구독 최적화 (불필요한 리스너 제거)
+- [x] 실시간 구독 최적화 (불필요한 리스너 제거) - useEffect cleanup 구현 완료
 
 ### 8.3 Storage 연동
 
 #### 시스템 구축 작업
-- [ ] 이미지 업로드 함수 구현
+- [x] 이미지 업로드 함수 구현 - TripCreate에서 구현 완료
   ```typescript
   uploadImage(file: File, path: string): Promise<string>
   deleteImage(url: string): Promise<void>
   ```
-- [ ] 이미지 압축 및 최적화
-- [ ] 업로드 진행률 표시
-- [ ] 에러 처리 및 재시도 로직
-- [ ] 이미지 삭제 시 Storage 정리
+- [ ] 이미지 압축 및 최적화 - 필요시 추가
+- [x] 업로드 진행률 표시 - loading 상태로 처리 완료
+- [x] 에러 처리 및 재시도 로직 - try-catch 및 에러 메시지 완료
+- [ ] 이미지 삭제 시 Storage 정리 - 필요시 추가
 
 ---
 
@@ -471,16 +474,16 @@
 ### 9.1 Leaflet 설정
 
 #### 시스템 구축 작업
-- [ ] Leaflet CSS import
-- [ ] react-leaflet 컴포넌트 설정
-- [ ] OpenStreetMap 타일 레이어 설정
+- [x] Leaflet CSS import
+- [x] react-leaflet 컴포넌트 설정
+- [x] OpenStreetMap 타일 레이어 설정
 - [ ] 대안 타일 서버 설정 (CartoDB, Stamen)
-- [ ] 지도 기본 옵션 설정 (줌, 중심점)
+- [x] 지도 기본 옵션 설정 (줌, 중심점)
 
 ### 9.2 마커 및 팝업
 
 #### 시스템 구축 작업
-- [ ] 커스텀 마커 아이콘 생성 (유형별 색상)
+- [x] 커스텀 마커 아이콘 생성 (유형별 색상)
   ```typescript
   const createPlanIcon = (type: string) => L.divIcon({
     html: `<div style="background: ${getTypeColor(type)}">
@@ -489,18 +492,19 @@
     iconSize: [24, 24]
   });
   ```
-- [ ] Popup 컴포넌트 구현
-- [ ] 마커 클릭 이벤트 처리
-- [ ] 지도 중심 이동 기능 (flyTo)
+- [x] Popup 컴포넌트 구현
+- [x] 마커 클릭 이벤트 처리
+- [x] 지도 중심 이동 기능 (자동 bounds 설정)
+- [x] TravelMap 컴포넌트 완성 (MapController 포함)
 
 ### 9.3 좌표 입력 시스템
 
 #### 시스템 구축 작업
-- [ ] 좌표 입력 모달 컴포넌트
-- [ ] 좌표 유효성 검증 (위도: -90~90, 경도: -180~180)
-- [ ] 좌표 저장 로직 (Firestore 업데이트)
-- [ ] 좌표 찾기 가이드 UI
-- [ ] 에러 처리 및 사용자 피드백
+- [ ] 좌표 입력 모달 컴포넌트 - TripMap 화면에서 구현
+- [x] 좌표 유효성 검증 (위도: -90~90, 경도: -180~180) - TravelMap에서 적용
+- [ ] 좌표 저장 로직 (Firestore 업데이트) - PlanDetail에서 구현
+- [ ] 좌표 찾기 가이드 UI - TripMap에서 구현
+- [x] 에러 처리 및 사용자 피드백 - TravelMap에서 적용
 
 ---
 

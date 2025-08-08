@@ -1,10 +1,10 @@
 import React from 'react';
-import { cn } from './ui/utils';
+import { cn } from '../lib/utils';
 
 interface GlassCardProps {
   children: React.ReactNode;
   className?: string;
-  variant?: 'default' | 'strong' | 'light';
+  variant?: 'default' | 'strong' | 'light' | 'travel';
   withWaveEffect?: boolean;
   hoverable?: boolean;
 }
@@ -17,9 +17,10 @@ export const GlassCard: React.FC<GlassCardProps> = ({
   hoverable = true
 }) => {
   const variants = {
-    default: 'bg-white/10 backdrop-blur-md border border-white/20',
-    strong: 'bg-white/20 backdrop-blur-xl border border-white/30',
-    light: 'bg-white/5 backdrop-blur-sm border border-white/10'
+    default: 'bg-glass-light backdrop-blur-md border border-white/20',
+    strong: 'bg-glass-strong backdrop-blur-xl border border-white/30',
+    light: 'bg-glass-light backdrop-blur-sm border border-white/10',
+    travel: 'bg-gradient-to-br from-primary-500/10 via-glass-medium to-travel-blue/10 backdrop-blur-lg border border-primary-300/20'
   };
 
   return (
