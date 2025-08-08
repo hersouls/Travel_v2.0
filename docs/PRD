@@ -1,4 +1,4 @@
-🎧 Moonwave 오안나 음악 플레이어 MVP - PRD 문서
+✈️ Moonwave 여행 관리 - PRD 문서
 
 
 ---
@@ -7,16 +7,16 @@
 
 항목	내용
 
-프로젝트명	Moonwave 오안나 음악 플레이어 MVP
-목적	13곡으로 구성된 정적 웹 기반 음악 플레이어 서비스 제공
-도메인	https://oh.moonwave.kr
-저장소	https://github.com/hersouls/Oh_v1.0
-배포 방식	GitHub Actions + GitHub Pages
-로그인	❌ 필요 없음
-DB 사용	❌ 없음 (Supabase, Firebase 연동 없음)
-외부 API	❌ 없음 (모든 데이터는 JSON/정적파일로 관리)
+프로젝트명	Moonwave 여행 관리
+목적	Moonwave 여행 스케줄을 관리하는 정적 웹 기반 여행 관리 서비스 제공
+도메인	https://travel.moonwave.kr
+저장소	https://github.com/hersouls/Travel_v2.0
+배포 방식	GitHub Actions + Vercel
+로그인	익명 로그인 (Firebase)
+DB 사용	Firebase
+외부 API	❌ 없음
 서비스 타입	정적 SPA + PWA (모바일 최적화 및 설치형 앱 포함)
-디자인 가이드	Moonwave 브랜드 디자인 가이드 기반 적용
+디자인 가이드	Moonwave 브랜드 가이드 기반 적용
 
 
 
@@ -26,42 +26,60 @@ DB 사용	❌ 없음 (Supabase, Firebase 연동 없음)
 
 영역	기술
 
-프론트엔드	React + Vite
-UI 스타일링	Tailwind CSS
-오디오 재생	HTML5 <audio> 태그 + useRef 제어
-상태관리	useState, useRef
-배포	GitHub Pages (Actions 자동 배포 스크립트 포함)
-데이터 구조	/public/sample-tracks.json, /music, /covers
-앱 아이콘	/public/moonwave_log.png (PWA 앱 실행 아이콘)
+프론트엔드	React 19 + Vite
+UI 스타일링	Tailwind CSS + Radix UI Components
+상태관리	useState, useContext, React Hook Form
+데이터베이스	Firebase Firestore
+인증	Firebase Auth (익명 로그인)
+배포	GitHub Actions + Vercel
+라우팅	React Router (SPA)
+PWA	manifest.json + Service Worker
+타입체크	TypeScript 5.8
 
 
 
 ---
 
-🎵 3. 음원 구성 및 저장 방식
+📅 3. 여행 데이터 구조 및 저장 방식
 
-총 13곡
+데이터 저장 구조
 
-모든 음원은 /public/music/ 경로에 .mp3 파일로 저장
+모든 여행 일정은 Firebase Firestore에 저장
 
-음원 커버 이미지는 /public/covers/에 저장
+사용자별 익명 인증을 통한 개인 데이터 관리
 
-트랙 메타정보 및 곡 설명은 /public/sample-tracks.json에 다음 구조로 저장:
+여행 일정 데이터 구조:
 
 
 {
-  "id": 1,
-  "title": "Shine Bright",
-  "artist": "오안나",
-  "audioUrl": "/music/shine-bright.mp3",
-  "coverUrl": "/covers/shine-bright.jpg",
-  "description": "오안나가 자신의 리듬, 궤적, 침묵, 파동 위에 스스로 빛이 되어 무대를 밝혀낸 마지막 선언곡",
-  "lyrics": "숨죽인 무대 위...",
-  "interpretation": "이 곡은 외부 조명 없이도 자신의 내면에서 발산되는 빛을 상징합니다...",
-  "sync": [
-    { "time": 0, "line": "숨죽인 무대 위" },
-    { "time": 5, "line": "조명 없는 나의 길" }
-  ]
+  "id": "travel_id_123",
+  "userId": "anonymous_user_id",
+  "title": "2025 도쿄 여행",
+  "startDate": "2025-03-15",
+  "endDate": "2025-03-22",
+  "destination": "도쿄, 일본",
+  "members": ["김문유", "오안나"],
+  "budget": 2000000,
+  "status": "planned", // planned, ongoing, completed
+  "itinerary": [
+    {
+      "day": 1,
+      "date": "2025-03-15",
+      "activities": [
+        {
+          "time": "09:00",
+          "title": "인천공항 출발",
+          "location": "인천국제공항",
+          "notes": "대한항공 KE123",
+          "cost": 450000
+        }
+      ]
+    }
+  ],
+  "accommodations": [],
+  "transportation": [],
+  "createdAt": "timestamp",
+  "updatedAt": "timestamp"
 }
 
 
@@ -71,13 +89,14 @@ UI 스타일링	Tailwind CSS
 
 요소	요구사항
 
-메인 화면	커버 이미지 중심 카드형 UI, 하단에 플레이어 영역 고정
-트랙 리스트	가로 슬라이드 방식 or 수직 목록형 선택 가능
-플레이어 영역	재생/정지, 볼륨, 진행바, 다음/이전곡, 반복 버튼 포함
-상세 뷰	곡 제목 + 설명 + 가사 + 해석 + 싱크 가사 출력 (스크롤형)
-가사 싱크	실시간 하이라이팅, 오디오 currentTime과 sync[] 연동
-인트로 페이지	서비스 소개 + 오안나 세계관 요약 + 음악 목록 진입 버튼
-다운로드 기능	각 곡마다 .mp3 개별 다운로드 버튼 추가
+메인 화면	여행 목록 카드형 UI, 새 여행 추가 버튼
+여행 목록	진행중/예정/완료 여행 구분, 필터링 및 정렬 기능
+여행 상세	일자별 일정 표시, 편집 모드, 예산 관리
+일정 편집	드래그 앤 드롭으로 일정 순서 변경 가능
+예산 관리	총 예산 대비 사용 금액 실시간 계산 및 시각화
+지도 표시	정적 지도 이미지 또는 iframe 임베드 (API 미사용)
+공유 기능	여행 일정 공유 링크 생성, PDF 내보내기
+알림 기능	여행 시작 전 알림, 일정 리마인더
 반응형	모바일 우선 디자인, 최소 375px 대응
 테마	Moonwave 색상 기준 (연보라/검정/흰톤 조합)
 
@@ -87,11 +106,15 @@ UI 스타일링	Tailwind CSS
 
 🔐 5. 인증 및 데이터 관리
 
-로그인/회원가입 없음
+Firebase 익명 인증 사용
 
-모든 데이터는 정적 JSON 또는 정적 파일 기반
+첫 방문 시 자동으로 익명 계정 생성
 
-보안 이슈 없음 (오픈된 공개 자료 기반)
+브라우저 로컬 스토리지에 인증 토큰 저장
+
+데이터는 사용자별로 격리되어 Firestore에 저장
+
+선택적 소셜 로그인 업그레이드 가능 (Google, GitHub)
 
 
 
@@ -99,22 +122,20 @@ UI 스타일링	Tailwind CSS
 
 🚀 6. 배포 구성
 
-Github Actions 설정
+Github Actions + Vercel 설정
 
 브랜치: main
 
-저장소: hersouls/Oh_v1.0
+저장소: hersouls/Travel_v2.0
 
-빌드 명령: vite build
+빌드 명령: npm run build
 
-아티팩트 경로: /dist
+배포 플랫폼: Vercel
 
-배포 대상: GitHub Pages (gh-pages 브랜치 자동 생성)
-
-사용 액션: peaceiris/actions-gh-pages@v3
+환경 변수: Firebase 설정 키
 
 
-name: Deploy to GitHub Pages
+name: Deploy to Vercel
 
 on:
   push:
@@ -122,7 +143,7 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -138,60 +159,70 @@ jobs:
 
       - name: Build project
         run: npm run build
+        env:
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v20
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-args: '--prod'
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
 
 DNS 설정
 
-oh.moonwave.kr → hersouls/Oh_v1.0 GitHub Pages 연결
+travel.moonwave.kr → Vercel 프로젝트 연결
 
-DNS A 레코드 or CNAME 파일 /public/CNAME 생성 필요:
-
-
-oh.moonwave.kr
+Vercel 대시보드에서 커스텀 도메인 설정
 
 
 ---
 
-📖 7. 콘텐츠 예시 - 'Shine Bright'
+📖 7. 주요 기능 상세
 
-> "오안나가 자신의 리듬, 궤적, 침묵, 파동 위에 스스로 빛이 되어 무대를 밝혀낸 마지막 선언곡"
+✈️ 여행 일정 관리
 
+새 여행 생성 및 기본 정보 입력 (목적지, 날짜, 인원, 예산)
 
+일자별 세부 일정 추가/수정/삭제
 
-✨ 핵심 철학
+시간대별 활동 관리 및 알림 설정
 
-조용한 반복, 실패의 흔적, 정의되지 않은 궤적들 속에서 끝내 자기 존재의 빛을 만든 사람의 이야기
-
-“I'm not lit, I ignite” → 외부 조명 아닌 내면의 점화
-
-
-🎧 사운드 구조
-
-정적 → 확장 → 폭발 → 공명 구조의 서사
-
-밀도와 질감 중심의 빛의 음향화 구현
+드래그 앤 드롭으로 일정 순서 조정
 
 
-📝 가사 (요약)
+💰 예산 관리
 
-숨죽인 무대 위, 조명 없는 나의 길
-반복된 silence, 깨진 trace — 그게 나의 base
-...
-I shine bright, not by chance
-내 리듬은 우연이 아냐, it's a dance
+총 예산 설정 및 카테고리별 할당
 
-🌟 해석 요약
+실시간 지출 내역 입력 및 추적
 
-빛은 단순히 ‘밝음’이 아니라 존재의 본질이 드러나는 자기발광
+남은 예산 자동 계산 및 시각화
 
-무대는 주어진 것이 아니라 만들어낸 공간
+환율 계산기 (선택적)
 
-완성이자 새로운 시작으로 작용
+
+🏨 숙소 및 교통 관리
+
+숙소 예약 정보 저장 (체크인/아웃, 주소, 연락처)
+
+항공/기차/버스 등 교통편 정보 관리
+
+예약 확인 번호 및 관련 문서 업로드
+
+
+📤 공유 및 내보내기
+
+여행 일정 공유 링크 생성
+
+PDF 형식으로 일정표 다운로드
+
+캘린더 앱 연동 (iCal 형식)
+
+SNS 공유 기능
 
 
 
@@ -201,11 +232,15 @@ I shine bright, not by chance
 
 항목	내용
 
-가사 싱크 기능	✅ 포함됨 (sync[] 기반 실시간 표시)
-앨범 단위 grouping	시리즈별/테마별 구분 UI 적용
-인트로 페이지	✅ 포함됨 (첫 진입 시 안내형 커버 + 진입 버튼)
-다운로드 기능	✅ 각 곡 mp3 다운로드 버튼 포함
-PWA 앱화	✅ 적용 (manifest + /public/moonwave_log.png 앱 아이콘)
+오프라인 모드	Service Worker를 통한 오프라인 데이터 캐싱
+실시간 협업	여러 사용자가 동시에 일정 편집 가능
+체크리스트	준비물 및 할 일 목록 관리
+사진 갤러리	여행 사진 업로드 및 앨범 생성
+리뷰 기능	여행 후기 및 평점 기록
+비용 정산	그룹 여행 시 비용 분담 계산
+다크 모드	사용자 선호에 따른 테마 전환
+데이터 백업	일정 데이터 JSON 내보내기/가져오기
+템플릿 기능	자주 가는 여행지 템플릿 저장 및 재사용
 
 
 
@@ -213,10 +248,12 @@ PWA 앱화	✅ 적용 (manifest + /public/moonwave_log.png 앱 아이콘)
 
 ✅ 문서 버전
 
-버전: PRD v1.2
+버전: PRD v2.0 (Travel Management)
 
-작성일: 2025-07-29
+작성일: 2025-08-08
 
-담당: 문유오빠 (Moonwave HQ)
+업데이트: 음악 플레이어에서 여행 관리 서비스로 전환
+
+담당: Moonwave Team
 
 
