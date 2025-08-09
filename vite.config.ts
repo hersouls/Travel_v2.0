@@ -4,8 +4,8 @@ import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  // Use GitHub Pages base path when building in CI
-  base: process.env.GITHUB_PAGES === 'true' ? '/Travel_v2.0/' : '/',
+  // Base path configurable via env for GitHub Pages/custom domains
+  base: process.env.VITE_BASE_PATH || '/',
   plugins: [react()],
   resolve: {
     alias: {

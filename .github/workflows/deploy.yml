@@ -43,7 +43,7 @@ jobs:
           VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
           VITE_FIREBASE_MEASUREMENT_ID: ${{ secrets.VITE_FIREBASE_MEASUREMENT_ID }}
-          GITHUB_PAGES: 'true'
+          VITE_BASE_PATH: '/'
         run: |
           npm run build
           # SPA fallback for direct deep links on GitHub Pages
@@ -56,4 +56,5 @@ jobs:
           publish_dir: ./dist
           publish_branch: gh-pages
           commit_message: Deploy to gh-pages
+          cname: travel.moonwave.kr
           enable_jekyll: false
