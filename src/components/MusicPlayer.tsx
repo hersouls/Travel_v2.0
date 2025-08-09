@@ -18,6 +18,94 @@ interface MusicPlayerProps {
   className?: string;
 }
 
+// 트랙 목록 (모듈 레벨 상수로 고정)
+const TRACKS: MusicTrack[] = [
+  {
+    id: '1',
+    title: 'Glass Vault',
+    artist: 'Moonwave',
+    duration: 240,
+    audioUrl: '/Music/10. Glass Vault.mp3'
+  },
+  {
+    id: '2',
+    title: 'Null Error Grace Part1',
+    artist: 'Moonwave',
+    duration: 216,
+    audioUrl: '/Music/11. Null Error Grace Part1.mp3'
+  },
+  {
+    id: '3',
+    title: 'Null Error Grace Part2',
+    artist: 'Moonwave',
+    duration: 174,
+    audioUrl: '/Music/12. Null Error Grace Part2.mp3'
+  },
+  {
+    id: '4',
+    title: 'Shine Bright',
+    artist: 'Moonwave',
+    duration: 198,
+    audioUrl: '/Music/13. Shine Bright.mp3'
+  },
+  {
+    id: '5',
+    title: "It's my Moonwave life",
+    artist: 'Moonwave',
+    duration: 228,
+    audioUrl: "/Music/14. It's my Moonwave life.mp3"
+  },
+  {
+    id: '6',
+    title: 'Ride My Wave',
+    artist: 'Moonwave',
+    duration: 294,
+    audioUrl: '/Music/15. Ride My Wave.mp3'
+  },
+  {
+    id: '7',
+    title: 'Glow Not Noise',
+    artist: 'Moonwave',
+    duration: 258,
+    audioUrl: '/Music/16. Glow Not Noise.mp3'
+  },
+  {
+    id: '8',
+    title: 'Moonwave',
+    artist: 'Moonwave',
+    duration: 300,
+    audioUrl: '/Music/17. Moonwave.mp3'
+  },
+  {
+    id: '9',
+    title: 'Under the Moonlight',
+    artist: 'Moonwave',
+    duration: 204,
+    audioUrl: '/Music/18. Under the Moonlight.mp3'
+  },
+  {
+    id: '10',
+    title: 'Decode me slow',
+    artist: 'Moonwave',
+    duration: 252,
+    audioUrl: '/Music/19. Decode me slow.mp3'
+  },
+  {
+    id: '11',
+    title: 'Daily Jump',
+    artist: 'Moonwave',
+    duration: 180,
+    audioUrl: '/Music/6. 매일의 점프.mp3'
+  },
+  {
+    id: '12',
+    title: 'Bloom Syntax',
+    artist: 'Moonwave',
+    duration: 210,
+    audioUrl: '/Music/7. Bloom Syntax.mp3'
+  }
+];
+
 // 뮤직플레이어 메인 컴포넌트
 export function MusicPlayer({ className }: MusicPlayerProps) {
   const { user } = useAuth();
@@ -33,111 +121,22 @@ export function MusicPlayer({ className }: MusicPlayerProps) {
   const [hasAutoPlayed, setHasAutoPlayed] = useState(false);
   const [shouldAutoPlayNext, setShouldAutoPlayNext] = useState(false);
 
-  // 트랙 목록
-  const tracks: MusicTrack[] = [
-    {
-      id: '1',
-      title: 'Glass Vault',
-      artist: 'Moonwave',
-      duration: 240,
-      audioUrl: '/Music/10. Glass Vault.mp3'
-    },
-    {
-      id: '2',
-      title: 'Null Error Grace Part1',
-      artist: 'Moonwave',
-      duration: 216,
-      audioUrl: '/Music/11. Null Error Grace Part1.mp3'
-    },
-    {
-      id: '3',
-      title: 'Null Error Grace Part2',
-      artist: 'Moonwave',
-      duration: 174,
-      audioUrl: '/Music/12. Null Error Grace Part2.mp3'
-    },
-    {
-      id: '4',
-      title: 'Shine Bright',
-      artist: 'Moonwave',
-      duration: 198,
-      audioUrl: '/Music/13. Shine Bright.mp3'
-    },
-    {
-      id: '5',
-      title: "It's my Moonwave life",
-      artist: 'Moonwave',
-      duration: 228,
-      audioUrl: "/Music/14. It's my Moonwave life.mp3"
-    },
-    {
-      id: '6',
-      title: 'Ride My Wave',
-      artist: 'Moonwave',
-      duration: 294,
-      audioUrl: '/Music/15. Ride My Wave.mp3'
-    },
-    {
-      id: '7',
-      title: 'Glow Not Noise',
-      artist: 'Moonwave',
-      duration: 258,
-      audioUrl: '/Music/16. Glow Not Noise.mp3'
-    },
-    {
-      id: '8',
-      title: 'Moonwave',
-      artist: 'Moonwave',
-      duration: 300,
-      audioUrl: '/Music/17. Moonwave.mp3'
-    },
-    {
-      id: '9',
-      title: 'Under the Moonlight',
-      artist: 'Moonwave',
-      duration: 204,
-      audioUrl: '/Music/18. Under the Moonlight.mp3'
-    },
-    {
-      id: '10',
-      title: 'Decode me slow',
-      artist: 'Moonwave',
-      duration: 252,
-      audioUrl: '/Music/19. Decode me slow.mp3'
-    },
-    {
-      id: '11',
-      title: 'Daily Jump',
-      artist: 'Moonwave',
-      duration: 180,
-      audioUrl: '/Music/6. 매일의 점프.mp3'
-    },
-    {
-      id: '12',
-      title: 'Bloom Syntax',
-      artist: 'Moonwave',
-      duration: 210,
-      audioUrl: '/Music/7. Bloom Syntax.mp3'
-    }
-  ];
-
-  const currentTrack = tracks[currentTrackIndex];
+  const currentTrack = TRACKS[currentTrackIndex];
 
   // 랜덤 트랙 선택 (현재 트랙과 다른 트랙)
   const playRandomTrack = useCallback(() => {
-    if (tracks.length <= 1) {
-      // 트랙이 1개 이하면 그대로 유지
+    if (TRACKS.length <= 1) {
       return;
     }
     
     let randomIndex;
     do {
-      randomIndex = Math.floor(Math.random() * tracks.length);
-    } while (randomIndex === currentTrackIndex); // 현재 트랙과 다를 때까지 반복
+      randomIndex = Math.floor(Math.random() * TRACKS.length);
+    } while (randomIndex === currentTrackIndex);
     
-    console.log(`🔀 랜덤 재생: ${tracks[randomIndex].title}`);
+    console.log(`🔀 랜덤 재생: ${TRACKS[randomIndex].title}`);
     setCurrentTrackIndex(randomIndex);
-  }, [tracks.length, currentTrackIndex]);
+  }, [currentTrackIndex]);
 
   // 오디오 초기화 및 이벤트 설정
   useEffect(() => {
@@ -158,9 +157,7 @@ export function MusicPlayer({ className }: MusicPlayerProps) {
 
     const handleEnded = () => {
       setIsPlaying(false);
-      // 다음 트랙 자동재생 플래그 설정
       setShouldAutoPlayNext(true);
-      // 현재 트랙과 다른 랜덤 트랙 선택
       playRandomTrack();
     };
 
@@ -211,22 +208,20 @@ export function MusicPlayer({ className }: MusicPlayerProps) {
   // 로그인 시 자동재생
   useEffect(() => {
     if (user && !hasAutoPlayed && audioRef.current && currentTrack) {
-      // 랜덤 트랙 선택
-      const randomIndex = Math.floor(Math.random() * tracks.length);
+      const randomIndex = Math.floor(Math.random() * TRACKS.length);
       setCurrentTrackIndex(randomIndex);
       setHasAutoPlayed(true);
 
-      // 자동재생 시도 (브라우저 정책에 따라 실패할 수 있음)
       setTimeout(async () => {
         try {
           await audioRef.current?.play();
           console.log('자동재생 성공');
-        } catch (error) {
+        } catch {
           console.log('자동재생 실패 (브라우저 정책)');
         }
       }, 1000);
     }
-  }, [user, hasAutoPlayed, tracks.length, currentTrack]);
+  }, [user, hasAutoPlayed, currentTrack]);
 
   // 로그아웃 시 리셋
   useEffect(() => {
@@ -242,10 +237,9 @@ export function MusicPlayer({ className }: MusicPlayerProps) {
       audioRef.current.src = currentTrack.audioUrl;
       audioRef.current.load();
       
-      // 기존에 재생 중이었거나 자동재생 플래그가 설정되어 있으면 재생
       if (wasPlaying || shouldAutoPlayNext) {
         audioRef.current.play().catch(console.error);
-        setShouldAutoPlayNext(false); // 플래그 리셋
+        setShouldAutoPlayNext(false);
       }
     }
   }, [currentTrackIndex, shouldAutoPlayNext, currentTrack, isPlaying]);
@@ -277,18 +271,17 @@ export function MusicPlayer({ className }: MusicPlayerProps) {
   const previousTrack = () => {
     const newIndex = currentTrackIndex > 0 
       ? currentTrackIndex - 1 
-      : tracks.length - 1;
+      : TRACKS.length - 1;
     setCurrentTrackIndex(newIndex);
   };
 
   // 다음 트랙
   const nextTrack = () => {
-    const newIndex = currentTrackIndex < tracks.length - 1 
+    const newIndex = currentTrackIndex < TRACKS.length - 1 
       ? currentTrackIndex + 1 
       : 0;
     setCurrentTrackIndex(newIndex);
   };
-
 
   // 음소거 토글
   const toggleMute = () => {
