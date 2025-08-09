@@ -6,6 +6,23 @@ import { getStorage } from 'firebase/storage';
 import { getAnalytics } from 'firebase/analytics';
 import { getPerformance } from 'firebase/performance';
 
+// Validate required envs early for clearer errors
+function assertFirebaseEnvVariables(): void {
+  const missingKeys: string[] = [];
+  if (!import.meta.env.VITE_FIREBASE_API_KEY) missingKeys.push('VITE_FIREBASE_API_KEY');
+  if (!import.meta.env.VITE_FIREBASE_AUTH_DOMAIN) missingKeys.push('VITE_FIREBASE_AUTH_DOMAIN');
+  if (!import.meta.env.VITE_FIREBASE_PROJECT_ID) missingKeys.push('VITE_FIREBASE_PROJECT_ID');
+  if (!import.meta.env.VITE_FIREBASE_STORAGE_BUCKET) missingKeys.push('VITE_FIREBASE_STORAGE_BUCKET');
+  if (!import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID) missingKeys.push('VITE_FIREBASE_MESSAGING_SENDER_ID');
+  if (!import.meta.env.VITE_FIREBASE_APP_ID) missingKeys.push('VITE_FIREBASE_APP_ID');
+
+  if (missingKeys.length > 0) {
+    throw new Error(`Missing Firebase environment variables: ${missingKeys.join(', ')}. Create a .env.local with VITE_ variables as documented in README.`);
+  }
+}
+
+assertFirebaseEnvVariables();
+
 // Firebase 설정 객체
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
