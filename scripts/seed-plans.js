@@ -205,10 +205,13 @@ async function main() {
 }
 
 // 스크립트 실행
-main().then(() => {
-  console.log('스크립트 실행 완료');
-  process.exit(0);
-}).catch((error) => {
-  console.error('스크립트 실행 실패:', error);
-  process.exit(1);
-});
+(async () => {
+  try {
+    await main();
+    console.log('스크립트 실행 완료');
+    process.exit(0);
+  } catch (error) {
+    console.error('스크립트 실행 실패:', error);
+    process.exit(1);
+  }
+})();
