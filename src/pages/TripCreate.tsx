@@ -26,6 +26,17 @@ export const TripCreate: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const formatKoreanDateLabel = (dateString: string) => {
+    if (!dateString) return '';
+    const [year, month, day] = dateString.split('-');
+    const date = new Date(Number(year), Number(month) - 1, Number(day));
+    const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+    const weekday = weekdays[date.getDay()];
+    const mm = month.padStart(2, '0');
+    const dd = day.padStart(2, '0');
+    return `${year}.${mm}.${dd}.${weekday}`;
+  };
+
   const countries = [
     '대한민국', '일본', '중국', '미국', '영국', '프랑스', '독일', '이탈리아',
     '스페인', '캐나다', '호주', '태국', '베트남', '싱가포르', '말레이시아',
@@ -254,6 +265,11 @@ export const TripCreate: React.FC = () => {
                   onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
                   className="w-full px-4 py-3 bg-glass-light backdrop-blur-sm border border-white/20 rounded-xl text-white focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300 touch-optimized transition-all text-numeric"
                 />
+                {formData.start_date && (
+                  <div className="text-xs-ko text-white/60 mt-1">
+                    {formatKoreanDateLabel(formData.start_date)}
+                  </div>
+                )}
               </div>
               <div>
                 <label className="block text-white text-sm-ko font-medium mb-2 tracking-ko-normal">
@@ -266,6 +282,11 @@ export const TripCreate: React.FC = () => {
                   min={formData.start_date}
                   className="w-full px-4 py-3 bg-glass-light backdrop-blur-sm border border-white/20 rounded-xl text-white focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300 touch-optimized transition-all text-numeric"
                 />
+                {formData.end_date && (
+                  <div className="text-xs-ko text-white/60 mt-1">
+                    {formatKoreanDateLabel(formData.end_date)}
+                  </div>
+                )}
               </div>
             </div>
 

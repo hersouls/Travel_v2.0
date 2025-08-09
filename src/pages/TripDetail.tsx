@@ -121,6 +121,17 @@ export const TripDetail: React.FC = () => {
     });
   };
 
+  const formatKoreanDateLabel = (dateString: string) => {
+    if (!dateString) return '';
+    const [year, month, day] = dateString.split('-');
+    const date = new Date(Number(year), Number(month) - 1, Number(day));
+    const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+    const weekday = weekdays[date.getDay()];
+    const mm = month.padStart(2, '0');
+    const dd = day.padStart(2, '0');
+    return `${year}.${mm}.${dd}.${weekday}`;
+  };
+
   const getTripDuration = () => {
     const start = new Date(trip.start_date);
     const end = new Date(trip.end_date);
@@ -190,9 +201,14 @@ export const TripDetail: React.FC = () => {
           >
             {/* Header with Title and Edit Button */}
             <div className="flex items-center justify-between mb-4">
-              <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white moonwave-glow break-words">
-                {trip.title}
-              </h1>
+              <div>
+                <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white moonwave-glow break-words">
+                  {trip.title}
+                </h1>
+                <p className="text-white/60 text-sm mt-1">
+                  {formatKoreanDateLabel(trip.start_date)} ~ {formatKoreanDateLabel(trip.end_date)}
+                </p>
+              </div>
               <WaveButton
                 variant="ghost"
                 size="sm"
