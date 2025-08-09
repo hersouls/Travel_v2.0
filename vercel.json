@@ -6,7 +6,6 @@
 
   "rewrites": [
     {
-      "source": "^/(?!assets/|manifest\\.json$|sw\\.js$|moonwave-icon\\.svg$).*$",
       "destination": "/index.html"
     }
   ],
