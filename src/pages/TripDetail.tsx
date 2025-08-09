@@ -190,9 +190,14 @@ export const TripDetail: React.FC = () => {
           >
             {/* Header with Title and Edit Button */}
             <div className="flex items-center justify-between mb-4">
-              <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white moonwave-glow break-words">
-                {trip.title}
-              </h1>
+              <div>
+                <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white moonwave-glow break-words">
+                  {trip.title}
+                </h1>
+                <p className="text-white/60 text-sm mt-1">
+                  {formatDate(trip.start_date)} ~ {formatDate(trip.end_date)}
+                </p>
+              </div>
               <WaveButton
                 variant="ghost"
                 size="sm"
