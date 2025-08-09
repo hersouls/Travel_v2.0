@@ -1,9 +1,11 @@
-const CACHE_NAME = 'moonwave-travel-v1.0.1';
+const CACHE_NAME = 'moonwave-travel-v1.0.2';
+const SCOPE_URL = new URL(self.registration.scope);
+
 const PRECACHE_URLS = [
-  '/',
-  '/index.html',
-  '/moonwave-icon.svg',
-  '/manifest.json'
+  '.',
+  'index.html',
+  'moonwave-icon.svg',
+  'manifest.json'
 ];
 
 self.addEventListener('install', (event) => {
@@ -33,7 +35,8 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
 
   // 자산 파일은 캐시 우선 (immutable)
-  const isAsset = new URL(request.url).pathname.startsWith('/assets/');
+  const assetsPrefix = new URL('assets/', SCOPE_URL).toString();
+  const isAsset = request.url.startsWith(assetsPrefix);
   if (isAsset) {
     event.respondWith(
       caches.match(request).then((cached) => {

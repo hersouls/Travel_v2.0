@@ -19,7 +19,7 @@ function App() {
 
   return (
     <AuthProvider>
-      <Router>
+      <Router basename={import.meta.env.BASE_URL}>
         <div className="min-h-screen relative">
           <WaveBackground />
           <div className="relative z-10 min-h-screen">

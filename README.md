@@ -397,3 +397,20 @@ MIT License - 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
 ---
 
 **Moonwave Team** - 여행의 모든 순간을 담다 ✈️🌙
+
+## 배포 (GitHub Pages)
+
+이 프로젝트는 GitHub Pages로 배포됩니다.
+
+- 브랜치: `main`
+- 경로(base): `/Travel_v2.0/`
+- 워크플로: `.github/workflows/deploy.yml`
+
+로컬에서 Pages 빌드 확인:
+
+```bash
+GITHUB_PAGES=true npm run build
+npx serve dist
+```
+
+깊은 링크를 위해 `dist/404.html`이 `index.html`의 복사본으로 업로드됩니다.
