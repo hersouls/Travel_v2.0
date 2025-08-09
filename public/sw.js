@@ -34,6 +34,11 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
 
+  // Early exit for non-GET requests: do not intercept or cache
+  if (request.method !== 'GET') {
+    return;
+  }
+
   // 자산 파일은 캐시 우선 (immutable)
   const assetsPrefix = new URL('assets/', SCOPE_URL).toString();
   const isAsset = request.url.startsWith(assetsPrefix);
