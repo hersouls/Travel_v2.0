@@ -36,6 +36,17 @@ export const TripEdit: React.FC = () => {
     '인도네시아', '필리핀', '인도', '브라질', '아르헨티나', '기타'
   ];
 
+  const formatKoreanDateLabel = (dateString: string) => {
+    if (!dateString) return '';
+    const [year, month, day] = dateString.split('-');
+    const date = new Date(Number(year), Number(month) - 1, Number(day));
+    const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+    const weekday = weekdays[date.getDay()];
+    const mm = month.padStart(2, '0');
+    const dd = day.padStart(2, '0');
+    return `${year}.${mm}.${dd}.${weekday}`;
+  };
+
   // 기존 여행 데이터 로드
   useEffect(() => {
     const loadTrip = async () => {
@@ -408,6 +419,11 @@ export const TripEdit: React.FC = () => {
                   onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
                   className="w-full px-4 py-3 bg-glass-light backdrop-blur-sm border border-white/20 rounded-xl text-white focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300 touch-optimized transition-all text-numeric"
                 />
+                {formData.start_date && (
+                  <div className="text-xs-ko text-white/60 mt-1">
+                    {formatKoreanDateLabel(formData.start_date)}
+                  </div>
+                )}
               </div>
               <div>
                 <label className="block text-white text-sm-ko font-medium mb-2 tracking-ko-normal">
@@ -420,6 +436,11 @@ export const TripEdit: React.FC = () => {
                   min={formData.start_date}
                   className="w-full px-4 py-3 bg-glass-light backdrop-blur-sm border border-white/20 rounded-xl text-white focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300 touch-optimized transition-all text-numeric"
                 />
+                {formData.end_date && (
+                  <div className="text-xs-ko text-white/60 mt-1">
+                    {formatKoreanDateLabel(formData.end_date)}
+                  </div>
+                )}
               </div>
             </div>
 
