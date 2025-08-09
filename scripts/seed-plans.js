@@ -1,4 +1,5 @@
 // Firebase v9 Firestore 일괄 Plan 등록 스크립트
+/* eslint-env node */
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, writeBatch, doc, serverTimestamp } from 'firebase/firestore';
 import { config } from 'dotenv';

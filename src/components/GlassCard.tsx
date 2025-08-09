@@ -24,12 +24,14 @@ export const GlassCard: React.FC<GlassCardProps> = ({
     strong: 'bg-glass-strong backdrop-blur-xl border border-white/30',
     light: 'bg-glass-light backdrop-blur-sm border border-white/10',
     travel: 'bg-gradient-to-br from-primary-500/10 via-glass-medium to-travel-blue/10 backdrop-blur-lg border border-primary-300/20'
-  };
+  } as const;
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (onClick && (event.key === 'Enter' || event.key === ' ')) {
       event.preventDefault();
-      onClick(event as any);
+      // React.MouseEvent과 호환되는 최소 속성만 전달
+      const syntheticClick = event as unknown as React.MouseEvent<HTMLDivElement>;
+      onClick(syntheticClick);
     }
     onKeyDown?.(event);
   };

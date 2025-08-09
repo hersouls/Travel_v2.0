@@ -4,9 +4,22 @@ import { GlassCard } from './GlassCard';
 import { cleanupAllFirebaseData, cleanupCurrentUserData } from '../utils/firebaseCleanup';
 import { Trash2, AlertTriangle, CheckCircle, XCircle, Loader } from 'lucide-react';
 
+type CleanupAllResult = {
+  success: boolean;
+  results?: { collection: string; deletedCount?: number; success?: boolean; error?: unknown }[];
+  error?: unknown;
+};
+
+type CleanupUserResult = {
+  success: boolean;
+  deletedTrips?: number;
+  deletedPlans?: number;
+  error?: unknown;
+};
+
 export const FirebaseCleanupButton: React.FC = () => {
   const [cleaning, setCleaning] = useState(false);
-  const [results, setResults] = useState<any>(null);
+  const [results, setResults] = useState<CleanupAllResult | CleanupUserResult | null>(null);
   const [confirmAll, setConfirmAll] = useState(false);
   const [confirmUser, setConfirmUser] = useState(false);
 
@@ -31,9 +44,9 @@ export const FirebaseCleanupButton: React.FC = () => {
     
     try {
       const result = await cleanupAllFirebaseData();
-      setResults(result);
+      setResults(result as CleanupAllResult);
     } catch (error) {
-      setResults({ success: false, error: 'Unexpected error occurred' });
+      setResults({ success: false, error } as CleanupAllResult);
     } finally {
       setCleaning(false);
       setConfirmAll(false);
@@ -60,9 +73,9 @@ export const FirebaseCleanupButton: React.FC = () => {
     
     try {
       const result = await cleanupCurrentUserData();
-      setResults(result);
+      setResults(result as CleanupUserResult);
     } catch (error) {
-      setResults({ success: false, error: 'Unexpected error occurred' });
+      setResults({ success: false, error } as CleanupUserResult);
     } finally {
       setCleaning(false);
       setConfirmUser(false);
@@ -180,26 +193,26 @@ export const FirebaseCleanupButton: React.FC = () => {
             </span>
           </div>
           
-          {results.results && (
+          {'results' in results && results.results && (
             <div className="mt-2 text-sm text-white/80">
-              {results.results.map((result: any, index: number) => (
+              {results.results.map((result, index) => (
                 <div key={index}>
-                  {result.collection}: {result.deletedCount}개 문서 삭제됨
+                  {result.collection}: {result.deletedCount ?? 0}개 문서 삭제됨
                 </div>
               ))}
             </div>
           )}
           
-          {results.deletedTrips !== undefined && (
+          {'deletedTrips' in results && results.deletedTrips !== undefined && (
             <div className="mt-2 text-sm text-white/80">
-              여행: {results.deletedTrips}개, 계획: {results.deletedPlans}개 삭제됨
+              여행: {results.deletedTrips}개, 계획: {('deletedPlans' in results && results.deletedPlans) ? results.deletedPlans : 0}개 삭제됨
             </div>
           )}
           
           {results.error && (
             <p className="text-xs text-red-300 mt-2">
               {typeof results.error === 'object' 
-                ? results.error.message || JSON.stringify(results.error)
+                ? (results.error as { message?: string }).message || JSON.stringify(results.error)
                 : String(results.error)
               }
             </p>

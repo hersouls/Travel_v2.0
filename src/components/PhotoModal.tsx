@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { WaveButton } from './WaveButton';
 import { GlassCard } from './GlassCard';
@@ -20,6 +20,19 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({
 }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
 
+  // navigation handlers are memoized to satisfy effect deps
+  const goToNext = useCallback(() => {
+    setCurrentIndex((prev) => (prev + 1) % photos.length);
+  }, [photos.length]);
+
+  const goToPrevious = useCallback(() => {
+    setCurrentIndex((prev) => (prev - 1 + photos.length) % photos.length);
+  }, [photos.length]);
+
+  const handleClose = useCallback(() => {
+    onClose();
+  }, [onClose]);
+
   // Reset index when modal opens
   useEffect(() => {
     if (isOpen) {
@@ -34,7 +47,7 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({
       
       switch (e.key) {
         case 'Escape':
-          onClose();
+          handleClose();
           break;
         case 'ArrowLeft':
           goToPrevious();
@@ -47,15 +60,7 @@ export const PhotoModal: React.FC<PhotoModalProps> = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, currentIndex, photos.length]);
-
-  const goToNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % photos.length);
-  };
-
-  const goToPrevious = () => {
-    setCurrentIndex((prev) => (prev - 1 + photos.length) % photos.length);
-  };
+  }, [isOpen, goToNext, goToPrevious, handleClose]);
 
   if (!isOpen || photos.length === 0) return null;
 

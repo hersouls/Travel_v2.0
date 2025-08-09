@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX } from 'lucide-react';
 import { WaveButton } from './WaveButton';
 import { GlassCard } from './GlassCard';
@@ -124,7 +124,7 @@ export function MusicPlayer({ className }: MusicPlayerProps) {
   const currentTrack = tracks[currentTrackIndex];
 
   // 랜덤 트랙 선택 (현재 트랙과 다른 트랙)
-  const playRandomTrack = () => {
+  const playRandomTrack = useCallback(() => {
     if (tracks.length <= 1) {
       // 트랙이 1개 이하면 그대로 유지
       return;
@@ -137,7 +137,7 @@ export function MusicPlayer({ className }: MusicPlayerProps) {
     
     console.log(`🔀 랜덤 재생: ${tracks[randomIndex].title}`);
     setCurrentTrackIndex(randomIndex);
-  };
+  }, [tracks.length, currentTrackIndex]);
 
   // 오디오 초기화 및 이벤트 설정
   useEffect(() => {
@@ -206,7 +206,7 @@ export function MusicPlayer({ className }: MusicPlayerProps) {
       audio.removeEventListener('canplay', handleCanPlay);
       audio.removeEventListener('error', handleError);
     };
-  }, [currentTrackIndex]);
+  }, [currentTrackIndex, currentTrack, playRandomTrack, volume]);
 
   // 로그인 시 자동재생
   useEffect(() => {
@@ -248,7 +248,7 @@ export function MusicPlayer({ className }: MusicPlayerProps) {
         setShouldAutoPlayNext(false); // 플래그 리셋
       }
     }
-  }, [currentTrackIndex, shouldAutoPlayNext]);
+  }, [currentTrackIndex, shouldAutoPlayNext, currentTrack, isPlaying]);
 
   // 시간 포맷팅
   const formatTime = (seconds: number) => {
@@ -385,19 +385,17 @@ export function MusicPlayer({ className }: MusicPlayerProps) {
           </div>
         </div>
 
-        {/* Progress Bar (모바일에서 숨김) */}
-        <div className="mt-4 hidden sm:block">
-          <div className="flex items-center justify-between text-xs text-white/60 mb-1">
+        {/* Progress Bar */}
+        <div className="mt-3 sm:mt-4">
+          <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-travel-blue to-travel-purple"
+              style={{ width: `${(currentTime / (duration || 1)) * 100}%` }}
+            />
+          </div>
+          <div className="flex justify-between mt-1 text-[10px] sm:text-xs text-white/60">
             <span>{formatTime(currentTime)}</span>
             <span>{formatTime(duration)}</span>
-          </div>
-          <div className="w-full bg-white/10 rounded-full h-1">
-            <div 
-              className="bg-travel-blue h-1 rounded-full transition-all duration-300"
-              style={{ 
-                width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` 
-              }}
-            />
           </div>
         </div>
       </GlassCard>
