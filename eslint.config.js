@@ -47,5 +47,21 @@ export default tseslint.config(
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
     },
+  },
+  {
+    files: ['scripts/**/*.js', '*.config.{js,cjs,mjs}', 'firebase-migration.js'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+      sourceType: 'module',
+    },
+    rules: {
+      'no-restricted-globals': 'off',
+      'no-restricted-imports': 'off',
+      'no-restricted-syntax': 'off',
+      'no-console': 'off',
+      'no-prototype-builtins': 'off',
+    },
   }
 );

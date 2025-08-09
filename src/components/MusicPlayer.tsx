@@ -221,7 +221,7 @@ export function MusicPlayer({ className }: MusicPlayerProps) {
         try {
           await audioRef.current?.play();
           console.log('자동재생 성공');
-        } catch (error) {
+        } catch {
           console.log('자동재생 실패 (브라우저 정책)');
         }
       }, 1000);
