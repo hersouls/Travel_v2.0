@@ -1,16 +1,19 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, Timestamp } from 'firebase/firestore';
+import { config } from 'dotenv';
+config();
 
 const USER_ID = 'f3NaO0zcLNWLJ7iSAFdKrEStRDx2';
 
 // Firebase 설정
 const firebaseConfig = {
-  apiKey: "AIzaSyBKuTrTT6mM5sHZBXwgZjT0ILvhUf1DfQw",
-  authDomain: "travel-v2-e5507.firebaseapp.com",
-  projectId: "travel-v2-e5507",
-  storageBucket: "travel-v2-e5507.firebasestorage.app",
-  messagingSenderId: "433842767476",
-  appId: "1:433842767476:web:bbe6b85e6b75aa3e6b7b96"
+  apiKey: process.env.VITE_FIREBASE_API_KEY,
+  authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.VITE_FIREBASE_APP_ID,
+  measurementId: process.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 const app = initializeApp(firebaseConfig);
