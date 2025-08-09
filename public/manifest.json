@@ -2,26 +2,26 @@
   "name": "Moonwave Travel",
   "short_name": "Travel",
   "description": "여행 계획과 기록을 위한 올인원 솔루션",
-  "start_url": "/",
+  "start_url": ".",
   "display": "standalone",
   "background_color": "#1a1a2e",
   "theme_color": "#16213e",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/moonwave-icon.svg",
+      "src": "moonwave-icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
-      "src": "/moonwave-icon.svg",
+      "src": "moonwave-icon.svg",
       "sizes": "192x192",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "/moonwave-icon.svg",
+      "src": "moonwave-icon.svg",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any"
@@ -33,10 +33,10 @@
       "name": "새 여행 만들기",
       "short_name": "새 여행",
       "description": "새로운 여행 계획을 시작합니다",
-      "url": "/create",
+      "url": "trips/new",
       "icons": [
         {
-          "src": "/moonwave-icon.svg",
+          "src": "moonwave-icon.svg",
           "sizes": "96x96"
         }
       ]
@@ -45,10 +45,10 @@
       "name": "장소 검색",
       "short_name": "장소 검색", 
       "description": "저장된 장소를 검색합니다",
-      "url": "/search",
+      "url": "places/search",
       "icons": [
         {
-          "src": "/moonwave-icon.svg",
+          "src": "moonwave-icon.svg",
           "sizes": "96x96"
         }
       ]
