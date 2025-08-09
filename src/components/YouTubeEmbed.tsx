@@ -108,7 +108,7 @@ export const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
           <WaveButton
             variant="ghost"
             size="sm"
-            onClick={(e) => handleModalClose(e)}
+            onClick={() => handleModalClose()}
             className="absolute top-6 right-6 md:top-8 md:right-8 lg:top-12 lg:right-12 z-10 bg-black/30 hover:bg-black/50 rounded-full p-3"
             ariaLabel="닫기"
           >
