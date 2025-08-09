@@ -3,8 +3,9 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts';
 import { GlassCard } from '../components/GlassCard';
 import { WaveButton } from '../components/WaveButton';
+import { Header } from '../components/Header';
+import { Footer } from '../components/Footer';
 import { 
-  ArrowLeft, 
   Search, 
   Plus, 
   Heart, 
@@ -14,7 +15,8 @@ import {
   Bed,
   Car,
   Filter,
-  Clock
+  Clock,
+
 } from 'lucide-react';
 import { 
   collection, 
@@ -77,7 +79,7 @@ const PlaceCard: React.FC<PlaceCardProps> = ({ place, onSelect, onToggleFavorite
             <span className="text-xs text-white/60 bg-white/10 px-2 py-1 rounded-full">
               {getTypeLabel(place.type)}
             </span>
-            {place.is_favorite && (
+            {place.favorite && (
               <Heart className="w-4 h-4 text-red-400 fill-current" />
             )}
           </div>
@@ -122,7 +124,7 @@ const PlaceCard: React.FC<PlaceCardProps> = ({ place, onSelect, onToggleFavorite
         >
           <Heart 
             className={`w-5 h-5 ${
-              place.is_favorite ? 'text-red-400 fill-current' : 'text-white/40'
+              place.favorite ? 'text-red-400 fill-current' : 'text-white/40'
             }`} 
           />
         </button>
@@ -216,8 +218,8 @@ export const PlaceSearch: React.FC = () => {
     filtered.sort((a, b) => {
       switch (sortBy) {
         case 'favorite':
-          if (a.is_favorite && !b.is_favorite) return -1;
-          if (!a.is_favorite && b.is_favorite) return 1;
+          if (a.favorite && !b.favorite) return -1;
+          if (!a.favorite && b.favorite) return 1;
           return (b.usage_count || 0) - (a.usage_count || 0);
         case 'usage':
           return (b.usage_count || 0) - (a.usage_count || 0);
@@ -263,7 +265,7 @@ export const PlaceSearch: React.FC = () => {
   const handleToggleFavorite = async (place: Place) => {
     try {
       await updateDoc(doc(db, 'users', user!.uid, 'places', place.id), {
-        is_favorite: !place.is_favorite,
+        favorite: !place.favorite,
         updated_at: Timestamp.now(),
       });
     } catch (error) {
@@ -277,18 +279,17 @@ export const PlaceSearch: React.FC = () => {
 
     try {
       const placeData: Omit<Place, 'id'> = {
-        user_id: user.uid,
+
         name: newPlace.name.trim(),
         address: newPlace.address.trim() || undefined,
         type: newPlace.type,
         rating: newPlace.rating || undefined,
         latitude: undefined,
         longitude: undefined,
-        is_favorite: false,
+        favorite: false,
         usage_count: 0,
         created_at: Timestamp.now(),
         updated_at: Timestamp.now(),
-        last_used: Timestamp.now(),
       };
 
       await addDoc(collection(db, 'users', user.uid, 'places'), placeData);
@@ -308,228 +309,222 @@ export const PlaceSearch: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-secondary-900 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-white text-lg">장소 목록을 불러오는 중...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-secondary-900">
-      {/* Header */}
-      <div className="sticky top-0 bg-gradient-to-r from-primary-900/90 to-secondary-900/90 backdrop-blur-sm z-10">
-        <div className="flex items-center justify-between p-6">
-          <WaveButton
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate(-1)}
-            className="!p-2"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </WaveButton>
-          
-          <h1 className="text-lg font-bold text-white">장소 검색</h1>
-          
-          <WaveButton
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowNewPlaceForm(!showNewPlaceForm)}
-            className="!p-2"
-          >
-            <Plus className="w-5 h-5" />
-          </WaveButton>
-        </div>
-      </div>
-
-      <div className="px-6 pb-6">
-        {/* Search Bar */}
-        <div className="mb-6">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/50" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="장소명이나 주소로 검색..."
-              className="w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300"
-            />
+    <div className="min-h-screen">
+      <Header />
+      {/* Main Content */}
+      <div className="pt-20 px-4 pb-6">
+        <div className="max-w-7xl mx-auto">
+          {/* Page Title */}
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold text-white text-center flex-1 text-glow">
+              장소 검색
+            </h1>
+            <WaveButton
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowNewPlaceForm(!showNewPlaceForm)}
+              className="!p-2"
+            >
+              <Plus className="w-5 h-5" />
+            </WaveButton>
           </div>
-        </div>
-
-        {/* Filters */}
-        <div className="mb-6 space-y-4">
-          {/* Type Filter */}
-          <div>
-            <div className="flex items-center space-x-2 mb-2">
-              <Filter className="w-4 h-4 text-white/60" />
-              <span className="text-white/60 text-sm">유형</span>
-            </div>
-            <div className="flex space-x-2 overflow-x-auto pb-2">
-              {placeTypes.map((type) => (
-                <button
-                  key={type.value}
-                  onClick={() => setSelectedType(type.value)}
-                  className={`flex-shrink-0 px-3 py-2 rounded-lg text-sm transition-all ${
-                    selectedType === type.value
-                      ? 'bg-primary-500 text-white'
-                      : 'bg-white/10 text-white/70 hover:bg-white/20'
-                  }`}
-                >
-                  {type.icon} {type.label}
-                </button>
-              ))}
+          {/* Search Bar */}
+          <div className="mb-6">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/50" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="장소명이나 주소로 검색..."
+                className="w-full pl-12 pr-4 py-3 bg-glass-light backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300"
+              />
             </div>
           </div>
 
-          {/* Sort Options */}
-          <div>
-            <div className="flex items-center space-x-2 mb-2">
-              <span className="text-white/60 text-sm">정렬</span>
+          {/* Filters */}
+          <div className="mb-6 space-y-4">
+            {/* Type Filter */}
+            <div>
+              <div className="flex items-center space-x-2 mb-2">
+                <Filter className="w-4 h-4 text-white/60" />
+                <span className="text-white/60 text-sm">유형</span>
+              </div>
+              <div className="flex space-x-2 overflow-x-auto pb-2">
+                {placeTypes.map((type) => (
+                  <button
+                    key={type.value}
+                    onClick={() => setSelectedType(type.value)}
+                    className={`flex-shrink-0 px-3 py-2 rounded-lg text-sm transition-all ${
+                      selectedType === type.value
+                        ? 'bg-primary-500 text-white'
+                        : 'bg-white/10 text-white/70 hover:bg-white/20'
+                    }`}
+                  >
+                    {type.icon} {type.label}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="flex space-x-2">
-              {sortOptions.map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => setSortBy(option.value)}
-                  className={`px-3 py-2 rounded-lg text-sm transition-all ${
-                    sortBy === option.value
-                      ? 'bg-primary-500 text-white'
-                      : 'bg-white/10 text-white/70 hover:bg-white/20'
-                  }`}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
 
-        {/* New Place Form */}
-        {showNewPlaceForm && (
-          <GlassCard variant="travel" className="mb-6">
-            <h3 className="text-lg font-semibold text-white mb-4">새 장소 추가</h3>
-            <form onSubmit={handleAddNewPlace} className="space-y-4">
-              <div>
-                <input
-                  type="text"
-                  value={newPlace.name}
-                  onChange={(e) => setNewPlace({ ...newPlace, name: e.target.value })}
-                  placeholder="장소명 *"
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300"
-                  required
-                />
+            {/* Sort Options */}
+            <div>
+              <div className="flex items-center space-x-2 mb-2">
+                <span className="text-white/60 text-sm">정렬</span>
               </div>
-              
-              <div>
-                <input
-                  type="text"
-                  value={newPlace.address}
-                  onChange={(e) => setNewPlace({ ...newPlace, address: e.target.value })}
-                  placeholder="주소"
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300"
-                />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <select
-                  value={newPlace.type}
-                  onChange={(e) => setNewPlace({ ...newPlace, type: e.target.value as Plan['type'] })}
-                  className="px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300"
-                >
-                  {placeTypes.filter(t => t.value !== 'all').map(type => (
-                    <option key={type.value} value={type.value} className="bg-primary-800">
-                      {type.label}
-                    </option>
-                  ))}
-                </select>
-                
-                <div className="flex items-center space-x-2">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      type="button"
-                      onClick={() => setNewPlace({ ...newPlace, rating: star })}
-                      className={`w-6 h-6 ${
-                        star <= newPlace.rating ? 'text-yellow-400' : 'text-white/30'
-                      }`}
-                    >
-                      <Star className="w-6 h-6 fill-current" />
-                    </button>
-                  ))}
-                </div>
-              </div>
-              
               <div className="flex space-x-2">
-                <WaveButton
-                  type="submit"
-                  variant="travel"
-                  size="sm"
-                  className="flex-1"
-                >
-                  추가
-                </WaveButton>
-                <WaveButton
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowNewPlaceForm(false)}
-                >
-                  취소
-                </WaveButton>
+                {sortOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => setSortBy(option.value)}
+                    className={`px-3 py-2 rounded-lg text-sm transition-all ${
+                      sortBy === option.value
+                        ? 'bg-primary-500 text-white'
+                        : 'bg-white/10 text-white/70 hover:bg-white/20'
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
               </div>
-            </form>
-          </GlassCard>
-        )}
+            </div>
+          </div>
 
-        {/* Places List */}
-        <div className="space-y-4">
-          {filteredAndSortedPlaces.length === 0 ? (
-            <GlassCard variant="light" className="text-center py-8">
-              {searchQuery.trim() ? (
-                <>
-                  <Search className="w-16 h-16 text-white/40 mx-auto mb-4" />
-                  <p className="text-white/60 mb-4">
-                    '{searchQuery}'에 대한 검색 결과가 없습니다
-                  </p>
-                  <WaveButton 
-                    variant="travel" 
-                    onClick={() => setShowNewPlaceForm(true)}
+          {/* New Place Form */}
+          {showNewPlaceForm && (
+            <GlassCard variant="travel" className="mb-6">
+              <h3 className="text-lg font-semibold text-white mb-4">새 장소 추가</h3>
+              <form onSubmit={handleAddNewPlace} className="space-y-4">
+                <div>
+                  <input
+                    type="text"
+                    value={newPlace.name}
+                    onChange={(e) => setNewPlace({ ...newPlace, name: e.target.value })}
+                    placeholder="장소명 *"
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <input
+                    type="text"
+                    value={newPlace.address}
+                    onChange={(e) => setNewPlace({ ...newPlace, address: e.target.value })}
+                    placeholder="주소"
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <select
+                    value={newPlace.type}
+                    onChange={(e) => setNewPlace({ ...newPlace, type: e.target.value as Plan['type'] })}
+                    className="px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300"
                   >
-                    <Plus className="w-4 h-4 mr-2" />
-                    새 장소 추가
-                  </WaveButton>
-                </>
-              ) : (
-                <>
-                  <MapPin className="w-16 h-16 text-white/40 mx-auto mb-4" />
-                  <p className="text-white/60 mb-4">저장된 장소가 없어요</p>
-                  <WaveButton 
-                    variant="travel" 
-                    onClick={() => setShowNewPlaceForm(true)}
+                    {placeTypes.filter(t => t.value !== 'all').map(type => (
+                      <option key={type.value} value={type.value} className="bg-primary-800">
+                        {type.label}
+                      </option>
+                    ))}
+                  </select>
+                  
+                  <div className="flex items-center space-x-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setNewPlace({ ...newPlace, rating: star })}
+                        className={`w-6 h-6 ${
+                          star <= newPlace.rating ? 'text-yellow-400' : 'text-white/30'
+                        }`}
+                      >
+                        <Star className="w-6 h-6 fill-current" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="flex space-x-2">
+                  <WaveButton
+                    type="submit"
+                    variant="travel"
+                    size="sm"
+                    className="flex-1"
                   >
-                    <Plus className="w-4 h-4 mr-2" />
-                    첫 번째 장소 추가
+                    추가
                   </WaveButton>
-                </>
-              )}
+                  <WaveButton
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowNewPlaceForm(false)}
+                  >
+                    취소
+                  </WaveButton>
+                </div>
+              </form>
             </GlassCard>
-          ) : (
-            <>
-              <div className="text-white/60 text-sm mb-2">
-                {filteredAndSortedPlaces.length}개의 장소
-              </div>
-              {filteredAndSortedPlaces.map((place) => (
-                <PlaceCard
-                  key={place.id}
-                  place={place}
-                  onSelect={handleSelectPlace}
-                  onToggleFavorite={handleToggleFavorite}
-                />
-              ))}
-            </>
           )}
+
+          {/* Places List */}
+          <div className="space-y-4">
+            {filteredAndSortedPlaces.length === 0 ? (
+              <GlassCard variant="light" className="text-center py-8">
+                {searchQuery.trim() ? (
+                  <>
+                    <Search className="w-16 h-16 text-white/40 mx-auto mb-4" />
+                    <p className="text-white/60 mb-4">
+                      '{searchQuery}'에 대한 검색 결과가 없습니다
+                    </p>
+                    <WaveButton 
+                      variant="travel" 
+                      onClick={() => setShowNewPlaceForm(true)}
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      새 장소 추가
+                    </WaveButton>
+                  </>
+                ) : (
+                  <>
+                    <MapPin className="w-16 h-16 text-white/40 mx-auto mb-4" />
+                    <p className="text-white/60 mb-4">저장된 장소가 없어요</p>
+                    <WaveButton 
+                      variant="travel" 
+                      onClick={() => setShowNewPlaceForm(true)}
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      첫 번째 장소 추가
+                    </WaveButton>
+                  </>
+                )}
+              </GlassCard>
+            ) : (
+              <>
+                <div className="text-white/60 text-sm mb-2">
+                  {filteredAndSortedPlaces.length}개의 장소
+                </div>
+                {filteredAndSortedPlaces.map((place) => (
+                  <PlaceCard
+                    key={place.id}
+                    place={place}
+                    onSelect={handleSelectPlace}
+                    onToggleFavorite={handleToggleFavorite}
+                  />
+                ))}
+              </>
+            )}
+          </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

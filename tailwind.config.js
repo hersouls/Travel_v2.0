@@ -87,6 +87,25 @@ export default {
         'fade-in': 'fade-in 0.5s ease-out',
         'fade-out': 'fade-out 0.5s ease-out',
       },
+      screens: {
+        'xs': '475px',
+        'sm': '640px',
+        'md': '768px',
+        'lg': '1024px',
+        'xl': '1280px',
+        '2xl': '1536px',
+        '3xl': '1920px',
+      },
+      container: {
+        center: true,
+        padding: {
+          DEFAULT: '1rem',
+          sm: '2rem',
+          lg: '4rem',
+          xl: '5rem',
+          '2xl': '6rem',
+        },
+      },
       keyframes: {
         'wave-pulse': {
           '0%, 100%': { transform: 'scale(1)', opacity: '1' },
@@ -117,9 +136,20 @@ export default {
           '100%': { opacity: '0' },
         },
       },
+      lineClamp: {
+        '1': '1',
+        '2': '2',
+        '3': '3',
+        '4': '4',
+        '5': '5',
+      },
+      spacing: {
+        '18': '4.5rem',
+        '88': '22rem',
+      },
     },
   },
   plugins: [
-    require('@tailwindcss/container-queries'),
+    import('@tailwindcss/container-queries'),
   ],
 } 

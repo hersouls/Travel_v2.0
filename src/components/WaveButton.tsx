@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { cn } from '../lib/utils';
 
-interface WaveButtonProps {
+interface WaveButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   onClick?: () => void;
   variant?: 'primary' | 'secondary' | 'ghost' | 'travel';
@@ -18,7 +18,8 @@ export const WaveButton: React.FC<WaveButtonProps> = ({
   size = 'md',
   className,
   ariaLabel,
-  disabled = false
+  disabled = false,
+  ...props
 }) => {
   const [isPressed, setIsPressed] = useState(false);
 
@@ -64,6 +65,7 @@ export const WaveButton: React.FC<WaveButtonProps> = ({
         // Custom className
         className
       )}
+      {...props}
     >
       {/* Wave animation overlay */}
       <div 

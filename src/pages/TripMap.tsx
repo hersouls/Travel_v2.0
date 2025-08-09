@@ -3,15 +3,17 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts';
 import { GlassCard } from '../components/GlassCard';
 import { WaveButton } from '../components/WaveButton';
+import { Header } from '../components/Header';
+
 import { TravelMap } from '../components/TravelMap';
 import { PlanCard } from '../components/PlanCard';
 import { 
-  ArrowLeft, 
   Filter, 
   MapPin, 
   Calendar,
   Navigation,
-  Edit3
+  Edit3,
+  ArrowLeft
 } from 'lucide-react';
 import { 
   doc, 
@@ -31,6 +33,7 @@ export const TripMap: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   
+  const [trips, setTrips] = useState<Trip[]>([]);
   const [trip, setTrip] = useState<Trip | null>(null);
   const [plans, setPlans] = useState<Plan[]>([]);
   const [filteredPlans, setFilteredPlans] = useState<Plan[]>([]);
@@ -39,6 +42,7 @@ export const TripMap: React.FC = () => {
   const [selectedDay, setSelectedDay] = useState<number | 'all'>('all');
   const [showSidebar, setShowSidebar] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+  const [selectedTripId, setSelectedTripId] = useState<string | null>(id || null);
   
   // 좌표 입력 모달
   const [showCoordinateModal, setShowCoordinateModal] = useState(false);
@@ -48,12 +52,61 @@ export const TripMap: React.FC = () => {
     longitude: '',
   });
 
+  // 모든 여행 데이터 로드 (전체 지도 보기 모드)
   useEffect(() => {
-    if (!id || !user) return;
+    if (!user || id) return;
+    
+    const tripsQuery = query(
+      collection(db, 'trips'),
+      where('user_id', '==', user.uid),
+      orderBy('created_at', 'desc')
+    );
+    
+    const unsubscribe = onSnapshot(tripsQuery, (snapshot) => {
+      const tripsData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Trip[];
+      setTrips(tripsData);
+      setLoading(false);
+    });
+    
+    return () => unsubscribe();
+  }, [user, id]);
+
+  // 특정 여행과 플랜 데이터 로드
+  useEffect(() => {
+    if (!user) return;
+    
+    const tripId = selectedTripId || id;
+    if (!tripId) {
+      // 전체 플랜 로드
+      const plansQuery = query(
+        collection(db, 'plans'),
+        orderBy('day', 'asc'),
+        orderBy('start_time', 'asc')
+      );
+      
+      const plansUnsubscribe = onSnapshot(
+        plansQuery,
+        (snapshot) => {
+          const plansData = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          })) as Plan[];
+          // 사용자의 여행에 속한 플랜만 필터링
+          const userTripIds = trips.map(t => t.id);
+          const userPlans = plansData.filter(p => userTripIds.includes(p.trip_id));
+          setPlans(userPlans);
+        }
+      );
+      
+      return () => plansUnsubscribe();
+    }
 
     // Trip 데이터 구독
     const tripUnsubscribe = onSnapshot(
-      doc(db, 'trips', id),
+      doc(db, 'trips', tripId),
       (doc) => {
         if (doc.exists()) {
           const tripData = { id: doc.id, ...doc.data() } as Trip;
@@ -77,7 +130,8 @@ export const TripMap: React.FC = () => {
 
     // Plans 데이터 구독
     const plansQuery = query(
-      collection(db, 'trips', id, 'plans'),
+      collection(db, 'plans'),
+      where('trip_id', '==', tripId),
       orderBy('day', 'asc'),
       orderBy('start_time', 'asc')
     );
@@ -100,7 +154,7 @@ export const TripMap: React.FC = () => {
       tripUnsubscribe();
       plansUnsubscribe();
     };
-  }, [id, user]);
+  }, [selectedTripId, id, user, trips]);
 
   // Filter plans based on selected day
   useEffect(() => {
@@ -113,19 +167,19 @@ export const TripMap: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-secondary-900 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-white text-lg">지도를 불러오는 중...</div>
       </div>
     );
   }
 
-  if (error || !trip) {
+  if (error || (!trip && id)) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-secondary-900 flex items-center justify-center p-6">
+      <div className="min-h-screen flex items-center justify-center p-4">
         <GlassCard variant="travel" className="text-center">
           <p className="text-white mb-4">{error || '여행을 찾을 수 없습니다.'}</p>
           <WaveButton onClick={() => navigate('/')}>
-            홈으로 돌아가기
+            Back
           </WaveButton>
         </GlassCard>
       </div>
@@ -133,13 +187,14 @@ export const TripMap: React.FC = () => {
   }
 
   const getTripDuration = () => {
+    if (!trip) return 0;
     const start = new Date(trip.start_date);
     const end = new Date(trip.end_date);
     const diffTime = Math.abs(end.getTime() - start.getTime());
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
   };
 
-  const days = Array.from({ length: getTripDuration() }, (_, i) => i + 1);
+  const days = trip ? Array.from({ length: getTripDuration() }, (_, i) => i + 1) : [];
   const plansWithCoordinates = filteredPlans.filter(plan => plan.latitude && plan.longitude);
 
   const handlePlanClick = (plan: Plan) => {
@@ -172,7 +227,7 @@ export const TripMap: React.FC = () => {
     }
 
     try {
-      await updateDoc(doc(db, 'trips', id!, 'plans', coordinateInput.planId), {
+      await updateDoc(doc(db, 'plans', coordinateInput.planId), {
         latitude: lat,
         longitude: lng,
         updated_at: new Date(),
@@ -187,88 +242,199 @@ export const TripMap: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-secondary-900 relative">
-      {/* Header */}
-      <div className="absolute top-0 left-0 right-0 z-20">
-        <div className="flex items-center justify-between p-6 bg-gradient-to-r from-primary-900/90 to-secondary-900/90 backdrop-blur-sm">
-          <WaveButton
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate(`/trips/${id}`)}
-            className="!p-2"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </WaveButton>
-          
-          <h1 className="text-lg font-bold text-white">{trip.title} 지도</h1>
-          
-          <WaveButton
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowSidebar(!showSidebar)}
-            className="!p-2"
-          >
-            <Filter className="w-5 h-5" />
-          </WaveButton>
-        </div>
-      </div>
-
-      {/* Map */}
-      <div className="h-screen pt-20">
-        <TravelMap
-          plans={filteredPlans}
-          onPlanClick={handlePlanClick}
-          className="h-full"
-        />
-      </div>
-
-      {/* Day Filter - Bottom */}
-      <div className="absolute bottom-6 left-6 right-6 z-10">
-        <GlassCard variant="light" className="p-4">
-          <div className="flex items-center space-x-2 mb-3">
-            <Calendar className="w-4 h-4 text-white/60" />
-            <span className="text-white/60 text-sm">Day 필터</span>
-          </div>
-          
-          <div className="flex space-x-2 overflow-x-auto pb-2">
-            <button
-              onClick={() => setSelectedDay('all')}
-              className={`flex-shrink-0 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                selectedDay === 'all'
-                  ? 'bg-primary-500 text-white'
-                  : 'bg-white/10 text-white/70 hover:bg-white/20'
-              }`}
+    <div className="h-screen relative overflow-hidden">
+      <Header />
+      
+      {/* Title Bar */}
+      <div className="fixed top-16 left-0 right-0 z-20 bg-black/20 backdrop-blur-lg">
+        <div className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {(id || selectedTripId) && (
+                <WaveButton
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    if (id) {
+                      navigate(-1);
+                    } else if (selectedTripId) {
+                      navigate(`/trips/${selectedTripId}`);
+                    }
+                  }}
+                  className="!p-2"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </WaveButton>
+              )}
+              <h1 className="text-xl font-bold text-white text-glow">
+                {trip ? `${trip.title} 지도` : '전체 여행 지도'}
+              </h1>
+            </div>
+            <WaveButton
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowSidebar(!showSidebar)}
+              className="!p-2 ml-4"
             >
-              전체
-              <span className="ml-1 text-xs bg-white/20 rounded-full px-1">
-                {plansWithCoordinates.length}
-              </span>
-            </button>
-            
-            {days.map((day) => {
-              const dayPlansWithCoords = plans.filter(p => p.day === day && p.latitude && p.longitude);
-              return (
+              <Filter className="w-5 h-5" />
+            </WaveButton>
+          </div>
+        </div>
+        
+        {/* Trip Selector - For overall map view */}
+        {!id && trips.length > 0 && (
+          <div className="px-4 pb-4">
+            <GlassCard variant="light" className="p-3">
+              <div className="flex items-center space-x-2 mb-2">
+                <MapPin className="w-4 h-4 text-white/60" />
+                <span className="text-white/60 text-sm">여행 선택</span>
+              </div>
+              
+              <div className="flex space-x-2 overflow-x-auto pb-2">
                 <button
-                  key={day}
-                  onClick={() => setSelectedDay(day)}
+                  onClick={() => {
+                    setSelectedTripId(null);
+                    setSelectedDay('all');
+                  }}
                   className={`flex-shrink-0 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                    selectedDay === day
+                    !selectedTripId
                       ? 'bg-primary-500 text-white'
                       : 'bg-white/10 text-white/70 hover:bg-white/20'
                   }`}
                 >
-                  Day {day}
-                  {dayPlansWithCoords.length > 0 && (
-                    <span className="ml-1 text-xs bg-white/20 rounded-full px-1">
-                      {dayPlansWithCoords.length}
-                    </span>
-                  )}
+                  전체
                 </button>
-              );
-            })}
+                
+                {trips.map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => {
+                      setSelectedTripId(t.id!);
+                      setTrip(t);
+                      setSelectedDay(1);
+                    }}
+                    className={`flex-shrink-0 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                      selectedTripId === t.id
+                        ? 'bg-primary-500 text-white'
+                        : 'bg-white/10 text-white/70 hover:bg-white/20'
+                    }`}
+                  >
+                    {t.title}
+                  </button>
+                ))}
+              </div>
+              
+              {/* Day Filter - When a trip is selected */}
+              {selectedTripId && trip && (
+                <div className="mt-3 pt-3 border-t border-white/10">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Calendar className="w-4 h-4 text-white/60" />
+                    <span className="text-white/60 text-sm">Day 필터</span>
+                  </div>
+                  
+                  <div className="flex space-x-2 overflow-x-auto pb-2">
+                    <button
+                      onClick={() => setSelectedDay('all')}
+                      className={`flex-shrink-0 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                        selectedDay === 'all'
+                          ? 'bg-primary-500 text-white'
+                          : 'bg-white/10 text-white/70 hover:bg-white/20'
+                      }`}
+                    >
+                      전체
+                      <span className="ml-1 text-xs bg-white/20 rounded-full px-1">
+                        {plansWithCoordinates.length}
+                      </span>
+                    </button>
+                    
+                    {days.map((day) => {
+                      const dayPlansWithCoords = plans.filter(p => p.day === day && p.latitude && p.longitude);
+                      return (
+                        <button
+                          key={day}
+                          onClick={() => setSelectedDay(day)}
+                          className={`flex-shrink-0 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                            selectedDay === day
+                              ? 'bg-primary-500 text-white'
+                              : 'bg-white/10 text-white/70 hover:bg-white/20'
+                          }`}
+                        >
+                          Day {day}
+                          {dayPlansWithCoords.length > 0 && (
+                            <span className="ml-1 text-xs bg-white/20 rounded-full px-1">
+                              {dayPlansWithCoords.length}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </GlassCard>
           </div>
-        </GlassCard>
+        )}
       </div>
+
+      {/* Map */}
+      <div className={`fixed inset-0 ${!id && trips.length > 0 && selectedTripId ? 'pt-96' : !id && trips.length > 0 ? 'pt-72' : 'pt-32'} px-4`}>
+        <TravelMap
+          plans={filteredPlans}
+          onPlanClick={handlePlanClick}
+          className="h-full w-full"
+          height="100%"
+        />
+      </div>
+
+      {/* Day Filter - Bottom (only for specific trip view) */}
+      {id && trip && (
+        <div className="absolute bottom-4 left-4 right-4 z-10 px-4">
+          <GlassCard variant="light" className="p-4">
+            <div className="flex items-center space-x-2 mb-3">
+              <Calendar className="w-4 h-4 text-white/60" />
+              <span className="text-white/60 text-sm">Day 필터</span>
+            </div>
+            
+            <div className="flex space-x-2 overflow-x-auto pb-2">
+              <button
+                onClick={() => setSelectedDay('all')}
+                className={`flex-shrink-0 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                  selectedDay === 'all'
+                    ? 'bg-primary-500 text-white'
+                    : 'bg-white/10 text-white/70 hover:bg-white/20'
+                }`}
+              >
+                전체
+                <span className="ml-1 text-xs bg-white/20 rounded-full px-1">
+                  {plansWithCoordinates.length}
+                </span>
+              </button>
+              
+              {days.map((day) => {
+                const dayPlansWithCoords = plans.filter(p => p.day === day && p.latitude && p.longitude);
+                return (
+                  <button
+                    key={day}
+                    onClick={() => setSelectedDay(day)}
+                    className={`flex-shrink-0 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                      selectedDay === day
+                        ? 'bg-primary-500 text-white'
+                        : 'bg-white/10 text-white/70 hover:bg-white/20'
+                    }`}
+                  >
+                    Day {day}
+                    {dayPlansWithCoords.length > 0 && (
+                      <span className="ml-1 text-xs bg-white/20 rounded-full px-1">
+                        {dayPlansWithCoords.length}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </GlassCard>
+        </div>
+      )}
 
       {/* Sidebar */}
       {showSidebar && (
@@ -277,8 +443,8 @@ export const TripMap: React.FC = () => {
             className="fixed inset-0 bg-black/50 z-30"
             onClick={() => setShowSidebar(false)}
           />
-          <div className="fixed right-0 top-0 h-full w-80 bg-gradient-to-b from-primary-900 to-secondary-900 z-40 overflow-y-auto">
-            <div className="p-6">
+          <div className="fixed right-0 top-0 h-full w-80 bg-black/50 backdrop-blur-lg z-40 overflow-y-auto">
+            <div className="p-4">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-white">일정 목록</h2>
                 <button
@@ -361,7 +527,7 @@ export const TripMap: React.FC = () => {
       {showCoordinateModal && (
         <>
           <div className="fixed inset-0 bg-black/50 z-50" onClick={() => setShowCoordinateModal(false)} />
-          <div className="fixed inset-0 flex items-center justify-center z-50 p-6">
+          <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
             <GlassCard variant="travel" className="w-full max-w-md">
               <h3 className="text-lg font-semibold text-white mb-4">
                 <Navigation className="w-5 h-5 inline mr-2" />
@@ -428,7 +594,7 @@ export const TripMap: React.FC = () => {
 
       {/* No coordinates warning */}
       {plansWithCoordinates.length === 0 && (
-        <div className="absolute top-32 left-6 right-6 z-10">
+        <div className="absolute top-1/2 left-4 right-4 z-10 transform -translate-y-1/2 px-4">
           <GlassCard variant="light" className="text-center">
             <Navigation className="w-12 h-12 text-white/40 mx-auto mb-4" />
             <p className="text-white/60 mb-2">지도에 표시할 일정이 없습니다</p>

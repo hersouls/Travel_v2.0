@@ -3,33 +3,15 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts';
 import { GlassCard } from '../components/GlassCard';
 import { WaveButton } from '../components/WaveButton';
-import { 
-  ArrowLeft, 
-  Save,
-  Trash2,
-  Upload,
-  X,
-  Star,
-  MapPin,
-  Clock,
-  Camera,
-  Youtube,
-  Map,
-  Search
-} from 'lucide-react';
-import { 
-  doc, 
-  getDoc, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  collection, 
-  Timestamp 
-} from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '../lib/firebase';
-import { Trip } from '../types/trip';
+import { Header } from '../components/Header';
+import { Footer } from '../components/Footer';
 import { Plan } from '../types/plan';
+import { Trip } from '../types/trip';
+import { MapPin, Clock, Save, X, Search, Star, Camera, Upload, Youtube, Map, Utensils, Bed, Car, ArrowLeft, Globe, Navigation, Plane } from 'lucide-react';
+import { doc, getDoc, setDoc, Timestamp, collection } from 'firebase/firestore';
+import { db } from '../lib/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { storage } from '../lib/firebase';
 
 export const PlanDetail: React.FC = () => {
   const { tripId, planId } = useParams<{ tripId: string; planId: string }>();
@@ -38,7 +20,6 @@ export const PlanDetail: React.FC = () => {
   const [searchParams] = useSearchParams();
   
   const [trip, setTrip] = useState<Trip | null>(null);
-  const [plan, setPlan] = useState<Plan | null>(null);
   const [isEdit, setIsEdit] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -51,7 +32,8 @@ export const PlanDetail: React.FC = () => {
     end_time: '10:00',
     type: 'attraction' as Plan['type'],
     address: '',
-    rating: 0,
+    website: '',
+    opening_hours: '',
     memo: '',
     youtube_link: '',
     map_url: '',
@@ -64,11 +46,14 @@ export const PlanDetail: React.FC = () => {
   const [existingPhotos, setExistingPhotos] = useState<string[]>([]);
 
   const planTypes = [
-    { value: 'attraction', label: '관광지', icon: '🏛️' },
-    { value: 'restaurant', label: '음식점', icon: '🍽️' },
-    { value: 'hotel', label: '숙소', icon: '🏨' },
-    { value: 'transport', label: '교통', icon: '🚗' },
-    { value: 'other', label: '기타', icon: '📍' },
+    { value: 'attraction', label: '관광지', icon: <Star className="w-4 h-4 inline mr-1 text-travel-orange" /> },
+    { value: 'restaurant', label: '음식점', icon: <Utensils className="w-4 h-4 inline mr-1 text-travel-green" /> },
+    { value: 'hotel', label: '숙소', icon: <Bed className="w-4 h-4 inline mr-1 text-travel-purple" /> },
+    { value: 'transport', label: '대중교통', icon: <MapPin className="w-4 h-4 inline mr-1 text-travel-blue" /> },
+    { value: 'car', label: '자동차', icon: <Car className="w-4 h-4 inline mr-1 text-travel-blue" /> },
+    { value: 'plane', label: '비행기', icon: <Plane className="w-4 h-4 inline mr-1 text-travel-blue" /> },
+    { value: 'airport', label: '공항', icon: <Navigation className="w-4 h-4 inline mr-1 text-travel-blue" /> },
+    { value: 'other', label: '기타', icon: <MapPin className="w-4 h-4 inline mr-1 text-white/80" /> },
   ];
 
   useEffect(() => {
@@ -95,10 +80,9 @@ export const PlanDetail: React.FC = () => {
         // Plan 데이터 로드 (편집 모드일 때)
         if (planId) {
           setIsEdit(true);
-          const planDoc = await getDoc(doc(db, 'trips', tripId, 'plans', planId));
+          const planDoc = await getDoc(doc(db, 'plans', planId));
           if (planDoc.exists()) {
             const planData = { id: planDoc.id, ...planDoc.data() } as Plan;
-            setPlan(planData);
             setFormData({
               day: planData.day,
               place_name: planData.place_name,
@@ -106,7 +90,8 @@ export const PlanDetail: React.FC = () => {
               end_time: planData.end_time || '',
               type: planData.type,
               address: planData.address || '',
-              rating: planData.rating || 0,
+              website: planData.website || '',
+              opening_hours: planData.opening_hours || '',
               memo: planData.memo || '',
               youtube_link: planData.youtube_link || '',
               map_url: planData.map_url || '',
@@ -166,6 +151,19 @@ export const PlanDetail: React.FC = () => {
     }
   };
 
+  const getTripDays = () => {
+    if (!trip) return Array.from({ length: 10 }, (_, i) => i + 1);
+    
+    const start = new Date(trip.start_date);
+    const end = new Date(trip.end_date);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    
+    // 최소 1일, 최대 30일까지 제한
+    const totalDays = Math.min(Math.max(1, diffDays), 30);
+    return Array.from({ length: totalDays }, (_, i) => i + 1);
+  };
+
   const validateForm = () => {
     if (!formData.place_name.trim()) {
       setError('장소명을 입력해주세요.');
@@ -213,35 +211,58 @@ export const PlanDetail: React.FC = () => {
         uploadedPhotoUrls.push(url);
       }
 
-      // Plan 데이터 생성
-      const planData: Omit<Plan, 'id'> = {
+      // Plan 데이터 생성 - undefined 값들을 조건부로 추가
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const planData: Record<string, any> = {
         trip_id: tripId!,
         day: formData.day,
         place_name: formData.place_name.trim(),
         start_time: formData.start_time,
-        end_time: formData.end_time || undefined,
         type: formData.type,
-        address: formData.address.trim() || undefined,
-        rating: formData.rating || undefined,
-        memo: formData.memo.trim() || undefined,
         photos: [...existingPhotos, ...uploadedPhotoUrls],
-        youtube_link: formData.youtube_link.trim() || undefined,
-        map_url: formData.map_url.trim() || undefined,
-        latitude: formData.latitude ? Number(formData.latitude) : undefined,
-        longitude: formData.longitude ? Number(formData.longitude) : undefined,
         created_at: Timestamp.now(),
         updated_at: Timestamp.now(),
       };
 
+      // 선택적 필드들을 조건부로 추가 (undefined 방지)
+      if (formData.end_time) {
+        planData.end_time = formData.end_time;
+      }
+      if (formData.address.trim()) {
+        planData.address = formData.address.trim();
+      }
+      if (formData.website.trim()) {
+        planData.website = formData.website.trim();
+      }
+      if (formData.opening_hours.trim()) {
+        planData.opening_hours = formData.opening_hours.trim();
+      }
+      if (formData.memo.trim()) {
+        planData.memo = formData.memo.trim();
+      }
+      if (formData.youtube_link.trim()) {
+        planData.youtube_link = formData.youtube_link.trim();
+      }
+      if (formData.map_url.trim()) {
+        planData.map_url = formData.map_url.trim();
+      }
+      if (formData.latitude && !isNaN(Number(formData.latitude))) {
+        planData.latitude = Number(formData.latitude);
+      }
+      if (formData.longitude && !isNaN(Number(formData.longitude))) {
+        planData.longitude = Number(formData.longitude);
+      }
+
       if (isEdit && planId) {
         // 수정
-        await updateDoc(doc(db, 'trips', tripId!, 'plans', planId), {
+        await setDoc(doc(db, 'plans', planId), {
           ...planData,
           updated_at: Timestamp.now(),
         });
       } else {
-        // 생성
-        await addDoc(collection(db, 'trips', tripId!, 'plans'), planData);
+        // 생성 - 새로운 문서 ID 생성
+        const newPlanRef = doc(collection(db, 'plans'));
+        await setDoc(newPlanRef, planData);
       }
 
       // 성공 시 TripDetail로 이동
@@ -254,24 +275,9 @@ export const PlanDetail: React.FC = () => {
     }
   };
 
-  const handleDelete = async () => {
-    if (!isEdit || !planId || !window.confirm('정말 이 일정을 삭제하시겠습니까?')) return;
-
-    setSaving(true);
-    try {
-      await deleteDoc(doc(db, 'trips', tripId!, 'plans', planId));
-      navigate(`/trips/${tripId}`);
-    } catch (error) {
-      console.error('일정 삭제 실패:', error);
-      setError('일정 삭제에 실패했습니다.');
-    } finally {
-      setSaving(false);
-    }
-  };
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-secondary-900 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-white text-lg">로딩 중...</div>
       </div>
     );
@@ -279,11 +285,11 @@ export const PlanDetail: React.FC = () => {
 
   if (error && !trip) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-secondary-900 flex items-center justify-center p-6">
+      <div className="min-h-screen flex items-center justify-center p-6">
         <GlassCard variant="travel" className="text-center">
           <p className="text-white mb-4">{error}</p>
           <WaveButton onClick={() => navigate('/')}>
-            홈으로 돌아가기
+            Back
           </WaveButton>
         </GlassCard>
       </div>
@@ -291,52 +297,45 @@ export const PlanDetail: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-secondary-900">
-      {/* Header */}
-      <div className="sticky top-0 bg-gradient-to-r from-primary-900/90 to-secondary-900/90 backdrop-blur-sm z-10">
-        <div className="flex items-center justify-between p-6">
-          <WaveButton
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate(`/trips/${tripId}`)}
-            className="!p-2"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </WaveButton>
-          
-          <h1 className="text-lg font-bold text-white">
-            {isEdit ? '일정 편집' : '새 일정 추가'}
-          </h1>
-          
-          {isEdit && (
+    <div className="min-h-screen">
+      <Header />
+      {/* Main Content */}
+      <div className="pt-20 px-4 pb-6">
+        <div className="max-w-7xl mx-auto">
+          {/* Page Title and Back Button */}
+          <div className="flex items-center justify-between mb-6">
             <WaveButton
               variant="ghost"
               size="sm"
-              onClick={handleDelete}
-              className="!p-2 text-red-400"
+              onClick={() => navigate(`/trips/${tripId}`)}
+              className="flex items-center space-x-2"
+              ariaLabel="Back to trip details"
             >
-              <Trash2 className="w-5 h-5" />
+              <ArrowLeft className="w-4 h-4" />
+              <span className="hidden sm:inline">Back</span>
             </WaveButton>
+            
+            <h1 className="text-xl sm:text-2xl font-bold text-white text-glow text-center flex-1">
+              {isEdit ? '일정 편집' : '새 일정 추가'}
+            </h1>
+            
+            <div className="w-20 sm:w-24"></div>
+          </div>
+          {/* Trip Info */}
+          {trip && (
+            <GlassCard variant="light" className="mb-6">
+              <h3 className="text-lg font-semibold text-white mb-2">{trip.title}</h3>
+              <p className="text-white/60">Day {formData.day} 일정</p>
+            </GlassCard>
           )}
-        </div>
-      </div>
 
-      <div className="px-6 pb-6">
-        {/* Trip Info */}
-        {trip && (
-          <GlassCard variant="light" className="mb-6">
-            <h3 className="text-lg font-semibold text-white mb-2">{trip.title}</h3>
-            <p className="text-white/60">Day {formData.day} 일정</p>
-          </GlassCard>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Info */}
-          <GlassCard variant="travel">
+          <GlassCard variant="travel" className="animate-fade-in">
             <h3 className="text-lg font-semibold text-white mb-4">기본 정보</h3>
             
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-white text-sm font-medium mb-2">
                     Day *
@@ -344,9 +343,9 @@ export const PlanDetail: React.FC = () => {
                   <select
                     value={formData.day}
                     onChange={(e) => setFormData({ ...formData, day: parseInt(e.target.value) })}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300"
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300 transition-all"
                   >
-                    {Array.from({ length: 10 }, (_, i) => i + 1).map(day => (
+                    {getTripDays().map(day => (
                       <option key={day} value={day} className="bg-primary-800">
                         Day {day}
                       </option>
@@ -358,17 +357,22 @@ export const PlanDetail: React.FC = () => {
                   <label className="block text-white text-sm font-medium mb-2">
                     유형 *
                   </label>
-                  <select
-                    value={formData.type}
-                    onChange={(e) => setFormData({ ...formData, type: e.target.value as Plan['type'] })}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300"
-                  >
-                    {planTypes.map(type => (
-                      <option key={type.value} value={type.value} className="bg-primary-800">
-                        {type.icon} {type.label}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={formData.type}
+                      onChange={(e) => setFormData({ ...formData, type: e.target.value as Plan['type'] })}
+                      className="w-full px-12 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300 transition-all appearance-none"
+                    >
+                      {planTypes.map(type => (
+                        <option key={type.value} value={type.value} className="bg-primary-800">
+                          {type.label}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                      {planTypes.find(type => type.value === formData.type)?.icon}
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -376,21 +380,23 @@ export const PlanDetail: React.FC = () => {
                 <label className="block text-white text-sm font-medium mb-2">
                   장소명 *
                 </label>
-                <div className="flex space-x-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <input
                     type="text"
                     value={formData.place_name}
                     onChange={(e) => setFormData({ ...formData, place_name: e.target.value })}
                     placeholder="예: 도쿄 스카이트리"
-                    className="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300"
+                    className="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300 transition-all"
                   />
                   <WaveButton
                     type="button"
                     variant="ghost"
                     onClick={() => navigate(`/places/search?trip=${tripId}`)}
-                    className="!p-3"
+                    className="!p-3 sm:!p-3 w-full sm:w-auto"
+                    ariaLabel="장소 검색"
                   >
                     <Search className="w-5 h-5" />
+                    <span className="ml-2 sm:hidden">장소 검색</span>
                   </WaveButton>
                 </div>
               </div>
@@ -408,7 +414,7 @@ export const PlanDetail: React.FC = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-white text-sm font-medium mb-2">
                     <Clock className="w-4 h-4 inline mr-1" />
@@ -418,7 +424,7 @@ export const PlanDetail: React.FC = () => {
                     type="time"
                     value={formData.start_time}
                     onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300"
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300 transition-all"
                   />
                 </div>
                 <div>
@@ -429,37 +435,49 @@ export const PlanDetail: React.FC = () => {
                     type="time"
                     value={formData.end_time}
                     onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300"
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300 transition-all"
                   />
                 </div>
               </div>
             </div>
           </GlassCard>
 
-          {/* Rating */}
-          <GlassCard variant="travel">
-            <h3 className="text-lg font-semibold text-white mb-4">평점</h3>
-            <div className="flex items-center space-x-2">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  type="button"
-                  onClick={() => setFormData({ ...formData, rating: star })}
-                  className={`w-8 h-8 ${
-                    star <= formData.rating ? 'text-yellow-400' : 'text-white/30'
-                  }`}
-                >
-                  <Star className="w-8 h-8 fill-current" />
-                </button>
-              ))}
-              <span className="text-white/60 ml-4">
-                {formData.rating > 0 ? `${formData.rating}점` : '평점 없음'}
-              </span>
+          {/* Website & Opening Hours */}
+          <GlassCard variant="travel" className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
+            <h3 className="text-lg font-semibold text-white mb-4">상세 정보</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-white text-sm font-medium mb-2">
+                  <Globe className="w-4 h-4 inline mr-2" />
+                  홈페이지
+                </label>
+                <input
+                  type="url"
+                  value={formData.website}
+                  onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                  placeholder="https://example.com"
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-travel-blue focus:ring-1 focus:ring-travel-blue"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-white text-sm font-medium mb-2">
+                  <Clock className="w-4 h-4 inline mr-2" />
+                  영업 시간
+                </label>
+                <input
+                  type="text"
+                  value={formData.opening_hours}
+                  onChange={(e) => setFormData({ ...formData, opening_hours: e.target.value })}
+                  placeholder="예: 월-금 09:00-18:00, 토요일 휴무"
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-travel-blue focus:ring-1 focus:ring-travel-blue"
+                />
+              </div>
             </div>
           </GlassCard>
 
           {/* Photos */}
-          <GlassCard variant="travel">
+          <GlassCard variant="travel" className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
             <h3 className="text-lg font-semibold text-white mb-4">
               <Camera className="w-5 h-5 inline mr-2" />
               사진 ({existingPhotos.length + photos.length}/5)
@@ -467,21 +485,24 @@ export const PlanDetail: React.FC = () => {
             
             {/* Existing Photos */}
             {existingPhotos.length > 0 && (
-              <div className="grid grid-cols-3 gap-3 mb-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 mb-4">
                 {existingPhotos.map((photo, index) => (
-                  <div key={index} className="relative">
+                  <div key={index} className="relative group">
                     <img
                       src={photo}
                       alt={`사진 ${index + 1}`}
-                      className="w-full h-20 object-cover rounded-lg"
+                      className="w-full aspect-square object-cover rounded-lg transition-transform group-hover:scale-105"
                     />
-                    <button
+                    <WaveButton
                       type="button"
                       onClick={() => removePhoto(index, true)}
-                      className="absolute top-1 right-1 p-1 bg-black/50 rounded-full text-white"
+                      variant="secondary"
+                      size="sm"
+                      className="absolute top-1 right-1 !p-1 !px-1 !py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      ariaLabel="사진 삭제"
                     >
                       <X className="w-3 h-3" />
-                    </button>
+                    </WaveButton>
                   </div>
                 ))}
               </div>
@@ -489,21 +510,24 @@ export const PlanDetail: React.FC = () => {
 
             {/* New Photos */}
             {photoPreviews.length > 0 && (
-              <div className="grid grid-cols-3 gap-3 mb-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 mb-4">
                 {photoPreviews.map((preview, index) => (
-                  <div key={index} className="relative">
+                  <div key={index} className="relative group">
                     <img
                       src={preview}
                       alt={`새 사진 ${index + 1}`}
-                      className="w-full h-20 object-cover rounded-lg"
+                      className="w-full aspect-square object-cover rounded-lg transition-transform group-hover:scale-105"
                     />
-                    <button
+                    <WaveButton
                       type="button"
                       onClick={() => removePhoto(index)}
-                      className="absolute top-1 right-1 p-1 bg-black/50 rounded-full text-white"
+                      variant="secondary"
+                      size="sm"
+                      className="absolute top-1 right-1 !p-1 !px-1 !py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      ariaLabel="사진 삭제"
                     >
                       <X className="w-3 h-3" />
-                    </button>
+                    </WaveButton>
                   </div>
                 ))}
               </div>
@@ -528,13 +552,13 @@ export const PlanDetail: React.FC = () => {
           </GlassCard>
 
           {/* Location */}
-          <GlassCard variant="travel">
+          <GlassCard variant="travel" className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
             <h3 className="text-lg font-semibold text-white mb-4">
               <MapPin className="w-5 h-5 inline mr-2" />
               위치 정보
             </h3>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-white text-sm font-medium mb-2">
                   위도 (Latitude)
@@ -544,7 +568,7 @@ export const PlanDetail: React.FC = () => {
                   value={formData.latitude}
                   onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
                   placeholder="예: 35.710063"
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300"
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300 transition-all"
                 />
               </div>
               <div>
@@ -556,17 +580,17 @@ export const PlanDetail: React.FC = () => {
                   value={formData.longitude}
                   onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
                   placeholder="예: 139.810700"
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300"
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300 transition-all"
                 />
               </div>
             </div>
           </GlassCard>
 
           {/* Links */}
-          <GlassCard variant="travel">
+          <GlassCard variant="travel" className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
             <h3 className="text-lg font-semibold text-white mb-4">링크</h3>
             
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div>
                 <label className="block text-white text-sm font-medium mb-2">
                   <Youtube className="w-4 h-4 inline mr-1" />
@@ -577,7 +601,7 @@ export const PlanDetail: React.FC = () => {
                   value={formData.youtube_link}
                   onChange={(e) => setFormData({ ...formData, youtube_link: e.target.value })}
                   placeholder="https://youtube.com/watch?v=..."
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300"
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300 transition-all"
                 />
               </div>
               
@@ -591,14 +615,14 @@ export const PlanDetail: React.FC = () => {
                   value={formData.map_url}
                   onChange={(e) => setFormData({ ...formData, map_url: e.target.value })}
                   placeholder="https://maps.google.com/..."
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300"
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300 transition-all"
                 />
               </div>
             </div>
           </GlassCard>
 
           {/* Memo */}
-          <GlassCard variant="travel">
+          <GlassCard variant="travel" className="animate-fade-in" style={{ animationDelay: '0.5s' }}>
             <h3 className="text-lg font-semibold text-white mb-4">메모</h3>
             <textarea
               value={formData.memo}
@@ -606,7 +630,7 @@ export const PlanDetail: React.FC = () => {
               placeholder="이 장소에 대한 메모를 작성해주세요..."
               maxLength={1000}
               rows={4}
-              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300 resize-none"
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300 resize-none transition-all"
             />
             <div className="text-xs text-white/60 mt-1 text-right">
               {formData.memo.length}/1000자
@@ -621,18 +645,33 @@ export const PlanDetail: React.FC = () => {
           )}
 
           {/* Submit Button */}
-          <WaveButton
-            type="submit"
-            variant="travel"
-            size="lg"
-            className="w-full"
-            disabled={saving}
-          >
-            <Save className="w-5 h-5 mr-2" />
-            {saving ? '저장 중...' : (isEdit ? '수정하기' : '추가하기')}
-          </WaveButton>
-        </form>
+          <div className="sticky bottom-6 z-10">
+            <WaveButton
+              type="submit"
+              variant="travel"
+              size="lg"
+              className="w-full animate-fade-in shadow-lg"
+              style={{ animationDelay: '0.6s' }}
+              disabled={saving}
+              ariaLabel={saving ? '저장 중' : (isEdit ? '일정 수정하기' : '일정 추가하기')}
+            >
+              {saving ? (
+                <div className="flex items-center justify-center space-x-2">
+                  <div className="animate-spin w-4 h-4 border-2 border-white/30 border-t-white rounded-full"></div>
+                  <span>저장 중...</span>
+                </div>
+              ) : (
+                <>
+                  <Save className="w-5 h-5 mr-2" />
+                  {isEdit ? '수정하기' : '추가하기'}
+                </>
+              )}
+            </WaveButton>
+          </div>
+          </form>
+        </div>
       </div>
+      <Footer />
     </div>
   );
 };

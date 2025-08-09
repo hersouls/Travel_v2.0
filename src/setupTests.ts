@@ -1,23 +1,43 @@
 import '@testing-library/jest-dom';
 
-// Mock Howler.js
-jest.mock('howler', () => ({
-  Howl: jest.fn().mockImplementation(() => ({
-    play: jest.fn(),
-    pause: jest.fn(),
-    stop: jest.fn(),
-    volume: jest.fn(),
-    seek: jest.fn(),
-    on: jest.fn(),
-    off: jest.fn(),
-    duration: jest.fn(() => 180),
-    playing: jest.fn(() => false),
-  })),
-  Howler: {
-    volume: jest.fn(),
-    mute: jest.fn(),
-    stop: jest.fn(),
+// Mock Firebase
+jest.mock('./lib/firebase', () => ({
+  auth: {
+    currentUser: null,
+    signInAnonymously: jest.fn(),
+    signOut: jest.fn(),
+    onAuthStateChanged: jest.fn(),
   },
+  db: {},
+  storage: {},
+  analytics: null,
+  performance: null,
+}));
+
+// Mock React Router
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => jest.fn(),
+  useParams: () => ({}),
+  useSearchParams: () => [new URLSearchParams(), jest.fn()],
+}));
+
+// Mock Leaflet
+jest.mock('leaflet', () => ({
+  map: jest.fn(() => ({
+    setView: jest.fn(),
+    addLayer: jest.fn(),
+    removeLayer: jest.fn(),
+    remove: jest.fn(),
+  })),
+  tileLayer: jest.fn(() => ({
+    addTo: jest.fn(),
+  })),
+  marker: jest.fn(() => ({
+    addTo: jest.fn(),
+    bindPopup: jest.fn(),
+  })),
+  icon: jest.fn(),
 }));
 
 // Mock localStorage

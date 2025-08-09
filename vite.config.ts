@@ -18,6 +18,7 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    strictPort: true,
     open: true,
     host: true
   },
@@ -29,13 +30,12 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
-          audio: ['howler'],
           ui: ['lucide-react']
         }
       }
     }
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'howler', 'lucide-react']
+    include: ['react', 'react-dom', 'lucide-react']
   }
 })

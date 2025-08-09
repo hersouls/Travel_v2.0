@@ -1,6 +1,18 @@
 @custom-variant dark (&:is(.dark *));
 
+/* =============================================================================
+ * FONT CONFIGURATION - Pretendard Korean Font
+ * ============================================================================= */
+@font-face {
+  font-family: 'Pretendard Variable';
+  src: url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.woff2') format('woff2-variations');
+  font-weight: 45 920;
+  font-display: swap;
+}
+
 :root {
+  /* Font family configuration */
+  --font-pretendard: 'Pretendard Variable', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
   --font-size: 14px;
   
   /* =============================================================================
@@ -156,6 +168,8 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-pretendard);
+    font-feature-settings: 'rlig' 1, 'calt' 1;
     background: linear-gradient(135deg, #0f0f23 0%, #16213e 25%, #1a1a2e 50%, #16213e 75%, #0f0f23 100%);
     background-attachment: fixed;
     min-height: 100vh;
@@ -294,8 +308,85 @@ html {
 }
 
 @keyframes twinkle {
-  0% { opacity: 0.3; }
-  100% { opacity: 0.8; }
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+@keyframes nebula {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.1) rotate(180deg);
+    opacity: 0.5;
+  }
+}
+
+@keyframes shooting-star {
+  0% {
+    transform: translateX(-100vw) translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(120vw) translateY(-80vh) rotate(45deg);
+    opacity: 0;
+  }
+}
+
+@keyframes shooting-star-2 {
+  0% {
+    transform: translateX(-50vw) translateY(-30vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(150vw) translateY(60vh) rotate(-30deg);
+    opacity: 0;
+  }
+}
+
+@keyframes shooting-star-3 {
+  0% {
+    transform: translateX(-80vw) translateY(-20vh) rotate(0deg);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100vw) translateY(-60vh) rotate(60deg);
+    opacity: 0;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  25% {
+    transform: translateY(-10px) translateX(5px);
+  }
+  50% {
+    transform: translateY(-5px) translateX(-5px);
+  }
+  75% {
+    transform: translateY(5px) translateX(10px);
+  }
 }
 
 /* Wave Animation Classes */
@@ -325,6 +416,64 @@ html {
 
 .moonwave-glow {
   animation: moonwave-glow 3s ease-in-out infinite;
+}
+
+/* =============================================================================
+ * WAVEBACKGROUND SPECIFIC STYLES
+ * ============================================================================= */
+.moonwave-background {
+  background: linear-gradient(135deg, #0f0f23 0%, #16213e 25%, #1a1a2e 50%, #16213e 75%, #0f0f23 100%);
+  background-attachment: fixed;
+  position: relative;
+  overflow: hidden;
+}
+
+.moonwave-wave-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.moonwave-wave-layer canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* WaveBackground 성능 최적화 */
+.moonwave-optimized {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* WaveBackground 반응형 설정 */
+@media (max-width: 768px) {
+  .moonwave-wave-layer {
+    opacity: 0.8;
+  }
+}
+
+@media (max-width: 480px) {
+  .moonwave-wave-layer {
+    opacity: 0.6;
+  }
+}
+
+/* WaveBackground 접근성 설정 */
+@media (prefers-reduced-motion: reduce) {
+  .moonwave-wave-layer {
+    opacity: 0.3;
+  }
+  
+  .moonwave-wave-layer canvas {
+    animation: none;
+  }
 }
 
 /* =============================================================================
@@ -438,6 +587,95 @@ html {
 .break-keep-ko {
   word-break: keep-all;
   overflow-wrap: break-word;
+}
+
+/* =============================================================================
+ * KOREAN TYPOGRAPHY UTILITIES - From fonts.css
+ * ============================================================================= */
+@layer utilities {
+  /* 한글 자간 최적화 */
+  .tracking-ko-tight { 
+    letter-spacing: -0.02em; 
+  }
+  .tracking-ko-normal { 
+    letter-spacing: -0.01em; 
+  }
+  .tracking-ko-wide { 
+    letter-spacing: 0; 
+  }
+  
+  /* 숫자 최적화 */
+  .text-numeric {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
+  }
+  
+  /* 타이포그래피 스케일 */
+  .text-xs-ko {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    letter-spacing: -0.01em;
+  }
+  
+  .text-sm-ko {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    letter-spacing: -0.01em;
+  }
+  
+  .text-base-ko {
+    font-size: 1rem;
+    line-height: 1.5rem;
+    letter-spacing: -0.01em;
+  }
+  
+  .text-lg-ko {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    letter-spacing: -0.01em;
+  }
+  
+  .text-xl-ko {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    letter-spacing: -0.01em;
+  }
+  
+  .text-2xl-ko {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    letter-spacing: -0.02em;
+  }
+  
+  .text-3xl-ko {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+    letter-spacing: -0.02em;
+  }
+  
+  .text-4xl-ko {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+    letter-spacing: -0.02em;
+  }
+  
+  .text-5xl-ko {
+    font-size: 3rem;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  
+  .text-6xl-ko {
+    font-size: 3.75rem;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  
+  .text-7xl-ko {
+    font-size: 4.5rem;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
 }
 
 /* =============================================================================

@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '../lib/utils';
 
-interface GlassCardProps {
+interface GlassCardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   className?: string;
   variant?: 'default' | 'strong' | 'light' | 'travel';
@@ -14,13 +14,24 @@ export const GlassCard: React.FC<GlassCardProps> = ({
   className,
   variant = 'default',
   withWaveEffect = false,
-  hoverable = true
+  hoverable = true,
+  onClick,
+  onKeyDown,
+  ...props
 }) => {
   const variants = {
     default: 'bg-glass-light backdrop-blur-md border border-white/20',
     strong: 'bg-glass-strong backdrop-blur-xl border border-white/30',
     light: 'bg-glass-light backdrop-blur-sm border border-white/10',
     travel: 'bg-gradient-to-br from-primary-500/10 via-glass-medium to-travel-blue/10 backdrop-blur-lg border border-primary-300/20'
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (onClick && (event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault();
+      onClick(event as any);
+    }
+    onKeyDown?.(event);
   };
 
   return (
@@ -31,10 +42,10 @@ export const GlassCard: React.FC<GlassCardProps> = ({
         'rounded-2xl p-6 shadow-lg',
         
         // Hover effects
-        hoverable && 'transition-all duration-300 hover:bg-white/15 hover:border-white/40 hover:translate-y-[-2px] hover:shadow-xl',
+        hoverable && 'transition-all duration-300 hover:bg-white/15 hover:border-white/30 hover:translate-y-[-2px] hover:shadow-xl',
         
         // Wave effects
-        withWaveEffect && 'wave-float wave-optimized',
+        withWaveEffect && 'relative overflow-hidden',
         
         // Performance optimization
         'transform-gpu will-change-transform',
@@ -42,6 +53,11 @@ export const GlassCard: React.FC<GlassCardProps> = ({
         // Custom className
         className
       )}
+      onClick={onClick}
+      onKeyDown={handleKeyDown}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      {...props}
     >
       {/* Wave effect lines */}
       {withWaveEffect && (

@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts';
 import { GlassCard } from '../components/GlassCard';
 import { WaveButton } from '../components/WaveButton';
-import { ArrowLeft, Calendar, MapPin, Upload, X } from 'lucide-react';
+import { Header } from '../components/Header';
+import { Footer } from '../components/Footer';
+import { Calendar, MapPin, Upload, X } from 'lucide-react';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../lib/firebase';
-import { Trip } from '../types/trip';
+
 
 export const TripCreate: React.FC = () => {
   const { user } = useAuth();
@@ -106,17 +108,21 @@ export const TripCreate: React.FC = () => {
       }
 
       // Trip 데이터 생성
-      const tripData: Omit<Trip, 'id'> = {
+      const tripData: any = {
         user_id: user.uid,
         title: formData.title.trim(),
         country: formData.country,
         start_date: formData.start_date,
         end_date: formData.end_date,
-        cover_image: cover_image_url || undefined,
         plans_count: 0,
         created_at: Timestamp.now(),
         updated_at: Timestamp.now(),
       };
+
+      // cover_image가 있을 때만 추가 (undefined 방지)
+      if (cover_image_url) {
+        tripData.cover_image = cover_image_url;
+      }
 
       // Firestore에 저장
       const docRef = await addDoc(collection(db, 'trips'), tripData);
@@ -132,49 +138,52 @@ export const TripCreate: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-secondary-900 p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <WaveButton
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate(-1)}
-          className="!p-2"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </WaveButton>
-        
-        <h1 className="text-xl font-bold text-white">새 여행 만들기</h1>
-        
-        <div className="w-10" /> {/* Spacer */}
-      </div>
+    <div className="min-h-screen">
+      <Header />
+      {/* Main Content */}
+      <div className="pt-20 px-4 pb-6">
+        <div className="max-w-7xl mx-auto">
+          {/* Page Title */}
+          <div className="text-center mb-6 animate-fade-in">
+            <h1 className="text-2xl-ko md:text-3xl-ko lg:text-4xl-ko xl:text-5xl-ko font-bold text-white moonwave-glow break-keep-ko">새 여행 만들기</h1>
+            <p className="text-sm-ko md:text-base-ko lg:text-lg-ko xl:text-xl-ko text-white/60 mt-2 tracking-ko-normal">특별한 여행의 시작을 계획해보세요</p>
+          </div>
 
-      <form onSubmit={handleSubmit} className="max-w-md mx-auto space-y-6">
+          <form onSubmit={handleSubmit} className="w-full space-y-6">
         {/* Cover Image Upload */}
-        <GlassCard variant="travel">
-          <h3 className="text-lg font-semibold text-white mb-4">커버 이미지</h3>
+        <GlassCard 
+          variant="travel" 
+          withWaveEffect={true}
+          hoverable={true}
+          className="animate-fade-in wave-optimized" 
+          style={{ animationDelay: '0.1s' }}
+        >
+          <h3 className="text-lg-ko font-semibold text-white mb-4 tracking-ko-normal">커버 이미지</h3>
           
           {coverImagePreview ? (
             <div className="relative">
               <img
                 src={coverImagePreview}
                 alt="커버 이미지 미리보기"
-                className="w-full h-40 object-cover rounded-xl"
+                className="w-full h-40 md:h-48 lg:h-56 object-cover rounded-xl"
               />
-              <button
+              <WaveButton
                 type="button"
                 onClick={removeImage}
-                className="absolute top-2 right-2 p-1 bg-black/50 rounded-full text-white"
+                variant="secondary"
+                size="sm"
+                className="absolute top-2 right-2 !p-2 !px-2 !py-2 rounded-full"
+                ariaLabel="이미지 삭제"
               >
                 <X className="w-4 h-4" />
-              </button>
+              </WaveButton>
             </div>
           ) : (
-            <label className="block w-full h-40 border-2 border-dashed border-white/30 rounded-xl cursor-pointer hover:border-white/50 transition-colors">
+            <label className="block w-full h-40 md:h-48 lg:h-56 border-2 border-dashed border-white/30 rounded-xl cursor-pointer hover:border-white/50 transition-colors touch-optimized wave-float">
               <div className="flex flex-col items-center justify-center h-full text-white/60 hover:text-white/80">
-                <Upload className="w-8 h-8 mb-2" />
-                <span className="text-sm">이미지 업로드</span>
-                <span className="text-xs mt-1">최대 5MB</span>
+                <Upload className="w-8 h-8 mb-2 wave-pulse" />
+                <span className="text-sm-ko tracking-ko-normal">이미지 업로드</span>
+                <span className="text-xs-ko mt-1 text-white/40">최대 5MB</span>
               </div>
               <input
                 type="file"
@@ -187,47 +196,55 @@ export const TripCreate: React.FC = () => {
         </GlassCard>
 
         {/* Basic Info */}
-        <GlassCard variant="travel">
+        <GlassCard 
+          variant="travel" 
+          withWaveEffect={true}
+          hoverable={true}
+          className="animate-fade-in wave-optimized" 
+          style={{ animationDelay: '0.2s' }}
+        >
           <div className="space-y-4">
-            <div>
-              <label className="block text-white text-sm font-medium mb-2">
-                여행 제목 *
-              </label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                placeholder="예: 도쿄 벚꽃 여행"
-                maxLength={60}
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300"
-              />
-              <div className="text-xs text-white/60 mt-1">
-                {formData.title.length}/60자
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-white text-sm-ko font-medium mb-2 tracking-ko-normal">
+                  여행 제목 *
+                </label>
+                <input
+                  type="text"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  placeholder="예: 도쿄 벚꽃 여행"
+                  maxLength={60}
+                  className="w-full px-4 py-3 bg-glass-light backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300 touch-optimized transition-all"
+                />
+                <div className="text-xs-ko text-white/60 mt-1 text-numeric">
+                  {formData.title.length}/60자
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-white text-sm-ko font-medium mb-2 tracking-ko-normal">
+                  <MapPin className="w-4 h-4 inline mr-1" />
+                  국가 *
+                </label>
+                <select
+                  value={formData.country}
+                  onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                  className="w-full px-4 py-3 bg-glass-light backdrop-blur-sm border border-white/20 rounded-xl text-white focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300 touch-optimized transition-all"
+                >
+                  <option value="" disabled>국가를 선택해주세요</option>
+                  {countries.map((country) => (
+                    <option key={country} value={country} className="bg-primary-800 text-base-ko">
+                      {country}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
-            <div>
-              <label className="block text-white text-sm font-medium mb-2">
-                <MapPin className="w-4 h-4 inline mr-1" />
-                국가 *
-              </label>
-              <select
-                value={formData.country}
-                onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300"
-              >
-                <option value="" disabled>국가를 선택해주세요</option>
-                {countries.map((country) => (
-                  <option key={country} value={country} className="bg-primary-800">
-                    {country}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-white text-sm font-medium mb-2">
+                <label className="block text-white text-sm-ko font-medium mb-2 tracking-ko-normal">
                   <Calendar className="w-4 h-4 inline mr-1" />
                   시작일 *
                 </label>
@@ -235,11 +252,11 @@ export const TripCreate: React.FC = () => {
                   type="date"
                   value={formData.start_date}
                   onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300"
+                  className="w-full px-4 py-3 bg-glass-light backdrop-blur-sm border border-white/20 rounded-xl text-white focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300 touch-optimized transition-all text-numeric"
                 />
               </div>
               <div>
-                <label className="block text-white text-sm font-medium mb-2">
+                <label className="block text-white text-sm-ko font-medium mb-2 tracking-ko-normal">
                   종료일 *
                 </label>
                 <input
@@ -247,28 +264,34 @@ export const TripCreate: React.FC = () => {
                   value={formData.end_date}
                   onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
                   min={formData.start_date}
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300"
+                  className="w-full px-4 py-3 bg-glass-light backdrop-blur-sm border border-white/20 rounded-xl text-white focus:outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-300 touch-optimized transition-all text-numeric"
                 />
               </div>
             </div>
 
             {/* Duration Display */}
             {formData.start_date && formData.end_date && (
-              <div className="bg-travel-blue/20 border border-travel-blue/30 rounded-xl p-3">
-                <p className="text-white text-sm text-center">
+              <GlassCard 
+                variant="light" 
+                className="animate-fade-in moonwave-glow"
+              >
+                <p className="text-white text-sm-ko text-center tracking-ko-normal">
                   <Calendar className="w-4 h-4 inline mr-1" />
-                  총 <span className="font-bold text-travel-blue">{calculateDuration()}일</span> 여행
+                  총 <span className="font-bold text-travel-blue text-numeric">{calculateDuration()}일</span> 여행
                 </p>
-              </div>
+              </GlassCard>
             )}
           </div>
         </GlassCard>
 
         {/* Error Message */}
         {error && (
-          <div className="bg-red-500/20 border border-red-400/30 rounded-xl p-4">
-            <p className="text-red-200 text-sm text-center">{error}</p>
-          </div>
+          <GlassCard 
+            variant="strong" 
+            className="animate-fade-in wave-pulse"
+          >
+            <p className="text-error-foreground text-sm-ko text-center tracking-ko-normal break-keep-ko">{error}</p>
+          </GlassCard>
         )}
 
         {/* Submit Button */}
@@ -276,12 +299,27 @@ export const TripCreate: React.FC = () => {
           type="submit"
           variant="travel"
           size="lg"
-          className="w-full"
+          className="w-full animate-fade-in touch-optimized wave-optimized group relative overflow-hidden"
+          style={{ animationDelay: '0.3s' }}
           disabled={loading}
+          ariaLabel={loading ? '여행 생성 중' : '여행 만들기'}
         >
-          {loading ? '여행 생성 중...' : '여행 만들기'}
+          {loading ? (
+            <div className="flex items-center justify-center space-x-2">
+              <div className="animate-spin w-4 h-4 border-2 border-white/30 border-t-white rounded-full"></div>
+              <span className="text-base-ko tracking-ko-normal">여행 생성 중...</span>
+            </div>
+          ) : (
+            <span className="text-base-ko tracking-ko-normal flex items-center justify-center space-x-2 group-hover:scale-105 transition-transform">
+              <span>여행 만들기</span>
+              <Calendar className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+            </span>
+          )}
         </WaveButton>
       </form>
+        </div>
+      </div>
+      <Footer />
     </div>
   );
 };

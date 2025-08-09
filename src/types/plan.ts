@@ -1,6 +1,6 @@
 import { Timestamp } from 'firebase/firestore';
 
-export type PlanType = 'attraction' | 'restaurant' | 'hotel' | 'transport' | 'other';
+export type PlanType = 'attraction' | 'restaurant' | 'hotel' | 'transport' | 'car' | 'plane' | 'airport' | 'other';
 
 export interface Plan {
   id: string;
@@ -10,7 +10,8 @@ export interface Plan {
   end_time?: string;     // HH:mm
   type: PlanType;
   address?: string;
-  rating?: number;       // 0.0~5.0
+  website?: string;      // 공식 홈페이지 링크
+  opening_hours?: string; // 영업 시간
   memo?: string;
   photos?: string[];     // Firebase Storage URLs
   youtube_link?: string;
@@ -29,7 +30,8 @@ export interface CreatePlanData {
   end_time?: string;
   type: PlanType;
   address?: string;
-  rating?: number;
+  website?: string;
+  opening_hours?: string;
   memo?: string;
   photos?: File[];
   youtube_link?: string;
