@@ -1,8 +1,16 @@
 // Firebase 데이터베이스 마이그레이션 스크립트
 // 기존 plans 컬렉션의 type 필드를 새로운 형식으로 업데이트
 
-const admin = require('firebase-admin');
-const serviceAccount = require('./service-account-key.json');
+/* eslint-env node */
+import admin from 'firebase-admin';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const serviceAccountPath = path.join(__dirname, 'service-account-key.json');
+const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf-8'));
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -44,7 +52,7 @@ async function migratePlansCollection() {
       const currentType = data.type;
       
       // 기존 타입이 유효한 경우에만 처리
-      if (currentType && typeMapping.hasOwnProperty(currentType)) {
+      if (currentType && Object.prototype.hasOwnProperty.call(typeMapping, currentType)) {
         // 새로운 타입으로 변경이 필요한 경우
         const newType = typeMapping[currentType];
         

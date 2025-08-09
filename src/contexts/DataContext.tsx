@@ -48,23 +48,23 @@ export function useData() {
   return context;
 }
 
+// 기본 설정 (컴포넌트 외부로 이동하여 참조 안정화)
+const defaultPreferences: Preferences = {
+  exchangeRate: 1300,
+  defaultCurrency: 'KRW',
+  theme: 'dark',
+  language: 'ko',
+  timezone: 'Asia/Seoul',
+  dateFormat: 'YYYY-MM-DD',
+  currencyFormat: 'KRW'
+};
+
 export function DataProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [preferences, setPreferences] = useState<Preferences | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // 기본 설정
-  const defaultPreferences = {
-    exchangeRate: 1300,
-    defaultCurrency: 'KRW' as const,
-    theme: 'dark' as const,
-    language: 'ko' as const,
-    timezone: 'Asia/Seoul',
-    dateFormat: 'YYYY-MM-DD',
-    currencyFormat: 'KRW'
-  };
 
   // 구독 데이터 구독
   useEffect(() => {
